@@ -13,7 +13,8 @@ GC.get_data = function() {
   };
   var smart = FHIR.client({
     serviceUrl: 'https://fhir-open-api-dstu2.smarthealthit.org',
-    patientId: '1137192',
+//    patientId: '1137192',
+    patientId:'7777704',
     auth: {
       type: 'none'
     }
