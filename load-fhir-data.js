@@ -3,7 +3,7 @@ window.GC = window.GC || {};
 GC.get_data = function() {
   var dfd = $.Deferred();
 
-  FHIR.oauth2.ready(onReady, onError);
+//  FHIR.oauth2.ready(onReady, onError);
 
   function onError(){
     console.log("Loading error", arguments);
@@ -11,26 +11,41 @@ GC.get_data = function() {
       responseText: "Loading error. See console for details."
     });
   };
-/*  var smart = FHIR.client({
+  var smart = FHIR.client({
     serviceUrl: 'https://fhir-open-api-dstu2.smarthealthit.org',
     patientId: '1137192',
     auth: {
       type: 'none'
     }
   })
-*/
+  console.log('smart');
+  console.log(smart);
+  onReady(smart);
+
   function onReady(smart){
 
-    var hidePatientHeader = (smart.tokenResponse.need_patient_banner === false);
-    GC.Preferences.prop("hidePatientHeader", hidePatientHeader);
+//    var hidePatientHeader = (smart.tokenResponse.need_patient_banner === false);
+//    GC.Preferences.prop("hidePatientHeader", hidePatientHeader);
 
     var ptFetch = smart.patient.read();
+    console.log('ptFetch');
+    console.log(ptFetch);
     var vitalsFetch = smart.patient.api.fetchAll({type: "Observation", query: {code: {$or: ['3141-9', '8302-2', '8287-5', '39156-5', '18185-9', '37362-1', '11884-4']}}});
+    console.log('vitalsFetch');
+    console.log(vitalsFetch);
     var familyHistoryFetch = smart.patient.api.fetchAll({type: "FamilyMemberHistory"});
+    console.log('familyHistoryFetch');
+    console.log(familyHistoryFetch);
 
     $.when(ptFetch, vitalsFetch, familyHistoryFetch).done(onData);
 
     function onData(patient, vitals, familyHistories){
+      console.log('patient');
+      console.log(patient);
+      console.log('vitals');
+      console.log(vitals);
+      console.log('familyHistories');
+      console.log(familyHistories);
       var vitalsByCode = smart.byCode(vitals, 'code');
 
       var t0 = new Date().getTime();
