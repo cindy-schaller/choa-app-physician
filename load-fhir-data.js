@@ -11,7 +11,14 @@ GC.get_data = function() {
       responseText: "Loading error. See console for details."
     });
   };
-
+/*  var smart = FHIR.client({
+    serviceUrl: 'https://fhir-open-api-dstu2.smarthealthit.org',
+    patientId: '1137192',
+    auth: {
+      type: 'none'
+    }
+  })
+*/
   function onReady(smart){
 
     var hidePatientHeader = (smart.tokenResponse.need_patient_banner === false);
