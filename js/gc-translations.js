@@ -199,6 +199,21 @@ window.GC = (function(NS) {
         STR_184 : { en : "state", es : "estado", bg : "статус" },
         
         // Header --------------------------------------------------------------
+        STR_2996 : {
+            en : "Phys:View",
+            es : "Médico:Ver",
+            bg : "лекар:изглед"
+        },
+        STR_2997 : {
+            en : "Phys:Record",
+            es : "Médico:grabar",
+            bg : "лекар:рекорд"
+        },
+        STR_2998 : {
+            en : "Phys:Referral",
+            es : "Médico:remisión",
+            bg : "лекар:сезиране"
+        },
         STR_2999 : {
             en : "Toggle Settings",
             es : "Cazonete ajustes",
