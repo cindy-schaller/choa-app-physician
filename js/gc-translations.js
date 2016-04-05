@@ -635,6 +635,7 @@ window.GC = (function(NS) {
         STR_3160  : { en : "Week", es : "Semana", bg : "Седмица" },
         STR_3161  : { en : "Day", es : "Día", bg : "Ден" },
         STR_3162  : { en : "Auto", es : "Automático", bg : "Автоматично" },
+        STR_3166  : { en : "PATIENTS", es : "PACIENTES", bg : "Пациенти"},
 
         // End Of Header Translations-----------------------------------------------------------------------------------------------------------------
         
