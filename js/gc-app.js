@@ -302,6 +302,11 @@
                 GC.TableView.render();
                 $("#print-button").html("Print Table");
                 break;
+            case "patients":
+                GC.PatientsView.render();
+                break;
+            default:
+                break;
         }
 
         drawn = true;
@@ -866,6 +871,7 @@
                 $("#view-clinical")[type == "graphs" ? "show" : "hide"]();
                 $("#view-parental")[type == "parent" ? "show" : "hide"]();
                 $("#view-table"   )[type == "table"  ? "show" : "hide"]();
+                $("#view-patients") [type == "patients"    ? "show" : "hide"]();
 
                 $("html")
                 .toggleClass("has-patient-header", !GC.Preferences.prop("hidePatientHeader"))
