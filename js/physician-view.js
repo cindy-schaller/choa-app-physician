@@ -52,22 +52,21 @@ XDate, setTimeout, getDataSet*/
     function renderPhysicianView( container ) 
     {
        
-        console.log("deeeeeeeeeeeeeeeeebug 2222222222222");
+        
 
         $(container).empty();
 
-        var str = $("<h1>hello world</h1>");
-
-        $(container).append(str);
+        
 
         //hardcoded for now
         var patientId = 18791941;
+    
         if(!patientId)
         {
             throw "Patient ID is a required parameter";
         }
       
-
+        $(container).append("<h1> hardcoded patient ID: " + patientId + "<h1>");
 
         $.ajax
         ({
@@ -77,20 +76,15 @@ XDate, setTimeout, getDataSet*/
 
             dataType: 'json',
 
-            success: function(questionareResult) { mergeHTML(questionareResult, true, container);}
+            success: function(questionareResult) { mergeHTML(questionareResult,  container);}
                     
         });
 
-
         
-        
-
-        console.log("deeeeeeeeeeeeeeeeebug 333333");
-       
     }
 
 
-    function mergeHTML(questionareResult, initialCall, container) 
+    function mergeHTML(questionareResult,  container) 
     {
         if (!questionareResult) 
             return;
@@ -101,124 +95,169 @@ XDate, setTimeout, getDataSet*/
         }
 
         console.log(questionareResult.entry);
+
         
         for (var i = 0; i < questionareResult.entry.length; i++) 
         {
             
-            var p = questionareResult.entry[i];
-            
-            console.log(p); 
+            var str = "<h1> Healthy Eating Questionare <h1><h1><h1>"
 
-            if (p.resource.group.question) 
+            $(container).append(str);
+
+            var qr = questionareResult.entry[i];
+
+            console.log(qr.resource.questionnaire.reference);
+            //  should be "Questionnaire/18791830"
+            var Qreference  =   ((qr.resource.questionnaire.reference) ?
+                                qr.resource.questionnaire.reference
+                                : 
+                                "Not known, ")  
+
+
+            str = "<h1>Questions from Questionnaire ID = " + Qreference + "<h1>"
+
+            $(container).append(str);
+
+            var n = Qreference.search("/");
+            var Qid = Qreference.substr(n);
+
+            $.ajax
+            ({
+
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?_id=' 
+                + Qid ,
+
+                dataType: 'json',
+
+                success: function(questionare) { mergeHTML_2 (qr, questionare, container);}
+                        
+            });
+        }
+    }
+
+    function mergeHTML_2(questionareResult, questionare, container)   
+    {
+
+       
+
+        if (!questionare) 
+            return;
+
+        var qr = questionareResult
+        var q = questionare
+
+        console.log(qr); 
+        console.log(q); 
+
+        if (q.entry[0].resource.group.question) 
+        {
+            for (var ind = 0; ind < q.entry[0].resource.group.question.length ; ind++) 
             {
-                for (var ind = 0; ind < p.resource.group.question.length ; ind++) 
-                {
 
-                    var rdata = 
+                var rdata = 
+                [
+                    "<h1>"
+
+                    +
+
+                    "QUESTION " + ind + " : " 
+
+                    +
+
+                     ((q.entry[0].resource.group.question[ind].text) ?
+                            q.entry[0].resource.group.question[ind].text + " , " 
+                            : 
+                            "question text Not known, ") 
+                    
+                    
+                    
+                    
+
+                ] 
+ 
+                $(container).append(rdata);
+
+
+                $(container).append("<h1> <h1> answer options : ");
+
+                for (var ind_o = 0; ind_o < q.entry[0].resource.group.question[ind].option.length ; ind_o++) 
+                {   
+
+                    var o_data = 
                     [
-                        "QUESTION " + ind 
+
+                        "option # " + ind_o + " : " 
 
                         +
+                            ((q.entry[0].resource.group.question[ind].option[ind_o]) ?
+                            q.entry[0].resource.group.question[ind].option[ind_o].display+ " , " 
+                            : 
+                            "option Not known, ")
+  
+                    ]     
 
-                        ((p.resource.group.question[ind]) ?
-
-                            ((p.resource.group.question[ind].answer) ?
-                                p.resource.group.question[ind].answer + ", " 
-                                : 
-                                "Not known, ")     
-                        :      
-                        "Not known")
-                    ]
-
-                    $(container).append(rdata);
+                    $(container).append(o_data);
                 }
-            } 
-   
-        }
+                    
+                $(container).append("<h1>");
 
-        
-
-
-        if (initialCall) 
-        {
-            getMultiResults(questionareResult);
-        }
-    }
-     
-    function getMultiResults(questionareResult) 
-    {
-        var nResults = questionareResult.total;
-    
-        var lookingForMore = false;
-    
-        for (var ind = 0; ind < (questionareResult.link ? questionareResult.link.length : 0); ind++) 
-        {
-            if (questionareResult.link[ind].relation == "next") 
-            {
-                var theURL = questionareResult.link[ind].url;
-            
-                console.log("url " + theURL);
-            
-                var a = $('<a>', { href:theURL } )[0];
-            
-                var que = a.search.substring(1);
-            
-                var quedata = que.split("&");
-            
-                for (var qind = 0; qind < quedata.length; qind++) 
-                {
-                    var item = quedata[qind].split("=");
                 
-                    if ((item[0] === "_getpagesoffset") && (parseInt(item[1]) < nResults)) 
-                    {
-                        var nRequests = 0;
-                        
-                        for (var offsetResults = parseInt(item[1]); offsetResults < nResults; offsetResults += 50) 
-                        {
-                            lookingForMore = true;
-                        
-                            var newURL = theURL.replace(/(_getpagesoffset=)(\d+)/, '$1' + offsetResults.toString());
-                           
-                            console.log("rewritten to " + newURL);
-                           
-                            nRequests++;
-                            
-                            $.ajax
-                            ({
-                                dataType: "json",
-                                url: newURL,
-                                success: function (newResult) 
-                                {
-                                    console.log(newResult);
-                                    
-                                    mergeHTML(newResult, false);
-                                    
-                                }
-                            });
-                        }
-                    }
-                }
-                break;
             }
-        }
-        
-        if (lookingForMore) 
-        {
-            $(document).ajaxStop
-                (
-                    function() 
-                    { 
-                        
-
-                    }
-
-                );
         } 
-        else 
+
+    
+
+
+
+        if (qr.resource.group.question) 
         {
-           
-        }
+            for (var ind = 0; ind < qr.resource.group.question.length ; ind++) 
+            {
+
+                var rdata = 
+                [
+                    "<h1>"
+
+                    +
+
+                    "QUESTION " + ind + " : " 
+
+                    +
+
+                    "linkId : "
+
+                    +
+
+                    ((qr.resource.group.question[ind].linkId) ?
+                            qr.resource.group.question[ind].linkId + " , " 
+                            : 
+                            "Not known, ") 
+                    
+                    +
+                    
+                    "answer : "
+
+                    + 
+
+                    ((qr.resource.group.question[ind].answer[0].valueInteger) ?
+                           qr.resource.group.question[ind].answer[0].valueInteger  
+                           : 
+                           "Not known, ")     
+
+                    +
+                    "<h1>"
+                   
+                ]
+
+                $(container).append(rdata);
+            }
+        } 
+
     }
+
+    
+     
+  
 
 
 
