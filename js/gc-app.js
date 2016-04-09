@@ -875,7 +875,8 @@
                 $("#view-parental")[type == "parent" ? "show" : "hide"]();
                 $("#view-table"   )[type == "table"  ? "show" : "hide"]();
                 $("#view-patients") [type == "patients"    ? "show" : "hide"]();
-
+                $("#view-physician") [type == "view"    ? "show" : "hide"]();
+               
                 $("html")
                 .toggleClass("has-patient-header", !GC.Preferences.prop("hidePatientHeader"))
                 .toggleClass("view-clinical", type == "graphs" || type == "table")
