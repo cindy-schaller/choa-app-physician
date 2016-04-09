@@ -56,16 +56,171 @@ XDate, setTimeout, getDataSet*/
 
         $(container).empty();
 
-        var loadingdiv = $("<h1>hello world</h1>");
+        var str = $("<h1>hello world</h1>");
 
-        $(container).append(loadingdiv);
+        $(container).append(str);
+
+        //hardcoded for now
+        var patientId = 18791941;
+        if(!patientId)
+        {
+            throw "Patient ID is a required parameter";
+        }
+      
+
+
+        $.ajax
+        ({
+
+            url: 'http://52.72.172.54:8080/fhir/baseDstu2/QuestionnaireResponse?patient=' 
+            + patientId ,
+
+            dataType: 'json',
+
+            success: function(questionareResult) { mergeHTML(questionareResult, true, container);}
+                    
+        });
+
 
         
-        loadingdiv.show();
+        
 
         console.log("deeeeeeeeeeeeeeeeebug 333333");
        
     }
+
+
+    function mergeHTML(questionareResult, initialCall, container) 
+    {
+        if (!questionareResult) 
+            return;
+        
+        if (questionareResult.data) 
+        {
+            questionareResult = questionareResult.data;
+        }
+
+        console.log(questionareResult.entry);
+        
+        for (var i = 0; i < questionareResult.entry.length; i++) 
+        {
+            
+            var p = questionareResult.entry[i];
+            
+            console.log(p); 
+
+            if (p.resource.group.question) 
+            {
+                for (var ind = 0; ind < p.resource.group.question.length ; ind++) 
+                {
+
+                    var rdata = 
+                    [
+                        "QUESTION " + ind 
+
+                        +
+
+                        ((p.resource.group.question[ind]) ?
+
+                            ((p.resource.group.question[ind].answer) ?
+                                p.resource.group.question[ind].answer + ", " 
+                                : 
+                                "Not known, ")     
+                        :      
+                        "Not known")
+                    ]
+
+                    $(container).append(rdata);
+                }
+            } 
+   
+        }
+
+        
+
+
+        if (initialCall) 
+        {
+            getMultiResults(questionareResult);
+        }
+    }
+     
+    function getMultiResults(questionareResult) 
+    {
+        var nResults = questionareResult.total;
+    
+        var lookingForMore = false;
+    
+        for (var ind = 0; ind < (questionareResult.link ? questionareResult.link.length : 0); ind++) 
+        {
+            if (questionareResult.link[ind].relation == "next") 
+            {
+                var theURL = questionareResult.link[ind].url;
+            
+                console.log("url " + theURL);
+            
+                var a = $('<a>', { href:theURL } )[0];
+            
+                var que = a.search.substring(1);
+            
+                var quedata = que.split("&");
+            
+                for (var qind = 0; qind < quedata.length; qind++) 
+                {
+                    var item = quedata[qind].split("=");
+                
+                    if ((item[0] === "_getpagesoffset") && (parseInt(item[1]) < nResults)) 
+                    {
+                        var nRequests = 0;
+                        
+                        for (var offsetResults = parseInt(item[1]); offsetResults < nResults; offsetResults += 50) 
+                        {
+                            lookingForMore = true;
+                        
+                            var newURL = theURL.replace(/(_getpagesoffset=)(\d+)/, '$1' + offsetResults.toString());
+                           
+                            console.log("rewritten to " + newURL);
+                           
+                            nRequests++;
+                            
+                            $.ajax
+                            ({
+                                dataType: "json",
+                                url: newURL,
+                                success: function (newResult) 
+                                {
+                                    console.log(newResult);
+                                    
+                                    mergeHTML(newResult, false);
+                                    
+                                }
+                            });
+                        }
+                    }
+                }
+                break;
+            }
+        }
+        
+        if (lookingForMore) 
+        {
+            $(document).ajaxStop
+                (
+                    function() 
+                    { 
+                        
+
+                    }
+
+                );
+        } 
+        else 
+        {
+           
+        }
+    }
+
+
 
 
     NS.PhysicianView = 
