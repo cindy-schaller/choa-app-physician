@@ -305,6 +305,9 @@
             case "patients":
                 GC.PatientsView.render();
                 break;
+            case "p-view":
+                GC.PhysicianView.render();
+                break;    
             default:
                 break;
         }
