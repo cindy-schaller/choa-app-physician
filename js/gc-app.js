@@ -307,7 +307,13 @@
                 break;
             case "p-view":
                 GC.PhysicianView.render();
-                break;    
+                break;
+            case "p-record":
+                GC.PhysicianRecord.render();
+                break;  
+            case "p-referral":
+                GC.PhysicianReferral.render();
+                break;      
             default:
                 break;
         }
@@ -876,6 +882,8 @@
                 $("#view-table"   )[type == "table"  ? "show" : "hide"]();
                 $("#view-patients") [type == "patients"    ? "show" : "hide"]();
                 $("#view-physician") [type == "view"    ? "show" : "hide"]();
+                $("#view-record") [type == "record"    ? "show" : "hide"]();
+                $("#view-referral") [type == "referral"    ? "show" : "hide"]();
                
                 $("html")
                 .toggleClass("has-patient-header", !GC.Preferences.prop("hidePatientHeader"))
