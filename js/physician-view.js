@@ -199,7 +199,7 @@ XDate, setTimeout, getDataSet*/
                     var o_data = 
                     [
 
-                        "<li>Response #" + human_readable_ocnt + ": " 
+                        "<li>" 
 
                         +
                             ((q.entry[0].resource.group.question[ind].option[ind_o]) ?
