@@ -66,7 +66,7 @@ XDate, setTimeout, getDataSet*/
             throw "Patient ID is a required parameter";
         }
       
-        $(container).append("Hardcoded patient ID: <b>" + patientId + "</b></br></br>");
+        $(container).append("<b>Hardcoded patient ID:</b> " + patientId + "</br></br>");
 
         $.ajax({
             url: 'http://52.72.172.54:8080/fhir/baseDstu2/Patient?_id=' + patientId ,
@@ -99,7 +99,7 @@ XDate, setTimeout, getDataSet*/
         var patientbirthdate =  patientResult.entry[0].resource.birthDate;
         
 
-         $(container).append("Patient name: <b>" + patientnameG +  " " + patientnameF + "</b> ,  Gender: <b>" + patientgender + "</b>,  Birth date: <b>" + patientbirthdate + "</b></br></br>"); 
+         $(container).append("<b>Patient name:</b> " + patientnameG +  " " + patientnameF + " ,  <b>Gender:</b> " + patientgender + ", <b>Birth date:</b> " + patientbirthdate + "</br></br>"); 
 
 
 
@@ -180,11 +180,15 @@ XDate, setTimeout, getDataSet*/
         console.log(q); 
 
         var date = qr.resource.meta.lastUpdated
-        var str = "<h1><b>Healthy Eating Questionare</b></h1>" +  "Date : " + date  + ""
 
-        $(container).append(str);
+
+        
+
+        var title = q.entry[0].resource.text.div + "<h1><b>Date questionare administered</b> : " + date  + "</h1>" 
+
+        $(container).append(title);
        
-        str = "<hr>";
+        var str = "<hr>";
 
         $(container).append(str);
 
