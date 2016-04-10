@@ -68,6 +68,41 @@ XDate, setTimeout, getDataSet*/
       
         $(container).append("Hardcoded patient ID: <b>" + patientId + "</b></br></br>");
 
+        $.ajax({
+            url: 'http://52.72.172.54:8080/fhir/baseDstu2/Patient?_id=' + patientId ,
+            dataType: 'json',
+            success: function(patientResult) { mergeHTML0(patientResult,container );}
+        });
+    }
+
+
+    function mergeHTML0(patientResult,  container) 
+    {
+         //hardcoded for now
+        var patientId = 18791941;
+
+        if (!patientResult) 
+            return;
+
+       
+        
+        if (patientResult.data) 
+        {
+            patientResult = patientResult.data;
+        }
+
+        console.log(patientResult);
+
+        var patientnameF = patientResult.entry[0].resource.name[0].family ;
+        var patientnameG = patientResult.entry[0].resource.name[0].given ;
+        var patientgender = patientResult.entry[0].resource.gender;
+        var patientbirthdate =  patientResult.entry[0].resource.birthDate;
+        
+
+         $(container).append("Patient name: <b>" + patientnameG +  " " + patientnameF +  ",  Gender: <b>" + patientgender + ",  Birth date: <b>" + patientbirthdate + "</b></br></br>"); 
+
+
+
         $.ajax
         ({
 
