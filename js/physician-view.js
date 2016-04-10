@@ -179,7 +179,7 @@ XDate, setTimeout, getDataSet*/
                     
                     +
 
-                    "?</h2>"
+                    "</h2>"
                     
 
                 ] 
