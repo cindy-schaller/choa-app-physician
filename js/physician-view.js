@@ -10,6 +10,7 @@ XDate, setTimeout, getDataSet*/
     "use strict";
 
     var selectedIndex = -1,
+        PATIENT,
 
         /**
          * The cached value from GC.App.getMetrics()
@@ -60,6 +61,7 @@ XDate, setTimeout, getDataSet*/
 
         //hardcoded for now
         var patientId = 18791941;
+        
     
         if(!patientId)
         {
@@ -69,6 +71,79 @@ XDate, setTimeout, getDataSet*/
         $(container).append("<b>Hardcoded patient ID:</b> " + patientId + "</br></br>");
     
         mergeHTML0(100, 200, patientId,  container) 
+    }
+
+    //requires weight in kg and heigh in cm
+    function calculateBMI(weight, height)
+    {
+        var heightInM = height/100; 
+        var BMI = weight/(heightInM*heightInM);
+        return BMI;
+    }
+
+    function businessLogic(percentile){ 
+
+        var OBESE_THRESHOLD = 0.95; 
+        var OVERWEIGHT_THRESHOLD = 0.85; 
+        var NORMAL_THRESHOLD = 0.05;
+
+        if (percentile > OBESE_THRESHOLD)
+            return "Obese";
+        else if (percentile > RISK_THRESHOLD)
+            return "Overweight";
+        else if (percentile > NORMAL_THRESHOLD)
+            return "Normal";
+        else
+            return "Underweight";
+    }
+
+    function getLastEnryHaving(propName) {
+        if ( !PATIENT ) {
+            return null;
+        }
+        return PATIENT.getLastEnryHaving(propName);
+    }
+
+    function getVitals() {
+            var out = {
+                    height : { value : undefined, "percentile" : null, color : "#0061A1", agemos : null },
+                    weight : { value : undefined, "percentile" : null, color : "#F09C17", agemos : null },
+                    headc  : { value : undefined, "percentile" : null, color : "#428500", agemos : null },
+                    bmi    : { value : undefined, "percentile" : null, color : "#B26666", agemos : null },
+                    
+                    age : PATIENT.getCurrentAge()
+                },
+                src    = out.age.getYears() > 2 ? "CDC" : "WHO",
+                gender = PATIENT.gender;
+            
+            $.each({
+                height : { modelProp: "lengthAndStature", dsType : "LENGTH" },
+                weight : { modelProp: "weight"          , dsType : "WEIGHT" },
+                headc  : { modelProp: "headc"           , dsType : "HEADC"  },
+                bmi    : { modelProp: "bmi"             , dsType : "BMI"    }
+            }, function(key, meta) {
+                var lastEntry = getLastEnryHaving( meta.modelProp ), ds, pct;
+                if (lastEntry) {
+                    ds = GC.getDataSet(src, meta.dsType, gender, 0, lastEntry.agemos);
+                    out[key].value  = lastEntry[meta.modelProp];
+                    out[key].agemos = lastEntry.agemos;
+                    out[key].date   = new XDate(PATIENT.DOB.getTime()).addMonths(lastEntry.agemos);
+                    
+                    if (ds) {
+                        pct = GC.findPercentileFromX(
+                            out[key].value, 
+                            ds, 
+                            gender, 
+                            lastEntry.agemos
+                        );
+                        if ( !isNaN(pct) ) {
+                            out[key].percentile  = pct;
+                        }
+                    }
+                }
+            });
+            
+            return out;
     }
     
     function mergeHTML0(height, weight, patientId,  container) 
@@ -82,7 +157,7 @@ XDate, setTimeout, getDataSet*/
     }
 
 
-    function mergeHTML1(height, weight,patientResult,  container) 
+    function mergeHTML1(height, weight, patientResult, container) 
     {
          //hardcoded for now
         var patientId = 18791941;
@@ -103,13 +178,21 @@ XDate, setTimeout, getDataSet*/
         var patientnameG = patientResult.entry[0].resource.name[0].given ;
         var patientgender = patientResult.entry[0].resource.gender;
         var patientbirthdate =  patientResult.entry[0].resource.birthDate;
+
+        PATIENT = GC.App.getPatient();
         
         //TO DO INSERT BMI AND OBESIT CALCULATION HERE
-        var BMI = 0;
-        var obesity_status = "overweight"
+        var bob = getVitals(); 
 
-        $(container).append("<table><tr><td><b>Patient name: </b></td><td>" + patientnameG +  " " + patientnameF + "</td><tr><td><b>Gender: </b></td><td> " + patientgender + "</td><td></tr><tr><td><b>Birth date: </b></td><td>" + patientbirthdate + "</td></tr></table></br></br>"); 
-        $(container).append("<table><tr><td><b>Weight: </b></td><td>" + weight  + "</td><tr><td><b>Height: </b></td><td> " + height + "</td><td></tr><tr><td><b>BMI: </b></td><td>" + BMI + "</td><td></tr><tr><td><b>Obesity Status: </b></td><td>" + obesity_status  +"</td></tr></table></br></br>"); 
+        var weightActual = bob.weight.value;
+        var heightActual = bob.height.value; 
+        var BMI = calculateBMI(weightActual,heightActual);      
+        var perc = bob.weight.percentile; 
+        var status = businessLogic(perc);       
+
+    
+
+        $(container).append("<table><tr><td><b>Patient name: </b></td><td>" + patientnameG +  " " + patientnameF + "</td><tr><td><b>Gender: </b></td><td> " + patientgender + "</td><td></tr><tr><td><b>Birth date: </b></td><td>" + patientbirthdate + "</td></tr><tr><td><b>Weight: </b></td><td>" + weightActual + "</td><tr><td><b>Height: </b></td><td> " + heightActual + "</td><td></tr><tr><td><b>BMI: </b></td><td>" + BMI + "</td><td></tr><tr><td><b>Percentile: </b></td><td>" + perc  +"</td><td></tr><tr><td><b>Obesity Status: </b></td><td>" + status  +"</td></tr></table></br></br>"); 
 
 
 
