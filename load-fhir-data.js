@@ -12,9 +12,12 @@ GC.get_data = function() {
     });
   };
   var smart = FHIR.client({
-    serviceUrl: 'https://fhir-open-api-dstu2.smarthealthit.org',
-//    patientId: '1137192',
-    patientId:'7777704',
+      serviceUrl: 'https://fhir-open-api-dstu2.smarthealthit.org',
+ //   patientId: '1137192',
+      patientId:'7777704',
+      //'http://52.72.172.54:8080/fhir/baseDstu2/Patient/18791941"
+      // serviceUrl: 'http://52.72.172.54:8080/fhir/baseDstu2',
+       //patientId: '18791941',
     auth: {
       type: 'none'
     }

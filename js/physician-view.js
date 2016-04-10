@@ -67,16 +67,22 @@ XDate, setTimeout, getDataSet*/
         }
       
         $(container).append("<b>Hardcoded patient ID:</b> " + patientId + "</br></br>");
+    
+        mergeHTML0(100, 200, patientId,  container) 
+    }
+    
+    function mergeHTML0(height, weight, patientId,  container) 
+    {
 
         $.ajax({
             url: 'http://52.72.172.54:8080/fhir/baseDstu2/Patient?_id=' + patientId ,
             dataType: 'json',
-            success: function(patientResult) { mergeHTML0(patientResult,container );}
+            success: function(patientResult) { mergeHTML1(height, weight,patientResult,container );}
         });
     }
 
 
-    function mergeHTML0(patientResult,  container) 
+    function mergeHTML1(height, weight,patientResult,  container) 
     {
          //hardcoded for now
         var patientId = 18791941;
@@ -98,8 +104,12 @@ XDate, setTimeout, getDataSet*/
         var patientgender = patientResult.entry[0].resource.gender;
         var patientbirthdate =  patientResult.entry[0].resource.birthDate;
         
+        //TO DO INSERT BMI AND OBESIT CALCULATION HERE
+        var BMI = 0;
+        var obesity_status = "overweight"
 
-         $(container).append("<table><tr><td><b>Patient name:</b></td><td>" + patientnameG +  " " + patientnameF + "</td><tr><td><b>Gender:</b></td><td> " + patientgender + "</td><td></tr><tr><td><b>Birth date:</b></td><td>" + patientbirthdate + "</td></tr></table></br></br>"); 
+        $(container).append("<table><tr><td><b>Patient name: </b></td><td>" + patientnameG +  " " + patientnameF + "</td><tr><td><b>Gender: </b></td><td> " + patientgender + "</td><td></tr><tr><td><b>Birth date: </b></td><td>" + patientbirthdate + "</td></tr></table></br></br>"); 
+        $(container).append("<table><tr><td><b>Weight: </b></td><td>" + weight  + "</td><tr><td><b>Height: </b></td><td> " + height + "</td><td></tr><tr><td><b>BMI: </b></td><td>" + BMI + "</td><td></tr><tr><td><b>Obesity Status: </b></td><td>" + obesity_status  +"</td></tr></table></br></br>"); 
 
 
 
@@ -111,7 +121,7 @@ XDate, setTimeout, getDataSet*/
 
             dataType: 'json',
 
-            success: function(questionareResult) { mergeHTML(questionareResult,  container);}
+            success: function(questionareResult) { mergeHTML2(questionareResult,  container);}
                     
         });
 
@@ -119,7 +129,7 @@ XDate, setTimeout, getDataSet*/
     }
 
 
-    function mergeHTML(questionareResult,  container) 
+    function mergeHTML2(questionareResult,  container) 
     {
         if (!questionareResult) 
             return;
