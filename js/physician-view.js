@@ -66,7 +66,7 @@ XDate, setTimeout, getDataSet*/
             throw "Patient ID is a required parameter";
         }
       
-        $(container).append("<h1> hardcoded patient ID: " + patientId + "<h1>");
+        $(container).append("Hardcoded patient ID: <b>" + patientId + "</b></br></br>");
 
         $.ajax
         ({
@@ -145,11 +145,11 @@ XDate, setTimeout, getDataSet*/
         console.log(q); 
 
         var date = qr.resource.meta.lastUpdated
-        var str = "<h1> Healthy Eating Questionare  " +  "Date : " + date  + "<h1><h1><h1>"
+        var str = "<h1> Healthy Eating Questionare " +  "Date : " + date  + "</h1>"
 
         $(container).append(str);
        
-        str = "<h1><h1><h1>-----------------------------------------<h1><h1><h1>"
+        str = "<hr>";
 
         $(container).append(str);
 
@@ -162,28 +162,33 @@ XDate, setTimeout, getDataSet*/
                 var human_readable_cnt = ind+1;  
                 var rdata = 
                 [
-                    "<h1>" 
+                    "</br>" 
 
                     +
                     
-                    "QUESTION " + human_readable_cnt + " :" 
+                    "<h2><b>QUESTION " + human_readable_cnt + "</b>: " 
                      
 
                     +
 
                      ((q.entry[0].resource.group.question[ind].text) ?
-                            q.entry[0].resource.group.question[ind].text + " , " 
+                            q.entry[0].resource.group.question[ind].text + "" 
                             : 
                             "question text Not known, ") 
                     
                     
-                    
+                    +
+
+                    "?</h2></br>"
                     
 
                 ] 
  
                 $(container).append(rdata);
 
+
+                var o_data_start = "<ul>"
+                $(container).append(o_data_start);
 
 
                 for (var ind_o = 0; ind_o < q.entry[0].resource.group.question[ind].option.length ; ind_o++) 
@@ -194,44 +199,51 @@ XDate, setTimeout, getDataSet*/
                     var o_data = 
                     [
 
-                        "multiple choice # " + human_readable_ocnt + " : " 
+                        "<li>Response #" + human_readable_ocnt + ": " 
 
                         +
                             ((q.entry[0].resource.group.question[ind].option[ind_o]) ?
                             q.entry[0].resource.group.question[ind].option[ind_o].display+ " , " 
                             : 
                             "option Not known, ")
+                        
+                        +
+
+                        "</li>"
   
                     ]     
 
                     $(container).append(o_data);
                 }
 
+                var o_data_end = "</ul>"
+                $(container).append(o_data_start);
+
                 
-                $(container).append("<h1>");
+                $(container).append("");
 
                 var final_answer = qr.resource.group.question[ind].answer[0].valueInteger;
                 
 
                 var adata = 
                 [
-                    "<h1>"
+                    ""
 
                     +
 
                     
                     
-                    "final answer : "
+                    "</br> <b> User Selected Response: "
 
                     + 
 
                     ((q.entry[0].resource.group.question[ind].option[final_answer]) ?
-                            q.entry[0].resource.group.question[ind].option[final_answer].display+ " , " 
+                            q.entry[0].resource.group.question[ind].option[final_answer].display+ "" 
                             : 
                             "option Not known, ")    
 
                     +
-                    "<h1><h1>-----------------------------------------<h1><h1><h1>"
+                    "</b></br></br><hr>"
                    
                 ]
 
