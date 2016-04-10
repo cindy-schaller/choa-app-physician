@@ -99,7 +99,7 @@ XDate, setTimeout, getDataSet*/
         var patientbirthdate =  patientResult.entry[0].resource.birthDate;
         
 
-         $(container).append("<b>Patient name:</b> " + patientnameG +  " " + patientnameF + " ,  <b>Gender:</b> " + patientgender + ", <b>Birth date:</b> " + patientbirthdate + "</br></br>"); 
+         $(container).append("<table><tr><td><b>Patient name:</b></td><td>" + patientnameG +  " " + patientnameF + "</td><tr><td><b>Gender:</b></td><td> " + patientgender + "</td><td></tr><tr><td><b>Birth date:</b></td><td>" + patientbirthdate + "</td></tr></table></br></br>"); 
 
 
 
