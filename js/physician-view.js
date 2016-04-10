@@ -145,7 +145,7 @@ XDate, setTimeout, getDataSet*/
         console.log(q); 
 
         var date = qr.resource.meta.lastUpdated
-        var str = "<h1> Healthy Eating Questionare " +  "Date : " + date  + "</h1>"
+        var str = "<h1><b>Healthy Eating Questionare</b></h1>" +  "Date : " + date  + ""
 
         $(container).append(str);
        
@@ -179,7 +179,7 @@ XDate, setTimeout, getDataSet*/
                     
                     +
 
-                    "?</h2></br>"
+                    "?</h2>"
                     
 
                 ] 
@@ -203,7 +203,7 @@ XDate, setTimeout, getDataSet*/
 
                         +
                             ((q.entry[0].resource.group.question[ind].option[ind_o]) ?
-                            q.entry[0].resource.group.question[ind].option[ind_o].display+ " , " 
+                            q.entry[0].resource.group.question[ind].option[ind_o].display+ "" 
                             : 
                             "option Not known, ")
                         
