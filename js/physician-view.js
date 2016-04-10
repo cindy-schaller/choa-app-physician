@@ -96,15 +96,13 @@ XDate, setTimeout, getDataSet*/
 
         console.log(questionareResult.entry);
 
-        
-        for (var i = 0; i < questionareResult.entry.length; i++) 
+        //for now just show one
+       // for (var i = 0; i < questionareResult.entry.length; i++) 
         {
             
-            var str = "<h1> Healthy Eating Questionare <h1><h1><h1>"
-
-            $(container).append(str);
-
-            var qr = questionareResult.entry[i];
+           
+            var last = questionareResult.entry.length -1
+            var qr = questionareResult.entry[last];
 
             console.log(qr.resource.questionnaire.reference);
             //  should be "Questionnaire/18791830"
@@ -114,9 +112,6 @@ XDate, setTimeout, getDataSet*/
                                 "Not known, ")  
 
 
-            str = "<h1>Questions from Questionnaire ID = " + Qreference + "<h1>"
-
-            $(container).append(str);
 
             var n = Qreference.search("/");
             var Qid = Qreference.substr(n);
@@ -149,18 +144,30 @@ XDate, setTimeout, getDataSet*/
         console.log(qr); 
         console.log(q); 
 
+        var date = qr.resource.meta.lastUpdated
+        var str = "<h1> Healthy Eating Questionare  " +  "Date : " + date  + "<h1><h1><h1>"
+
+        $(container).append(str);
+       
+        str = "<h1><h1><h1>-----------------------------------------<h1><h1><h1>"
+
+        $(container).append(str);
+
         if (q.entry[0].resource.group.question) 
         {
             for (var ind = 0; ind < q.entry[0].resource.group.question.length ; ind++) 
             {
-
+ 
+                //so human readable numbers start at 1, not zero
+                var human_readable_cnt = ind+1;  
                 var rdata = 
                 [
-                    "<h1>"
+                    "<h1>" 
 
                     +
-
-                    "QUESTION " + ind + " : " 
+                    
+                    "QUESTION " + human_readable_cnt + " :" 
+                     
 
                     +
 
@@ -178,15 +185,16 @@ XDate, setTimeout, getDataSet*/
                 $(container).append(rdata);
 
 
-                $(container).append("<h1> <h1> answer options : ");
 
                 for (var ind_o = 0; ind_o < q.entry[0].resource.group.question[ind].option.length ; ind_o++) 
                 {   
 
+                    //so human readable numbers start at 1, not zero
+                    var human_readable_ocnt = ind_o+1; 
                     var o_data = 
                     [
 
-                        "option # " + ind_o + " : " 
+                        "multiple choice # " + human_readable_ocnt + " : " 
 
                         +
                             ((q.entry[0].resource.group.question[ind].option[ind_o]) ?
@@ -198,59 +206,39 @@ XDate, setTimeout, getDataSet*/
 
                     $(container).append(o_data);
                 }
-                    
-                $(container).append("<h1>");
 
                 
-            }
-        } 
+                $(container).append("<h1>");
 
-    
+                var final_answer = qr.resource.group.question[ind].answer[0].valueInteger;
+                
 
-
-
-        if (qr.resource.group.question) 
-        {
-            for (var ind = 0; ind < qr.resource.group.question.length ; ind++) 
-            {
-
-                var rdata = 
+                var adata = 
                 [
                     "<h1>"
 
                     +
 
-                    "QUESTION " + ind + " : " 
-
-                    +
-
-                    "linkId : "
-
-                    +
-
-                    ((qr.resource.group.question[ind].linkId) ?
-                            qr.resource.group.question[ind].linkId + " , " 
-                            : 
-                            "Not known, ") 
                     
-                    +
                     
-                    "answer : "
+                    "final answer : "
 
                     + 
 
-                    ((qr.resource.group.question[ind].answer[0].valueInteger) ?
-                           qr.resource.group.question[ind].answer[0].valueInteger  
-                           : 
-                           "Not known, ")     
+                    ((q.entry[0].resource.group.question[ind].option[final_answer]) ?
+                            q.entry[0].resource.group.question[ind].option[final_answer].display+ " , " 
+                            : 
+                            "option Not known, ")    
 
                     +
-                    "<h1>"
+                    "<h1><h1>-----------------------------------------<h1><h1><h1>"
                    
                 ]
 
-                $(container).append(rdata);
+                $(container).append(adata);
+                
             }
+         
         } 
 
     }
