@@ -184,7 +184,7 @@ XDate, setTimeout, getDataSet*/
 
         
 
-        var title = q.entry[0].resource.text.div + "<h1><b>Date questionare administered</b> : " + date  + "</h1>" 
+        var title = q.entry[0].resource.text.div + "<h1><b>date questionnaire administered</b> : " + date  + "</h1>" 
 
         $(container).append(title);
        
