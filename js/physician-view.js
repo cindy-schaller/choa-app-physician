@@ -10,6 +10,7 @@ XDate, setTimeout, getDataSet*/
     "use strict";
 
     var selectedIndex = -1,
+        PATIENT,
 
         /**
          * The cached value from GC.App.getMetrics()
@@ -60,13 +61,140 @@ XDate, setTimeout, getDataSet*/
 
         //hardcoded for now
         var patientId = 18791941;
+        
     
         if(!patientId)
         {
             throw "Patient ID is a required parameter";
         }
       
-        $(container).append("<h1> hardcoded patient ID: " + patientId + "<h1>");
+        $(container).append("<b>Hardcoded patient ID:</b> " + patientId + "</br></br>");
+    
+        mergeHTML0(100, 200, patientId,  container) 
+    }
+
+    //requires weight in kg and heigh in cm
+    function calculateBMI(weight, height)
+    {
+        var heightInM = height/100; 
+        var BMI = weight/(heightInM*heightInM);
+        return BMI;
+    }
+
+    function businessLogic(percentile){ 
+
+        var OBESE_THRESHOLD = 0.95; 
+        var OVERWEIGHT_THRESHOLD = 0.85; 
+        var NORMAL_THRESHOLD = 0.05;
+
+        if (percentile > OBESE_THRESHOLD)
+            return "Obese";
+        else if (percentile > RISK_THRESHOLD)
+            return "Overweight";
+        else if (percentile > NORMAL_THRESHOLD)
+            return "Normal";
+        else
+            return "Underweight";
+    }
+
+    function getLastEnryHaving(propName) {
+        if ( !PATIENT ) {
+            return null;
+        }
+        return PATIENT.getLastEnryHaving(propName);
+    }
+
+    function getVitals() {
+            var out = {
+                    height : { value : undefined, "percentile" : null, color : "#0061A1", agemos : null },
+                    weight : { value : undefined, "percentile" : null, color : "#F09C17", agemos : null },
+                    headc  : { value : undefined, "percentile" : null, color : "#428500", agemos : null },
+                    bmi    : { value : undefined, "percentile" : null, color : "#B26666", agemos : null },
+                    
+                    age : PATIENT.getCurrentAge()
+                },
+                src    = out.age.getYears() > 2 ? "CDC" : "WHO",
+                gender = PATIENT.gender;
+            
+            $.each({
+                height : { modelProp: "lengthAndStature", dsType : "LENGTH" },
+                weight : { modelProp: "weight"          , dsType : "WEIGHT" },
+                headc  : { modelProp: "headc"           , dsType : "HEADC"  },
+                bmi    : { modelProp: "bmi"             , dsType : "BMI"    }
+            }, function(key, meta) {
+                var lastEntry = getLastEnryHaving( meta.modelProp ), ds, pct;
+                if (lastEntry) {
+                    ds = GC.getDataSet(src, meta.dsType, gender, 0, lastEntry.agemos);
+                    out[key].value  = lastEntry[meta.modelProp];
+                    out[key].agemos = lastEntry.agemos;
+                    out[key].date   = new XDate(PATIENT.DOB.getTime()).addMonths(lastEntry.agemos);
+                    
+                    if (ds) {
+                        pct = GC.findPercentileFromX(
+                            out[key].value, 
+                            ds, 
+                            gender, 
+                            lastEntry.agemos
+                        );
+                        if ( !isNaN(pct) ) {
+                            out[key].percentile  = pct;
+                        }
+                    }
+                }
+            });
+            
+            return out;
+    }
+    
+    function mergeHTML0(height, weight, patientId,  container) 
+    {
+
+        $.ajax({
+            url: 'http://52.72.172.54:8080/fhir/baseDstu2/Patient?_id=' + patientId ,
+            dataType: 'json',
+            success: function(patientResult) { mergeHTML1(height, weight,patientResult,container );}
+        });
+    }
+
+
+    function mergeHTML1(height, weight, patientResult, container) 
+    {
+         //hardcoded for now
+        var patientId = 18791941;
+
+        if (!patientResult) 
+            return;
+
+       
+        
+        if (patientResult.data) 
+        {
+            patientResult = patientResult.data;
+        }
+
+        console.log(patientResult);
+
+        var patientnameF = patientResult.entry[0].resource.name[0].family ;
+        var patientnameG = patientResult.entry[0].resource.name[0].given ;
+        var patientgender = patientResult.entry[0].resource.gender;
+        var patientbirthdate =  patientResult.entry[0].resource.birthDate;
+
+        PATIENT = GC.App.getPatient();
+        
+        //TO DO INSERT BMI AND OBESIT CALCULATION HERE
+        var bob = getVitals(); 
+
+        var weightActual = bob.weight.value;
+        var heightActual = bob.height.value; 
+        var BMI = calculateBMI(weightActual,heightActual);      
+        var perc = bob.weight.percentile; 
+        var status = businessLogic(perc);       
+
+    
+
+        $(container).append("<table><tr><td><b>Patient name: </b></td><td>" + patientnameG +  " " + patientnameF + "</td><tr><td><b>Gender: </b></td><td> " + patientgender + "</td><td></tr><tr><td><b>Birth date: </b></td><td>" + patientbirthdate + "</td></tr><tr><td><b>Weight: </b></td><td>" + weightActual + "</td><tr><td><b>Height: </b></td><td> " + heightActual + "</td><td></tr><tr><td><b>BMI: </b></td><td>" + BMI + "</td><td></tr><tr><td><b>Percentile: </b></td><td>" + perc  +"</td><td></tr><tr><td><b>Obesity Status: </b></td><td>" + status  +"</td></tr></table></br></br>"); 
+
+
 
         $.ajax
         ({
@@ -76,7 +204,7 @@ XDate, setTimeout, getDataSet*/
 
             dataType: 'json',
 
-            success: function(questionareResult) { mergeHTML(questionareResult,  container);}
+            success: function(questionareResult) { mergeHTML2(questionareResult,  container);}
                     
         });
 
@@ -84,7 +212,7 @@ XDate, setTimeout, getDataSet*/
     }
 
 
-    function mergeHTML(questionareResult,  container) 
+    function mergeHTML2(questionareResult,  container) 
     {
         if (!questionareResult) 
             return;
@@ -145,11 +273,15 @@ XDate, setTimeout, getDataSet*/
         console.log(q); 
 
         var date = qr.resource.meta.lastUpdated
-        var str = "<h1> Healthy Eating Questionare  " +  "Date : " + date  + "<h1><h1><h1>"
 
-        $(container).append(str);
+
+        
+
+        var title = q.entry[0].resource.text.div + "<h1><b>date questionnaire administered</b> : " + date  + "</h1>" 
+
+        $(container).append(title);
        
-        str = "<h1><h1><h1>-----------------------------------------<h1><h1><h1>"
+        var str = "<hr>";
 
         $(container).append(str);
 
@@ -162,28 +294,33 @@ XDate, setTimeout, getDataSet*/
                 var human_readable_cnt = ind+1;  
                 var rdata = 
                 [
-                    "<h1>" 
+                    "</br>" 
 
                     +
                     
-                    "QUESTION " + human_readable_cnt + " :" 
+                    "<h2><b>QUESTION " + human_readable_cnt + "</b>: " 
                      
 
                     +
 
                      ((q.entry[0].resource.group.question[ind].text) ?
-                            q.entry[0].resource.group.question[ind].text + " , " 
+                            q.entry[0].resource.group.question[ind].text + "" 
                             : 
                             "question text Not known, ") 
                     
                     
-                    
+                    +
+
+                    "</h2>"
                     
 
                 ] 
  
                 $(container).append(rdata);
 
+
+                var o_data_start = "<ul>"
+                $(container).append(o_data_start);
 
 
                 for (var ind_o = 0; ind_o < q.entry[0].resource.group.question[ind].option.length ; ind_o++) 
@@ -194,44 +331,51 @@ XDate, setTimeout, getDataSet*/
                     var o_data = 
                     [
 
-                        "multiple choice # " + human_readable_ocnt + " : " 
+                        "<li>" 
 
                         +
                             ((q.entry[0].resource.group.question[ind].option[ind_o]) ?
-                            q.entry[0].resource.group.question[ind].option[ind_o].display+ " , " 
+                            q.entry[0].resource.group.question[ind].option[ind_o].display+ "" 
                             : 
                             "option Not known, ")
+                        
+                        +
+
+                        "</li>"
   
                     ]     
 
                     $(container).append(o_data);
                 }
 
+                var o_data_end = "</ul>"
+                $(container).append(o_data_start);
+
                 
-                $(container).append("<h1>");
+                $(container).append("");
 
                 var final_answer = qr.resource.group.question[ind].answer[0].valueInteger;
                 
 
                 var adata = 
                 [
-                    "<h1>"
+                    ""
 
                     +
 
                     
                     
-                    "final answer : "
+                    "</br> <b> User Selected Response: "
 
                     + 
 
                     ((q.entry[0].resource.group.question[ind].option[final_answer]) ?
-                            q.entry[0].resource.group.question[ind].option[final_answer].display+ " , " 
+                            q.entry[0].resource.group.question[ind].option[final_answer].display+ "" 
                             : 
                             "option Not known, ")    
 
                     +
-                    "<h1><h1>-----------------------------------------<h1><h1><h1>"
+                    "</b></br></br><hr>"
                    
                 ]
 
