@@ -1,7 +1,7 @@
 /*global
-Chart, GC, PointSet, Raphael, console, $,
-jQuery, debugLog,
-XDate, setTimeout, getDataSet*/
+ Chart, GC, PointSet, Raphael, console, $,
+ jQuery, debugLog,
+ XDate, setTimeout, getDataSet*/
 
 /*jslint undef: true, eqeq: true, nomen: true, plusplus: true, forin: true*/
 (function(NS, $) {
@@ -57,7 +57,6 @@ XDate, setTimeout, getDataSet*/
     }
 
     function renderPatientsView( container ) {
-        console.log("deeeeeeeeeeeeeeeeebug 1111111111111111111");
         $(container).empty();
 
         var loadingdiv = $("<div></div>").addClass("table-loading-spinner").hide();
@@ -108,8 +107,8 @@ XDate, setTimeout, getDataSet*/
         loadingdiv.show();
         $.ajax({
             url: 'http://52.72.172.54:8080/fhir/baseDstu2/Patient' +
-                '?birthdate=%3E%3D' + minorDateStr + '&birthdate=%3C%3D' +
-                todayDateStr + '&_count=50',
+            '?birthdate=%3E%3D' + minorDateStr + '&birthdate=%3C%3D' +
+            todayDateStr + '&_count=50',
             dataType: 'json',
             success: function(patientResult) { mergeHTML(patientResult, true);}
         });
@@ -135,26 +134,26 @@ XDate, setTimeout, getDataSet*/
                     }
                 }
                 var rdata = [
-                        (p.resource.name) ?
-                            ((p.resource.name[0].family) ? p.resource.name[0].family + ", " : "") +
-                            ((p.resource.name[0].given[0]) ? p.resource.name[0].given[0] : "") +
-                            ((p.resource.name[0].given[1]) ? " " + p.resource.name[0].given[1] : "") :
-                            "Not known",
-                        (p.resource.id) ? p.resource.id : "",
-                        (p.resource.address && p.resource.address[0].postalCode) ?
-                            p.resource.address[0].postalCode : "",
-                        thePhone,
-                        (p.resource.address) ?
-                            ((p.resource.address[0].line) ?
-                                p.resource.address[0].line.join(", ") + ", " : "") +
-                            ((p.resource.address[0].city) ?
-                                p.resource.address[0].city + ", "  : "" ) +
-                            ((p.resource.address[0].state) ?
-                                p.resource.address[0].state : "") :
-                            "Not known",
-                        theEmail,
-                        (p.resource.birthDate) ? p.resource.birthDate : ""
-                    ];
+                    (p.resource.name) ?
+                    ((p.resource.name[0].family) ? p.resource.name[0].family + ", " : "") +
+                    ((p.resource.name[0].given[0]) ? p.resource.name[0].given[0] : "") +
+                    ((p.resource.name[0].given[1]) ? " " + p.resource.name[0].given[1] : "") :
+                        "Not known",
+                    (p.resource.id) ? p.resource.id : "",
+                    (p.resource.address && p.resource.address[0].postalCode) ?
+                        p.resource.address[0].postalCode : "",
+                    thePhone,
+                    (p.resource.address) ?
+                    ((p.resource.address[0].line) ?
+                    p.resource.address[0].line.join(", ") + ", " : "") +
+                    ((p.resource.address[0].city) ?
+                    p.resource.address[0].city + ", "  : "" ) +
+                    ((p.resource.address[0].state) ?
+                        p.resource.address[0].state : "") :
+                        "Not known",
+                    theEmail,
+                    (p.resource.birthDate) ? p.resource.birthDate : ""
+                ];
                 thedatatable.row.add(rdata);
                 thedataset.push(rdata);
 //              if (p.resource.deceased) {alert(p.resource.deceased + " " + heading.text());}
@@ -170,7 +169,7 @@ XDate, setTimeout, getDataSet*/
             var nResults = patientResult.total;
             var lookingForMore = false;
             for (var ind = 0; ind < (patientResult.link ?
-                                    patientResult.link.length : 0); ind++) {
+                patientResult.link.length : 0); ind++) {
                 if (patientResult.link[ind].relation == "next") {
                     var theURL = patientResult.link[ind].url;
                     console.log("url " + theURL);
@@ -183,10 +182,10 @@ XDate, setTimeout, getDataSet*/
                             (parseInt(item[1]) < nResults)) {
                             var nRequests = 0;
                             for (var offsetResults = parseInt(item[1]);
-                                offsetResults < nResults; offsetResults += 50) {
+                                 offsetResults < nResults; offsetResults += 50) {
                                 lookingForMore = true;
                                 var newURL = theURL.replace(/(_getpagesoffset=)(\d+)/, '$1' +
-                                                            offsetResults.toString());
+                                    offsetResults.toString());
                                 console.log("rewritten to " + newURL);
                                 nRequests++;
                                 $.ajax({
@@ -218,7 +217,7 @@ XDate, setTimeout, getDataSet*/
 //            if (PRINT_MODE) {
 //                renderTableViewForPrint("#view-table");
 //            } else {
-                renderPatientsView("#view-patients");
+            renderPatientsView("#view-patients");
 //            }
         }//,
 //        selectByAge : PRINT_MODE ? $.noop : selectByAge
@@ -232,16 +231,16 @@ XDate, setTimeout, getDataSet*/
 //            updateDataTableLayout();
 //            initAnnotationPopups();
 
-/*            $("#stage").on("click", ".datatable td, .datatable th", function() {
-                //debugger;
-                var i = 0, tmp = this;
-                while ( tmp.previousSibling ) {
-                    tmp = tmp.previousSibling;
-                    i++;
-                }
-                GC.App.setSelectedRecord(GC.App.getPatient().getModel()[i], "selected");
-            });
-*/
+            /*            $("#stage").on("click", ".datatable td, .datatable th", function() {
+             //debugger;
+             var i = 0, tmp = this;
+             while ( tmp.previousSibling ) {
+             tmp = tmp.previousSibling;
+             i++;
+             }
+             GC.App.setSelectedRecord(GC.App.getPatient().getModel()[i], "selected");
+             });
+             */
             $("html").bind("set:viewType set:language", function(e) {
                 if (isPatientsViewVisible()) {
                     renderPatientsView("#view-patients");
@@ -263,30 +262,30 @@ XDate, setTimeout, getDataSet*/
                 }
             });
 
-/*            GC.Preferences.bind("set:fontSize", function(e) {
-                setTimeout(updateDataTableLayout, 0);
-            });
-*/
+            /*            GC.Preferences.bind("set:fontSize", function(e) {
+             setTimeout(updateDataTableLayout, 0);
+             });
+             */
             GC.Preferences.bind("set:timeFormat", function(e) {
                 renderPatientsView("#view-patients");
             });
 
-/*            $("#stage")
-            .on("dblclick", ".datatable td", function() {
-                var i = $(this).closest("tr").find("td").index(this);
-                GC.App.editEntry(GC.App.getPatient().getModel()[i]);
-            })
-            .on("dblclick", ".datatable th", function() {
-                var i = $(this).closest("tr").find("th").index(this);
-                GC.App.editEntry(GC.App.getPatient().getModel()[i]);
-            });
-*/
-/*            $("html").bind("appSelectionChange", function(e, selType, sel) {
-                if (selType == "selected") {
-                    selectByAge(sel.age.getMilliseconds());
-                }
-            });
-*/        }
+            /*            $("#stage")
+             .on("dblclick", ".datatable td", function() {
+             var i = $(this).closest("tr").find("td").index(this);
+             GC.App.editEntry(GC.App.getPatient().getModel()[i]);
+             })
+             .on("dblclick", ".datatable th", function() {
+             var i = $(this).closest("tr").find("th").index(this);
+             GC.App.editEntry(GC.App.getPatient().getModel()[i]);
+             });
+             */
+            /*            $("html").bind("appSelectionChange", function(e, selType, sel) {
+             if (selType == "selected") {
+             selectByAge(sel.age.getMilliseconds());
+             }
+             });
+             */        }
     });
 
 }(GC, jQuery));
