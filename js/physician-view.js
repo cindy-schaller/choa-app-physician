@@ -52,12 +52,7 @@ XDate, setTimeout, getDataSet*/
 
     function renderPhysicianView( container ) 
     {
-       
-        
-
         $(container).empty();
-
-        
 
         //hardcoded for now
         var patientId = 18791941;
@@ -70,7 +65,7 @@ XDate, setTimeout, getDataSet*/
       
         $(container).append("<b>Hardcoded patient ID:</b> " + patientId + "</br></br>");
     
-        mergeHTML0(100, 200, patientId,  container) 
+        mergeHTML0(100, 200, patientId,  container);
     }
 
     //requires weight in kg and heigh in cm
@@ -152,7 +147,7 @@ XDate, setTimeout, getDataSet*/
         $.ajax({
             url: 'http://52.72.172.54:8080/fhir/baseDstu2/Patient?_id=' + patientId ,
             dataType: 'json',
-            success: function(patientResult) { mergeHTML1(height, weight,patientResult,container );}
+            success: function(patientResult) { mergeHTML1(height, weight,patientResult,container )}
         });
     }
 
@@ -186,14 +181,38 @@ XDate, setTimeout, getDataSet*/
 
         var weightActual = bob.weight.value;
         var heightActual = bob.height.value; 
-        var BMI = calculateBMI(weightActual,heightActual);      
+        var BMI = calculateBMI(weightActual,heightActual);
         var perc = bob.weight.percentile; 
         var status = businessLogic(perc);       
 
     
 
-        $(container).append("<table><tr><td><b>Patient name: </b></td><td>" + patientnameG +  " " + patientnameF + "</td><tr><td><b>Gender: </b></td><td> " + patientgender + "</td><td></tr><tr><td><b>Birth date: </b></td><td>" + patientbirthdate + "</td></tr><tr><td><b>Weight: </b></td><td>" + weightActual + "</td><tr><td><b>Height: </b></td><td> " + heightActual + "</td><td></tr><tr><td><b>BMI: </b></td><td>" + BMI + "</td><td></tr><tr><td><b>Percentile: </b></td><td>" + perc  +"</td><td></tr><tr><td><b>Obesity Status: </b></td><td>" + status  +"</td></tr></table></br></br>"); 
+        // $(container).append("<div class='row col-md-4'>" +
+        //         "<table>" +
+        //             "<tr><td><b>Patient name: </b></td><td>" + patientnameG +  " " + patientnameF + "</td></tr>" +
+        //             "<tr><td><b>Gender: </b></td><td> " + patientgender + "</td></tr>" +
+        //             "<tr><td><b>Birth date: </b></td><td>" + patientbirthdate + "</td></tr>" +
+        //             "<tr><td><b>Weight: </b></td><td>" + weightActual + "</td></tr>" +
+        //             "<tr><td><b>Height: </b></td><td> " + heightActual + "</td></tr>" +
+        //             "<tr><td><b>BMI: </b></td><td>" + BMI + "</td></tr>" +
+        //             "<tr><td><b>Percentile: </b></td><td>" + perc  +"</td></tr>" +
+        //             "<tr><td><b>Obesity Status: </b></td><td>" + status  +"</td></tr>" +
+        //         "</table>" +
+        //     "</div>");
 
+        $(container).append(
+            "<div class='row col-md-4 media-middle'>" +
+                "<dl class='dl-horizontal'>" +
+                    "<dt> Patient name: </dt><dd>"  + patientnameG +  " "  + patientnameF + "</dt>" +
+                    "<dt> Gender: </dt><dd>"  + patientgender + "</dt>" +
+                    "<dt> Birthday: </dt><dd>"  + patientbirthdate + "</dt>" +
+                    "<dt> Weight: </dt><dd>"  + weightActual + "</dt>" +
+                    "<dt> Height: </dt><dd>"  + heightActual + "</dt>" +
+                    "<dt> BMI: </dt><dd>"  + BMI + "</dt>" +
+                    "<dt> Percentile: </dt><dd>"  + perc + "</dt>" +
+                    "<dt> Obesity Status: </dt><dd>"  + status + "</dt>" +
+                "</dl>" +
+            "</div>");
 
 
         $.ajax
@@ -229,7 +248,7 @@ XDate, setTimeout, getDataSet*/
         {
             
            
-            var last = questionareResult.entry.length -1
+            var last = questionareResult.entry.length -1;
             var qr = questionareResult.entry[last];
 
             console.log(qr.resource.questionnaire.reference);
@@ -258,64 +277,65 @@ XDate, setTimeout, getDataSet*/
         }
     }
 
-    function mergeHTML_2(questionareResult, questionare, container)   
+    function mergeHTML_2(questionareResult, questionare, container)
     {
 
-       
-
-        if (!questionare) 
-            return;
-
-        var qr = questionareResult
-        var q = questionare
-
-        console.log(qr); 
-        console.log(q); 
-
-        var date = qr.resource.meta.lastUpdated
 
 
-        
+        if (!questionare) return;
 
-        var title = q.entry[0].resource.text.div + "<h1><b>date questionnaire administered</b> : " + date  + "</h1>" 
+        var qr = questionareResult;
+        var q = questionare;
+
+        console.log(qr);
+        console.log(q);
+
+        var date = qr.resource.meta.lastUpdated;
+
+
+
+
+        var title = q.entry[0].resource.text.div + "<h1><b>date questionnaire administered</b> : " + date  + "</h1>"
 
         $(container).append(title);
-       
+
         var str = "<hr>";
 
         $(container).append(str);
 
-        if (q.entry[0].resource.group.question) 
+        $(container).append("<div></div>").addClass("row cold-md-8");
+
+        if (q.entry[0].resource.group.question)
         {
-            for (var ind = 0; ind < q.entry[0].resource.group.question.length ; ind++) 
+            for (var ind = 0; ind < q.entry[0].resource.group.question.length ; ind++)
             {
- 
+
                 //so human readable numbers start at 1, not zero
-                var human_readable_cnt = ind+1;  
-                var rdata = 
+                var human_readable_cnt = ind+1;
+                var rdata =
                 [
-                    "</br>" 
+                    "</br>"
 
                     +
-                    
-                    "<h2><b>QUESTION " + human_readable_cnt + "</b>: " 
-                     
+
+                    "<h2><b>QUESTION " + human_readable_cnt + "</b>: "
+
 
                     +
 
                      ((q.entry[0].resource.group.question[ind].text) ?
-                            q.entry[0].resource.group.question[ind].text + "" 
-                            : 
-                            "question text Not known, ") 
-                    
-                    
+                            q.entry[0].resource.group.question[ind].text + ""
+                            :
+                            "question text Not known, ")
+
+
                     +
 
                     "</h2>"
-                    
 
-                ] 
- 
+
+                ]
+
                 $(container).append(rdata);
 
 
@@ -323,27 +343,27 @@ XDate, setTimeout, getDataSet*/
                 $(container).append(o_data_start);
 
 
-                for (var ind_o = 0; ind_o < q.entry[0].resource.group.question[ind].option.length ; ind_o++) 
-                {   
+                for (var ind_o = 0; ind_o < q.entry[0].resource.group.question[ind].option.length ; ind_o++)
+                {
 
                     //so human readable numbers start at 1, not zero
-                    var human_readable_ocnt = ind_o+1; 
-                    var o_data = 
+                    var human_readable_ocnt = ind_o+1;
+                    var o_data =
                     [
 
-                        "<li>" 
+                        "<li>"
 
                         +
                             ((q.entry[0].resource.group.question[ind].option[ind_o]) ?
-                            q.entry[0].resource.group.question[ind].option[ind_o].display+ "" 
-                            : 
+                            q.entry[0].resource.group.question[ind].option[ind_o].display+ ""
+                            :
                             "option Not known, ")
-                        
+
                         +
 
                         "</li>"
-  
-                    ]     
+
+                    ]
 
                     $(container).append(o_data);
                 }
@@ -351,39 +371,39 @@ XDate, setTimeout, getDataSet*/
                 var o_data_end = "</ul>"
                 $(container).append(o_data_start);
 
-                
+
                 $(container).append("");
 
                 var final_answer = qr.resource.group.question[ind].answer[0].valueInteger;
-                
 
-                var adata = 
+
+                var adata =
                 [
                     ""
 
                     +
 
-                    
-                    
+
+
                     "</br> <b> User Selected Response: "
 
-                    + 
+                    +
 
                     ((q.entry[0].resource.group.question[ind].option[final_answer]) ?
-                            q.entry[0].resource.group.question[ind].option[final_answer].display+ "" 
-                            : 
-                            "option Not known, ")    
+                            q.entry[0].resource.group.question[ind].option[final_answer].display+ ""
+                            :
+                            "option Not known, ")
 
                     +
                     "</b></br></br><hr>"
-                   
+
                 ]
 
                 $(container).append(adata);
-                
+
             }
-         
-        } 
+
+        }
 
     }
 
