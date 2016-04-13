@@ -89,7 +89,7 @@ XDate, setTimeout, getDataSet*/
 
         if (percentile > OBESE_THRESHOLD)
             return "Obese";
-        else if (percentile > RISK_THRESHOLD)
+        else if (percentile > OVERWEIGHT_THRESHOLD)
             return "Overweight";
         else if (percentile > NORMAL_THRESHOLD)
             return "Normal";
