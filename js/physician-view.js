@@ -163,92 +163,19 @@ XDate, setTimeout, getDataSet*/
 
             console.log(questionnaireCall);
 
-            if (questionnaireCall.entry) {
-                var questionnaire = questionnaireCall.entry[0].resource;
-            }
-            console.log(questionnaire);
-            alert(JSON.stringify(questionnaire));
-            var questionnaireLastUpdated = questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "";
-            var questionnaireElements = questionnaire.group;
-            var questionnaireTitle = questionnaireElements.title;
-            alert(questionnaireTitle);
-
-            var questions = {};
-            var options = [];
-            alert(questionnaireElements.question.length);
-            for (var i = 0; i < questionnaireElements.question.length; i++) {
-                var linkID = questionnaireElements.question[i].linkId;
-                for (var j = 0; j < questionnaireElements.question[i].option[j].length; j++) {
-                    var choiceNum = questionnaireElements.question[i].option[j].code;
-                    alert.(JSON.stringify(choiceNum));
-                    var optionText = questionnaireElements.question[i].option[j].display;
-                    options.push([choiceNum, optionText]);
-                }
-                // alert(JSON.stringify(options));
-
-            }
-            // var questionsAsked = [];
-            // var questionOptions = [];
-            // var questions = [];
-            // for (var i = 0; i < questionnaireElements.question.length; i++) {
-            //     var linkID = (questionnaireElements.question[i].linkId ? questionnaireElements.question[i].linkId : "");
-            //     // alert(JSON.stringify(questionnaireElements.question[i].option));
-            //     for (var j = 0; j < questionnaireElements.question[i].option.length; j++) {
-            //         if (questionnaireElements.question[i].option[j].display) {
-            //             questionOptions[i].push(questionnaireElements.question[i].option[j].display);
-            //         }
-            //     }
-            //     alert(JSON.stringify(questionOptions[i]));
-            //     questions.push([questionnaireElements.question[i].linkId, questionOptions]);
-            //     // console.log(i + questions);
-            // }
-            // // alert(JSON.stringify(questions));
-            //
-            // if (questionnaireResponseCall.entry) {
-            //     var responses = questionnaireResponseCall.entry[0].resource;
-            // }
-        });
-
-
-
-
-        //
-        // var theQuestions = $("<div></div>").addClass("col-md-4 col-md-offset-4");
-        // theQuestions.attr("id", "questions-div").attr("width", "50%");
-        // var questionsID = (window.sessionStorage.getItem('questionsID')) ?
-        //     window.sessionStorage.getItem('questions_id') : "18791835";
-        //
-        // $.ajax({
-        //     url: 'http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?_id=' + questionsID,
-        //     dataType: 'json',
-        //     success: $.extend({})
-        // });
-        // function mergeQuestionHTML(questionsResult) {
-        //     console.log("mergeQuestionHTML");
-        //     console.log(questionsResult);
-        //     if (!questionsResult) return;
-        //     if (questionsResult.entry) {
-        //         questionsResult = questionsResult.entry[0].resource;
-        //     }
-        //     console.log(questionsResult);
-        //     var lastUpdated = questionsResult.meta.lastUpdated ? questionsResult.meta.lastUpdated.split("T")[0] : "";
-        //     var questionnaireElements = questionsResult.group;
-        //     var questionnaireTitle = questionnaireElements.title;
-        //     var questionsAsked = [];
-        //     var questionsOptions = [];
-        //     var questions =[];
-        //     for (var i = 0; i < questionnaireElements.question.length; i++) {
-        //         var linkId = (questionnaireElements.question[i].linkId ? questionnaireElements.question[i].linkId : "");
-        //         var text = (questionnaireElements.question[i].text ? questionnaireElements.question[i].text : "");
-        //         for (var j = 0; j < questionnaireElements.question[i].option.length; j++) {
-        //             var options = questionnaireElements.question[i].option[j];
-        //             questionsOptions.push(options);
-        //             questionsAsked.push({linkId, text, questionsOptions});
-        //
-        //         }
-        //     }
-        //     alert(JSON.stringify(questionsAsked));
-        // }
+        //hardcoded for now
+        var patientId = 18791941;
+        
+    
+        if(!patientId)
+        {
+            throw "Patient ID is a required parameter";
+        }
+      
+        $(container).append("<h1 style='font-size: 28px; font-weight:bold;'>Patient View</h1>");
+        $(container).append("<b>Hardcoded patient ID:</b> " + patientId + "</br></br>");      
+    
+        mergeHTML0(100, 200, patientId,  container) 
     }
 
     function calculateBMI(weight, height)
