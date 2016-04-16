@@ -70,7 +70,6 @@ XDate, setTimeout, getDataSet*/
             });
             return patientCall;
         })();
-        // alert(JSON.stringify(patientCall));
         var questionnaireResponseCall = (function () {
             var questionnaireResponseCall = null;
             $.ajax({
@@ -85,7 +84,8 @@ XDate, setTimeout, getDataSet*/
             return questionnaireResponseCall;
         })();
         var theQuestions = $("<div></div>").addClass("col-md-4 col-md-offset-4");
-        theQuestions.attr("id", "questions-div").attr("width", "50%");
+        theQuestions.attr("id", "theQuestions-div").attr("width", "50%");
+        $(container).append(theQuestions);
         var questionsID = (window.sessionStorage.getItem('questionsID')) ?
             window.sessionStorage.getItem('questions_id') : "18791835";
         var questionnaireCall = (function () {
@@ -115,19 +115,19 @@ XDate, setTimeout, getDataSet*/
             var patientGender = patient.gender ? patient.gender : "";
             var patientBDay = patient.birthDate ? patient.birthDate : "";
             var address = (patient.address ?
-                (patient.address[0].line ?
-                    patient.address[0].line + "</br>" : "") +
-                (patient.address[0].city ?
-                    patient.address[0].city + ", " : "") +
-                (patient.address[0].state ?
-                    patient.address[0].state + " " : "") +
-                (patient.address[0].postalCode ?
-                    patient.address[0].postalCode + "" : "") : "");
+            (patient.address[0].line ?
+                patient.address[0].line + "</br>" : "") +
+            (patient.address[0].city ?
+                patient.address[0].city + ", " : "") +
+            (patient.address[0].state ?
+                patient.address[0].state + " " : "") +
+            (patient.address[0].postalCode ?
+                patient.address[0].postalCode + "" : "") : "");
             var contact = (patient.telecom ?
-                (patient.telecom[0].system ?
-                    patient.telecom[0].system + " " : "") +
-                (patient.telecom[0].value ?
-                    patient.telecom[0].value : "") : "");
+            (patient.telecom[0].system ?
+                patient.telecom[0].system + " " : "") +
+            (patient.telecom[0].value ?
+                patient.telecom[0].value : "") : "");
             thePatient.append($("<div></div>")
                 .addClass("patient-version")
                 .attr("id", "patient-version")
@@ -161,21 +161,26 @@ XDate, setTimeout, getDataSet*/
                 .attr("id", "patient-contact")
                 .html("Contact: " + contact));
 
-            console.log(questionnaireCall);
-
-        //hardcoded for now
-        var patientId = 18791941;
-        
-    
-        if(!patientId)
-        {
-            throw "Patient ID is a required parameter";
-        }
-      
-        $(container).append("<h1 style='font-size: 28px; font-weight:bold;'>Patient View</h1>");
-        $(container).append("<b>Hardcoded patient ID:</b> " + patientId + "</br></br>");      
-    
-        mergeHTML0(100, 200, patientId,  container) 
+            if (questionnaireCall.entry) {
+                var questionnaire = questionnaireCall.entry[0].resource;
+            }
+            if (questionnaireResponseCall.entry) {
+                var response = questionnaireResponseCall.entry[0].resource;
+            }
+            var questionnaireId = (questionnaire.id ? questionnaire.id : "");
+            var questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
+            var questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
+            var responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
+            var qAndA = [];
+            for(var i = 0; i < questionnaire.group.question.length; i++) {
+                var responseIndex = response.group.question[i].answer[0].valueInteger;
+                qAndA.push([(questionnaire.group.question[i].text), (questionnaire.group.question[i].option[responseIndex].display)]);
+            }
+            theQuestions.append($("<div></div>")
+                .addClass("QandA")
+                .attr("id", "question-and-answer")
+                .html("Questionnaire Responses: : " + qAndA));
+        })
     }
 
     function calculateBMI(weight, height)
