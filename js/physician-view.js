@@ -4,7 +4,7 @@ jQuery, debugLog,
 XDate, setTimeout, getDataSet*/
 
 /*jslint undef: true, eqeq: true, nomen: true, plusplus: true, forin: true*/
-(function(NS, $) 
+(function(NS, $)
 {
 
     "use strict";
@@ -30,7 +30,7 @@ XDate, setTimeout, getDataSet*/
         MONTH      = WEEK * 4.348214285714286,
         YEAR       = MONTH * 12,
 
-        shortDateFormat = 
+        shortDateFormat =
         {
             "Years"   : "y",
             "Year"    : "y",
@@ -43,60 +43,235 @@ XDate, setTimeout, getDataSet*/
             separator : " "
         };
 
-    function isPhysicianViewVisible() 
+    function isPhysicianViewVisible()
     {
+        console.log("start");
         return GC.App.getViewType() == "view";
     }
 
-    
-
-    function renderPhysicianView( container ) 
-    {
+    function renderPhysicianView(container) {
         $(container).empty();
 
-        //hardcoded for now
-        var patientId = 18791941;
-        
-    
-        if(!patientId)
-        {
-            throw "Patient ID is a required parameter";
-        }
-      
-        $(container).append("<b>Hardcoded patient ID:</b> " + patientId + "</br></br>");
-    
-        mergeHTML0(100, 200, patientId,  container);
+        var thePatient = $("<div></div>").addClass("col-md-4");
+        thePatient.attr("id", "thePatient-div").attr("width", "50%");
+        $(container).append(thePatient);
+        var patientID = (window.sessionStorage.getItem('patientID')) ?
+            window.sessionStorage.getItem('patientID') : "18791941";
+        var patientCall = (function () {
+            var patientCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Patient?_id=' + patientID,
+                dataType: 'json',
+                success: function (data) {
+                    patientCall = data;
+                }
+            });
+            return patientCall;
+        })();
+        // alert(JSON.stringify(patientCall));
+        var questionnaireResponseCall = (function () {
+            var questionnaireResponseCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/QuestionnaireResponse?patient=' + patientID,
+                dataType: 'json',
+                success: function (data) {
+                    questionnaireResponseCall = data;
+                }
+            });
+            return questionnaireResponseCall;
+        })();
+        var theQuestions = $("<div></div>").addClass("col-md-4 col-md-offset-4");
+        theQuestions.attr("id", "questions-div").attr("width", "50%");
+        var questionsID = (window.sessionStorage.getItem('questionsID')) ?
+            window.sessionStorage.getItem('questions_id') : "18791835";
+        var questionnaireCall = (function () {
+            var questionnaireCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?_id=' + questionsID,
+                dataType: 'json',
+                success: function (data) {
+                    questionnaireCall = data;
+                }
+            });
+            return questionnaireCall;
+        })();
+
+        $.when(patientCall, questionnaireResponseCall, questionnaireCall).then(function() {
+            console.log("thePatient: " + patientCall);
+            if (patientCall.entry) {
+                var patient = patientCall.entry[0].resource;
+            }
+            console.log(patient);
+            var patientId = (patient.id ? patient.id : "");
+            var patientVersion = (patient.meta.versionId) ? patient.meta.versionId : "";
+            var patientLastUpdated = patient.meta.lastUpdated ? patient.meta.lastUpdated : "";
+            var patientName = patient.name[0] ? patient.name[0].given[0] + " " + patient.name[0].family[0] : "";
+            var patientGender = patient.gender ? patient.gender : "";
+            var patientBDay = patient.birthDate ? patient.birthDate : "";
+            var address = (patient.address ?
+                (patient.address[0].line ?
+                    patient.address[0].line + "</br>" : "") +
+                (patient.address[0].city ?
+                    patient.address[0].city + ", " : "") +
+                (patient.address[0].state ?
+                    patient.address[0].state + " " : "") +
+                (patient.address[0].postalCode ?
+                    patient.address[0].postalCode + "" : "") : "");
+            var contact = (patient.telecom ?
+                (patient.telecom[0].system ?
+                    patient.telecom[0].system + " " : "") +
+                (patient.telecom[0].value ?
+                    patient.telecom[0].value : "") : "");
+            thePatient.append($("<div></div>")
+                .addClass("patient-version")
+                .attr("id", "patient-version")
+                .html("Version: " + patientVersion));
+            thePatient.append($("<div></div>")
+                .addClass("patient-lastUpdated")
+                .attr("id", "patient-lastUpdated")
+                .html("Date: " + patientLastUpdated.split("T")[0]));
+            thePatient.append($("<div></div>")
+                .addClass("patient-id")
+                .attr("id", "patient-id")
+                .html("ID: " + patientId));
+            thePatient.append($("<div></div>")
+                .addClass("patient-fullname")
+                .attr("id", "patient-fullname")
+                .html("Name: " + patientName));
+            thePatient.append($("<div></div>")
+                .addClass("patient-gender")
+                .attr("id", "patient-gender")
+                .html("Gender: " + patientGender));
+            thePatient.append($("<div></div>")
+                .addClass("patient-bday")
+                .attr("id", "patient-bday")
+                .html("Birthdate: " + patientBDay));
+            thePatient.append($("<div></div>")
+                .addClass("patient-address")
+                .attr("id", "patient-address")
+                .html("Address: " + address));
+            thePatient.append($("<div></div>")
+                .addClass("patient-contact")
+                .attr("id", "patient-contact")
+                .html("Contact: " + contact));
+
+            console.log(questionnaireCall);
+
+            if (questionnaireCall.entry) {
+                var questionnaire = questionnaireCall.entry[0].resource;
+            }
+            console.log(questionnaire);
+            alert(JSON.stringify(questionnaire));
+            var questionnaireLastUpdated = questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "";
+            var questionnaireElements = questionnaire.group;
+            var questionnaireTitle = questionnaireElements.title;
+            alert(questionnaireTitle);
+
+            var questions = {};
+            var options = [];
+            alert(questionnaireElements.question.length);
+            for (var i = 0; i < questionnaireElements.question.length; i++) {
+                var linkID = questionnaireElements.question[i].linkId;
+                for (var j = 0; j < questionnaireElements.question[i].option[j].length; j++) {
+                    var choiceNum = questionnaireElements.question[i].option[j].code;
+                    alert.(JSON.stringify(choiceNum));
+                    var optionText = questionnaireElements.question[i].option[j].display;
+                    options.push([choiceNum, optionText]);
+                }
+                // alert(JSON.stringify(options));
+
+            }
+            // var questionsAsked = [];
+            // var questionOptions = [];
+            // var questions = [];
+            // for (var i = 0; i < questionnaireElements.question.length; i++) {
+            //     var linkID = (questionnaireElements.question[i].linkId ? questionnaireElements.question[i].linkId : "");
+            //     // alert(JSON.stringify(questionnaireElements.question[i].option));
+            //     for (var j = 0; j < questionnaireElements.question[i].option.length; j++) {
+            //         if (questionnaireElements.question[i].option[j].display) {
+            //             questionOptions[i].push(questionnaireElements.question[i].option[j].display);
+            //         }
+            //     }
+            //     alert(JSON.stringify(questionOptions[i]));
+            //     questions.push([questionnaireElements.question[i].linkId, questionOptions]);
+            //     // console.log(i + questions);
+            // }
+            // // alert(JSON.stringify(questions));
+            //
+            // if (questionnaireResponseCall.entry) {
+            //     var responses = questionnaireResponseCall.entry[0].resource;
+            // }
+        });
+
+
+
+
+        //
+        // var theQuestions = $("<div></div>").addClass("col-md-4 col-md-offset-4");
+        // theQuestions.attr("id", "questions-div").attr("width", "50%");
+        // var questionsID = (window.sessionStorage.getItem('questionsID')) ?
+        //     window.sessionStorage.getItem('questions_id') : "18791835";
+        //
+        // $.ajax({
+        //     url: 'http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?_id=' + questionsID,
+        //     dataType: 'json',
+        //     success: $.extend({})
+        // });
+        // function mergeQuestionHTML(questionsResult) {
+        //     console.log("mergeQuestionHTML");
+        //     console.log(questionsResult);
+        //     if (!questionsResult) return;
+        //     if (questionsResult.entry) {
+        //         questionsResult = questionsResult.entry[0].resource;
+        //     }
+        //     console.log(questionsResult);
+        //     var lastUpdated = questionsResult.meta.lastUpdated ? questionsResult.meta.lastUpdated.split("T")[0] : "";
+        //     var questionnaireElements = questionsResult.group;
+        //     var questionnaireTitle = questionnaireElements.title;
+        //     var questionsAsked = [];
+        //     var questionsOptions = [];
+        //     var questions =[];
+        //     for (var i = 0; i < questionnaireElements.question.length; i++) {
+        //         var linkId = (questionnaireElements.question[i].linkId ? questionnaireElements.question[i].linkId : "");
+        //         var text = (questionnaireElements.question[i].text ? questionnaireElements.question[i].text : "");
+        //         for (var j = 0; j < questionnaireElements.question[i].option.length; j++) {
+        //             var options = questionnaireElements.question[i].option[j];
+        //             questionsOptions.push(options);
+        //             questionsAsked.push({linkId, text, questionsOptions});
+        //
+        //         }
+        //     }
+        //     alert(JSON.stringify(questionsAsked));
+        // }
     }
 
-    //requires weight in kg and heigh in cm
     function calculateBMI(weight, height)
     {
-        var heightInM = height/100; 
+        var heightInM = height/100;
         var BMI = weight/(heightInM*heightInM);
         return BMI;
     }
 
-    function businessLogic(percentile){ 
+    function obesityThresholds(percentile){
 
-        var OBESE_THRESHOLD = 0.95; 
-        var OVERWEIGHT_THRESHOLD = 0.85; 
+        var OBESE_THRESHOLD = 0.95;
+        var OVERWEIGHT_THRESHOLD = 0.85;
         var NORMAL_THRESHOLD = 0.05;
 
         if (percentile > OBESE_THRESHOLD)
             return "Obese";
-        else if (percentile > RISK_THRESHOLD)
+        else if (percentile > OVERWEIGHT_THRESHOLD)
             return "Overweight";
         else if (percentile > NORMAL_THRESHOLD)
             return "Normal";
         else
             return "Underweight";
-    }
-
-    function getLastEnryHaving(propName) {
-        if ( !PATIENT ) {
-            return null;
-        }
-        return PATIENT.getLastEnryHaving(propName);
     }
 
     function getVitals() {
@@ -105,12 +280,12 @@ XDate, setTimeout, getDataSet*/
                     weight : { value : undefined, "percentile" : null, color : "#F09C17", agemos : null },
                     headc  : { value : undefined, "percentile" : null, color : "#428500", agemos : null },
                     bmi    : { value : undefined, "percentile" : null, color : "#B26666", agemos : null },
-                    
+
                     age : PATIENT.getCurrentAge()
                 },
                 src    = out.age.getYears() > 2 ? "CDC" : "WHO",
                 gender = PATIENT.gender;
-            
+
             $.each({
                 height : { modelProp: "lengthAndStature", dsType : "LENGTH" },
                 weight : { modelProp: "weight"          , dsType : "WEIGHT" },
@@ -123,12 +298,12 @@ XDate, setTimeout, getDataSet*/
                     out[key].value  = lastEntry[meta.modelProp];
                     out[key].agemos = lastEntry.agemos;
                     out[key].date   = new XDate(PATIENT.DOB.getTime()).addMonths(lastEntry.agemos);
-                    
+
                     if (ds) {
                         pct = GC.findPercentileFromX(
-                            out[key].value, 
-                            ds, 
-                            gender, 
+                            out[key].value,
+                            ds,
+                            gender,
                             lastEntry.agemos
                         );
                         if ( !isNaN(pct) ) {
@@ -137,286 +312,13 @@ XDate, setTimeout, getDataSet*/
                     }
                 }
             });
-            
+
             return out;
     }
-    
-    function mergeHTML0(height, weight, patientId,  container) 
+
+    NS.PhysicianView =
     {
-
-        $.ajax({
-            url: 'http://52.72.172.54:8080/fhir/baseDstu2/Patient?_id=' + patientId ,
-            dataType: 'json',
-            success: function(patientResult) { mergeHTML1(height, weight,patientResult,container )}
-        });
-    }
-
-
-    function mergeHTML1(height, weight, patientResult, container) 
-    {
-         //hardcoded for now
-        var patientId = 18791941;
-
-        if (!patientResult) 
-            return;
-
-       
-        
-        if (patientResult.data) 
-        {
-            patientResult = patientResult.data;
-        }
-
-        console.log(patientResult);
-
-        var patientnameF = patientResult.entry[0].resource.name[0].family ;
-        var patientnameG = patientResult.entry[0].resource.name[0].given ;
-        var patientgender = patientResult.entry[0].resource.gender;
-        var patientbirthdate =  patientResult.entry[0].resource.birthDate;
-
-        PATIENT = GC.App.getPatient();
-        
-        //TO DO INSERT BMI AND OBESIT CALCULATION HERE
-        var bob = getVitals(); 
-
-        var weightActual = bob.weight.value;
-        var heightActual = bob.height.value; 
-        var BMI = calculateBMI(weightActual,heightActual);
-        var perc = bob.weight.percentile; 
-        var status = businessLogic(perc);       
-
-    
-
-        // $(container).append("<div class='row col-md-4'>" +
-        //         "<table>" +
-        //             "<tr><td><b>Patient name: </b></td><td>" + patientnameG +  " " + patientnameF + "</td></tr>" +
-        //             "<tr><td><b>Gender: </b></td><td> " + patientgender + "</td></tr>" +
-        //             "<tr><td><b>Birth date: </b></td><td>" + patientbirthdate + "</td></tr>" +
-        //             "<tr><td><b>Weight: </b></td><td>" + weightActual + "</td></tr>" +
-        //             "<tr><td><b>Height: </b></td><td> " + heightActual + "</td></tr>" +
-        //             "<tr><td><b>BMI: </b></td><td>" + BMI + "</td></tr>" +
-        //             "<tr><td><b>Percentile: </b></td><td>" + perc  +"</td></tr>" +
-        //             "<tr><td><b>Obesity Status: </b></td><td>" + status  +"</td></tr>" +
-        //         "</table>" +
-        //     "</div>");
-
-        $(container).append(
-            "<div class='row col-md-4 media-middle'>" +
-                "<dl class='dl-horizontal'>" +
-                    "<dt> Patient name: </dt><dd>"  + patientnameG +  " "  + patientnameF + "</dt>" +
-                    "<dt> Gender: </dt><dd>"  + patientgender + "</dt>" +
-                    "<dt> Birthday: </dt><dd>"  + patientbirthdate + "</dt>" +
-                    "<dt> Weight: </dt><dd>"  + weightActual + "</dt>" +
-                    "<dt> Height: </dt><dd>"  + heightActual + "</dt>" +
-                    "<dt> BMI: </dt><dd>"  + BMI + "</dt>" +
-                    "<dt> Percentile: </dt><dd>"  + perc + "</dt>" +
-                    "<dt> Obesity Status: </dt><dd>"  + status + "</dt>" +
-                "</dl>" +
-            "</div>");
-
-
-        $.ajax
-        ({
-
-            url: 'http://52.72.172.54:8080/fhir/baseDstu2/QuestionnaireResponse?patient=' 
-            + patientId ,
-
-            dataType: 'json',
-
-            success: function(questionareResult) { mergeHTML2(questionareResult,  container);}
-                    
-        });
-
-        
-    }
-
-
-    function mergeHTML2(questionareResult,  container) 
-    {
-        if (!questionareResult) 
-            return;
-        
-        if (questionareResult.data) 
-        {
-            questionareResult = questionareResult.data;
-        }
-
-        console.log(questionareResult.entry);
-
-        //for now just show one
-       // for (var i = 0; i < questionareResult.entry.length; i++) 
-        {
-            
-           
-            var last = questionareResult.entry.length -1;
-            var qr = questionareResult.entry[last];
-
-            console.log(qr.resource.questionnaire.reference);
-            //  should be "Questionnaire/18791830"
-            var Qreference  =   ((qr.resource.questionnaire.reference) ?
-                                qr.resource.questionnaire.reference
-                                : 
-                                "Not known, ")  
-
-
-
-            var n = Qreference.search("/");
-            var Qid = Qreference.substr(n);
-
-            $.ajax
-            ({
-
-                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?_id=' 
-                + Qid ,
-
-                dataType: 'json',
-
-                success: function(questionare) { mergeHTML_2 (qr, questionare, container);}
-                        
-            });
-        }
-    }
-
-    function mergeHTML_2(questionareResult, questionare, container)
-    {
-
-
-
-        if (!questionare) return;
-
-        var qr = questionareResult;
-        var q = questionare;
-
-        console.log(qr);
-        console.log(q);
-
-        var date = qr.resource.meta.lastUpdated;
-
-
-
-
-        var title = q.entry[0].resource.text.div + "<h1><b>date questionnaire administered</b> : " + date  + "</h1>"
-
-        $(container).append(title);
-
-        var str = "<hr>";
-
-        $(container).append(str);
-
-        $(container).append("<div></div>").addClass("row cold-md-8");
-
-        if (q.entry[0].resource.group.question)
-        {
-            for (var ind = 0; ind < q.entry[0].resource.group.question.length ; ind++)
-            {
-
-                //so human readable numbers start at 1, not zero
-                var human_readable_cnt = ind+1;
-                var rdata =
-                [
-                    "</br>"
-
-                    +
-
-                    "<h2><b>QUESTION " + human_readable_cnt + "</b>: "
-
-
-                    +
-
-                     ((q.entry[0].resource.group.question[ind].text) ?
-                            q.entry[0].resource.group.question[ind].text + ""
-                            :
-                            "question text Not known, ")
-
-
-                    +
-
-                    "</h2>"
-
-
-                ]
-
-                $(container).append(rdata);
-
-
-                var o_data_start = "<ul>"
-                $(container).append(o_data_start);
-
-
-                for (var ind_o = 0; ind_o < q.entry[0].resource.group.question[ind].option.length ; ind_o++)
-                {
-
-                    //so human readable numbers start at 1, not zero
-                    var human_readable_ocnt = ind_o+1;
-                    var o_data =
-                    [
-
-                        "<li>"
-
-                        +
-                            ((q.entry[0].resource.group.question[ind].option[ind_o]) ?
-                            q.entry[0].resource.group.question[ind].option[ind_o].display+ ""
-                            :
-                            "option Not known, ")
-
-                        +
-
-                        "</li>"
-
-                    ]
-
-                    $(container).append(o_data);
-                }
-
-                var o_data_end = "</ul>"
-                $(container).append(o_data_start);
-
-
-                $(container).append("");
-
-                var final_answer = qr.resource.group.question[ind].answer[0].valueInteger;
-
-
-                var adata =
-                [
-                    ""
-
-                    +
-
-
-
-                    "</br> <b> User Selected Response: "
-
-                    +
-
-                    ((q.entry[0].resource.group.question[ind].option[final_answer]) ?
-                            q.entry[0].resource.group.question[ind].option[final_answer].display+ ""
-                            :
-                            "option Not known, ")
-
-                    +
-                    "</b></br></br><hr>"
-
-                ]
-
-                $(container).append(adata);
-
-            }
-
-        }
-
-    }
-
-    
-     
-  
-
-
-
-
-    NS.PhysicianView = 
-    {
-        render : function() 
+        render : function()
         {
 
                 renderPhysicianView("#view-physician");
@@ -424,33 +326,33 @@ XDate, setTimeout, getDataSet*/
         }
     };
 
-    $(function() 
+    $(function()
     {
-        if (!PRINT_MODE) 
+        if (!PRINT_MODE)
         {
 
-            $("html").bind("set:viewType set:language", function(e) 
+            $("html").bind("set:viewType set:language", function(e)
             {
-                if (isPhysicianViewVisible()) 
+                if (isPhysicianViewVisible())
                 {
                     renderPhysicianView("#view-physician");
                 }
             });
 
-            GC.Preferences.bind("set:metrics set:nicu set:currentColorPreset", function(e) 
+            GC.Preferences.bind("set:metrics set:nicu set:currentColorPreset", function(e)
             {
-                if (isPhysicianViewVisible()) 
+                if (isPhysicianViewVisible())
                 {
                     renderPhysicianView("#view-physician");
                 }
             });
 
-            GC.Preferences.bind("set", function(e) 
+            GC.Preferences.bind("set", function(e)
             {
                 if (e.data.path == "roundPrecision.velocity.nicu" ||
-                    e.data.path == "roundPrecision.velocity.std") 
+                    e.data.path == "roundPrecision.velocity.std")
                 {
-                    if (isPhysicianViewVisible()) 
+                    if (isPhysicianViewVisible())
                     {
                         renderPhysicianView("#view-physician");
                     }
@@ -458,7 +360,7 @@ XDate, setTimeout, getDataSet*/
             });
 
 
-            GC.Preferences.bind("set:timeFormat", function(e) 
+            GC.Preferences.bind("set:timeFormat", function(e)
             {
                 renderPhysicianView("#view-physician");
             });

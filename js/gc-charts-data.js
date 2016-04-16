@@ -45,7 +45,7 @@ if (!GC) {
         for ( i = tmp.length - 1; i >= 0; i-- ) {
             ds = tmp[i];
             range = GC.getDataSetAgeRange( ds )[ gender ];
-            
+            if(range == null) { return null; }
             if ( range.min <= endAgeMos && range.max >= startAgeMos ) {
                 n = endAgeMos - 
                     startAgeMos - 

@@ -1,5 +1,15 @@
 window.GC = window.GC || {};
 
+var param = function(i) {
+  var r = new RegExp("[?&]" + i.replace(/[\[\]]/g, "\\$&") + "(=([^&#]*)|&|#|$)", "i");
+  var e = r.exec(window.location.href);
+
+  if (!e || !e[2])
+    return null;
+
+  return decodeURIComponent(e[2].replace(/\+/g, " "));
+}
+
 GC.get_data = function() {
   var dfd = $.Deferred();
 
@@ -12,12 +22,9 @@ GC.get_data = function() {
     });
   };
   var smart = FHIR.client({
-      serviceUrl: 'https://fhir-open-api-dstu2.smarthealthit.org',
- //   patientId: '1137192',
-      patientId:'7777704',
-      //'http://52.72.172.54:8080/fhir/baseDstu2/Patient/18791941"
-      // serviceUrl: 'http://52.72.172.54:8080/fhir/baseDstu2',
-       //patientId: '18791941',
+    serviceUrl: 'http://52.72.172.54:8080/fhir/baseDstu2',
+    // We need a better default patient, one with more data to support the GCs
+    patientId: param('patient') != null ? param('patient') : patientID = 'Patient-19454',
     auth: {
       type: 'none'
     }
