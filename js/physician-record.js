@@ -65,9 +65,21 @@ XDate, setTimeout, getDataSet*/
         {
             throw "Patient ID is a required parameter";
         }
-      
-        $(container).append("<h1>Physician recorded observation: " + patientId + "</h1>");
-        $(container).append("<h1>Patient's activity level:</h1>");
+        $(container).append("<h1 style='font-size: 28px; font-weight:bold;'>Patient Record</h1>");
+        $(container).append("<h1 style='font-size: 16px;'>Patient: " + patientId + "</h1>");
+        $(container).append("<br></br>");
+        
+        $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Observations: </h1>");
+
+        $(container).append("<textarea rows='6' cols='50'>observations</textarea>");
+        $(container).append("<br></br>");
+        $(container).append("<br></br>");
+
+        $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Lab Results: </h1>");
+
+        $(container).append("<textarea rows='6' cols='50'>observations</textarea>");
+        $(container).append("<br></br>");
+        $(container).append("<br></br>");
 
         $(container).append("<h1>Order the following lab tests:</h1>");
         $(container).append("<h1>Body fat test</h1>");

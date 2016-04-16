@@ -66,17 +66,33 @@ XDate, setTimeout, getDataSet*/
             throw "Patient ID is a required parameter";
         }
       
-        $(container).append("<h1> Physician recommendations: " + patientId + "</h1>");
 
-        $(container).append("<h1> Habib was here</h1>");
+        $(container).append("<h1 style='font-size: 28px; font-weight:bold;'>Patient View</h1>");
+        $(container).append("<h1>Patient: " + patientId + "</h1>");
+        $(container).append("<br></br>");
 
+        $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Recommendations based on questionnaire: </h1>");
 
-        $(container).append("<h1>Recommendations based on questionnaire</h1>");
-        $(container).append("<ul><li>List item 1</li><li>List item 2</li><li>List item 3</li></ul>");
+        $(container).append("<textarea rows='5' cols='50'>Recommendations:</textarea>");
+        $(container).append("<br></br>");
 
-        $(container).append("<h1>Recommendations based on ICD-10 codes</h1>");
-        $(container).append("<h1>Recommendations based on </h1>");
-        
+        $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Physician recommendations (ICD-10): </h1>");
+
+        $(container).append("<textarea rows='5' cols='50'>ICD-10 codes:</textarea>");
+        $(container).append("<br></br>");
+
+        $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Lab Test Recommendations: </h1>");
+
+        $(container).append("<textarea rows='5' cols='50'>Lab-based Referrals:</textarea>");
+        $(container).append("<br></br>");
+
+        $(container).append("<h1>Order the following lab tests:</h1>");
+        $(container).append("<h1>Body fat test</h1>");
+        $(container).append("<br></br>");
+
+        $(container).append("<button style='height: 30px; background-color: #bbccff;padding:5px;'>Export Data</button>");
+        $(container).append("<button style='height: 30px; background-color: #bbccff;padding:5px;'>Submit Referrals</button>");
+
     }
 
     
