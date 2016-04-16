@@ -68,10 +68,8 @@ XDate, setTimeout, getDataSet*/
             throw "Patient ID is a required parameter";
         }
       
-        $(container).append("<h1 style='font-size: 28px; font-weight:bold;'>Patient Record</h1>");
-        $(container).append("<b>Hardcoded patient ID:</b> " + patientId + "</br></br>");
-        $(container).append("<br></br>");
-        
+        $(container).append("<h1 style='font-size: 28px; font-weight:bold;'>Patient View</h1>");
+        $(container).append("<b>Hardcoded patient ID:</b> " + patientId + "</br></br>");      
     
         mergeHTML0(100, 200, patientId,  container) 
     }
