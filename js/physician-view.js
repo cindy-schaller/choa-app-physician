@@ -254,6 +254,263 @@ XDate, setTimeout, getDataSet*/
         render : function()
         {
 
+        console.log(patientResult);
+
+        var patientnameF = patientResult.entry[0].resource.name[0].family ;
+        var patientnameG = patientResult.entry[0].resource.name[0].given ;
+        var patientgender = patientResult.entry[0].resource.gender;
+        var patientbirthdate =  patientResult.entry[0].resource.birthDate;
+
+        PATIENT = GC.App.getPatient();
+        
+        //TO DO INSERT BMI AND OBESIT CALCULATION HERE
+        var bob = getVitals(); 
+
+        var weightActual = bob.weight.value;
+        var heightActual = bob.height.value; 
+        var BMI = calculateBMI(weightActual,heightActual);      
+        var perc = bob.weight.percentile; 
+        var status = businessLogic(perc);       
+
+    
+
+        $(container).append("<table><tr><td><b>Patient name: </b></td><td>" + patientnameG +  " " + patientnameF + "</td><tr><td><b>Gender: </b></td><td> " + patientgender + "</td><td></tr><tr><td><b>Birth date: </b></td><td>" + patientbirthdate + "</td></tr><tr><td><b>Weight: </b></td><td>" + weightActual + "</td><tr><td><b>Height: </b></td><td> " + heightActual + "</td><td></tr><tr><td><b>BMI: </b></td><td>" + BMI + "</td><td></tr><tr><td><b>Percentile: </b></td><td>" + perc  +"</td><td></tr><tr><td><b>Obesity Status: </b></td><td>" + status  +"</td></tr></table></br></br>"); 
+
+
+
+        $.ajax
+        ({
+
+            url: 'http://52.72.172.54:8080/fhir/baseDstu2/QuestionnaireResponse?patient=' 
+            + patientId ,
+
+            dataType: 'json',
+
+            success: function(questionareResult) { mergeHTML2(questionareResult,  container);}
+                    
+        });
+
+        
+    }
+
+
+    function mergeHTML2(questionareResult,  container) 
+    {
+        if (!questionareResult) 
+            return;
+        
+        if (questionareResult.data) 
+        {
+            questionareResult = questionareResult.data;
+        }
+
+        console.log(questionareResult.entry);
+
+        //for now just show one
+       // for (var i = 0; i < questionareResult.entry.length; i++) 
+        {
+            
+           
+            var last = questionareResult.entry.length -1
+            var qr = questionareResult.entry[last];
+
+            console.log(qr.resource.questionnaire.reference);
+            //  should be "Questionnaire/18791830"
+            var Qreference  =   ((qr.resource.questionnaire.reference) ?
+                                qr.resource.questionnaire.reference
+                                : 
+                                "Not known, ")  
+
+
+
+            var n = Qreference.search("/");
+            var Qid = Qreference.substr(n);
+
+            $.ajax
+            ({
+
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?_id=' 
+                + Qid ,
+
+                dataType: 'json',
+
+                success: function(questionare) { mergeHTML_2 (qr, questionare, container);}
+                        
+            });
+        }
+    }
+
+    function mergeHTML_2(questionareResult, questionare, container)   
+    {
+
+       
+
+        if (!questionare) 
+            return;
+
+        var qr = questionareResult
+        var q = questionare
+
+        console.log(qr); 
+        console.log(q); 
+
+        var date = qr.resource.meta.lastUpdated
+
+
+        
+
+        var title = q.entry[0].resource.text.div + "<h1><b>date questionnaire administered</b> : " + date  + "</h1>" 
+
+        $(container).append(title);
+       
+        var str = "<hr>";
+
+        $(container).append(str);
+
+        if (q.entry[0].resource.group.question) 
+        {
+            for (var ind = 0; ind < q.entry[0].resource.group.question.length ; ind++) 
+            {
+
+
+               
+
+                //so human readable numbers start at 1, not zero
+                var human_readable_cnt = ind+1;  
+                var rdata = 
+                [
+                    "</br>" 
+
+                    +
+                    
+                    "<h2><b>QUESTION " + human_readable_cnt + "</b>: " 
+                     
+
+                    +
+
+                     ((q.entry[0].resource.group.question[ind].text) ?
+                            q.entry[0].resource.group.question[ind].text + "" 
+                            : 
+                            "question text Not known, ") 
+                    
+                    
+                    +
+
+                    "</h2>"
+                    
+
+                ] 
+ 
+                $(container).append(rdata);
+
+
+                var o_data_start = "<ul>"
+                $(container).append(o_data_start);
+
+
+
+                for (var ind_o = 0; ind_o < q.entry[0].resource.group.question[ind].option.length ; ind_o++) 
+                {   
+
+                    //so human readable numbers start at 1, not zero
+                    var human_readable_ocnt = ind_o+1; 
+                    var o_data = 
+                    [
+
+                        "<li>" 
+
+                        +
+                            ((q.entry[0].resource.group.question[ind].option[ind_o]) ?
+                            q.entry[0].resource.group.question[ind].option[ind_o].display+ "" 
+                            : 
+                            "option Not known, ")
+                        
+                        +
+
+                        "</li>"
+  
+                    ]     
+
+                    $(container).append(o_data);
+                }
+
+                var o_data_end = "</ul>"
+                $(container).append(o_data_start);
+
+                
+                $(container).append("");
+
+                //search for final answer
+                var question_link_ID = q.entry[0].resource.group.question[ind].linkId;
+
+                var qr_index = -1;
+                for (var x = 0; x < qr.resource.group.question.length ; x++) 
+                {   
+
+                   //console.log(question_link_ID);
+                   //console.log( qr.resource.group.question[x].linkId);
+                   if(question_link_ID == qr.resource.group.question[x].linkId)
+                   {
+                       //console.log( "validated linkId of question to a LinkID in the questionare-response");
+                       qr_index = x;
+                       break;
+                   }
+                }
+
+                if(qr_index == -1)
+                {
+                    
+                    console.log("ERROR: could not validate linkId of question to any LinkID in the questionare-response"); 
+                    return;
+                }
+
+                
+                   
+                var final_answer = qr.resource.group.question[qr_index].answer[0].valueInteger;
+                
+
+                var adata = 
+                [
+                    ""
+
+                    +
+
+                    
+                    
+                    "</br> <b> User Selected Response: "
+
+                    + 
+
+                    ((q.entry[0].resource.group.question[ind].option[final_answer]) ?
+                            q.entry[0].resource.group.question[ind].option[final_answer].display+ "" 
+                            : 
+                            "option Not known, ")    
+
+                    +
+                    "</b></br></br><hr>"
+                   
+                ]
+
+                $(container).append(adata);
+                
+            }
+         
+        } 
+
+    }
+
+    
+     
+  
+
+
+
+
+    NS.PhysicianView = 
+    {
+        render : function() 
+        {
+
                 renderPhysicianView("#view-physician");
 
         }
