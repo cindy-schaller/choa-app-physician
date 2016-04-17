@@ -292,7 +292,10 @@ XDate, setTimeout, getDataSet*/
         {
             for (var ind = 0; ind < q.entry[0].resource.group.question.length ; ind++) 
             {
- 
+
+
+               
+
                 //so human readable numbers start at 1, not zero
                 var human_readable_cnt = ind+1;  
                 var rdata = 
@@ -326,6 +329,7 @@ XDate, setTimeout, getDataSet*/
                 $(container).append(o_data_start);
 
 
+
                 for (var ind_o = 0; ind_o < q.entry[0].resource.group.question[ind].option.length ; ind_o++) 
                 {   
 
@@ -357,7 +361,33 @@ XDate, setTimeout, getDataSet*/
                 
                 $(container).append("");
 
-                var final_answer = qr.resource.group.question[ind].answer[0].valueInteger;
+                //search for final answer
+                var question_link_ID = q.entry[0].resource.group.question[ind].linkId;
+
+                var qr_index = -1;
+                for (var x = 0; x < qr.resource.group.question.length ; x++) 
+                {   
+
+                   //console.log(question_link_ID);
+                   //console.log( qr.resource.group.question[x].linkId);
+                   if(question_link_ID == qr.resource.group.question[x].linkId)
+                   {
+                       //console.log( "validated linkId of question to a LinkID in the questionare-response");
+                       qr_index = x;
+                       break;
+                   }
+                }
+
+                if(qr_index == -1)
+                {
+                    
+                    console.log("ERROR: could not validate linkId of question to any LinkID in the questionare-response"); 
+                    return;
+                }
+
+                
+                   
+                var final_answer = qr.resource.group.question[qr_index].answer[0].valueInteger;
                 
 
                 var adata = 
