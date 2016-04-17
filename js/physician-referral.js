@@ -67,8 +67,8 @@ XDate, setTimeout, getDataSet*/
         }
       
 
-        $(container).append("<h1 style='font-size: 28px; font-weight:bold;'>Patient View</h1>");
-        $(container).append("<h1>Patient: " + patientId + "</h1>");
+        $(container).append("<h1 style='font-size: 28px; font-weight:bold;'>Patient Referral</h1>");
+        $(container).append("<h1 style='font-size: 16px;'>Patient: " + patientId + "</h1>");
         $(container).append("<br></br>");
 
         $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Recommendations based on questionnaire: </h1>");
