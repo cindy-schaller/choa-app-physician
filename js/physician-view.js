@@ -83,7 +83,7 @@ XDate, setTimeout, getDataSet*/
             });
             return questionnaireResponseCall;
         })();
-        var theQuestions = $("<div></div>").addClass("col-md-4 col-md-offset-4");
+        var theQuestions = $("<div></div>").addClass("col-md-4 col-md-offset-5");
         theQuestions.attr("id", "theQuestions-div").attr("width", "50%");
         $(container).append(theQuestions);
         var questionsID = (window.sessionStorage.getItem('questionsID')) ?
@@ -171,6 +171,7 @@ XDate, setTimeout, getDataSet*/
             var questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
             var questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
             var responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
+            // TODO add validation and map by linkId
             var qAndA = [];
             for(var i = 0; i < questionnaire.group.question.length; i++) {
                 var responseIndex = response.group.question[i].answer[0].valueInteger;
