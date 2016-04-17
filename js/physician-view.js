@@ -175,9 +175,25 @@ XDate, setTimeout, getDataSet*/
             // TODO add validation and map by linkId
             var qAndA = [];
             for(var i = 0; i < questionnaire.group.question.length; i++) {
-                var responseIndex = response.group.question[i].answer[0].valueInteger;
-                qAndA.push([(questionnaire.group.question[i].text), (questionnaire.group.question[i].option[responseIndex].display)]);
-            }
+                //search for validated by LinkId final answer
+                var question_link_ID = questionnaire.group.question[i].linkId;
+                var qr_index = -1;
+                for (var x = 0; x < response.group.question.length ; x++) {   
+                   //console.log(question_link_ID);
+                   //console.log( qr.resource.group.question[x].linkId);
+                   if(question_link_ID == response.group.question[x].linkId){
+                       //console.log( "validated linkId of question to a LinkID in the questionare-response");
+                       qr_index = x;
+                       break;
+                   }
+                }
+                if(qr_index == -1){     
+                    console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionare-response"); 
+                    return;
+                }   
+                var final_answer = response.group.question[qr_index].answer[0].valueInteger;
+                qAndA.push([(questionnaire.group.question[i].text), (questionnaire.group.question[i].option[final_answer].display)]);
+              }
             theQuestions.append($("<div></div>")
                 .addClass("QandA")
                 .attr("id", "question-and-answer")
