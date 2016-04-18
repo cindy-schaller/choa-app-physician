@@ -84,6 +84,9 @@ XDate, setTimeout, getDataSet*/
             });
             return questionnaireResponseCall;
         })();
+        var theAnalysis = $("<div></div>").addClass("col-md-4 col-md-offset-5");
+        theAnalysis.attr("id", "theAnalysis-div").attr("width", "50%");
+        $(container).append(theAnalysis);
         var theQuestions = $("<div></div>").addClass("col-md-4 col-md-offset-5");
         theQuestions.attr("id", "theQuestions-div").attr("width", "50%");
         $(container).append(theQuestions);
@@ -168,6 +171,7 @@ XDate, setTimeout, getDataSet*/
             if (questionnaireResponseCall.entry) {
                 var response = questionnaireResponseCall.entry[0].resource;
             }
+         
             var questionnaireId = (questionnaire.id ? questionnaire.id : "");
             var questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
             var questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
@@ -192,8 +196,20 @@ XDate, setTimeout, getDataSet*/
                     return;
                 }   
                 var final_answer = response.group.question[qr_index].answer[0].valueInteger;
-                qAndA.push([(questionnaire.group.question[i].text), (questionnaire.group.question[i].option[final_answer].display)]);
-              }
+                qAndA.push([(questionnaire.group.question[i].text), (questionnaire.group.question[i].option[final_answer].display), final_answer]);
+            }
+            var [result, focus_score] = questionnaire_ranking(qAndA);
+            //console.log(result);
+            //console.log(focus_score);
+            var blurb_5210 = "5-2-1-0 is an evidence-based prevention message centered on recommendations for Childhood Obesity Assessment, Prevention and Treatment\
+            sponsored by the Centers for Disease Control and Prevention (CDC).\
+            5-2-1-0 recomends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, \
+            and 0 Sugary Drinks a day. \
+            The patient was administered the Healthy Eating Questionare and an analysis of the results indicates the 5-2-1-0 order of priority for this patient is as follows: ";
+            theAnalysis.append($("<div></div>")
+                .addClass("5210Analysis")
+                .attr("id", "question-and-5210Analysis")
+                .html(blurb_5210 + result));
             theQuestions.append($("<div></div>")
                 .addClass("QandA")
                 .attr("id", "question-and-answer")
@@ -201,6 +217,92 @@ XDate, setTimeout, getDataSet*/
         })
     }
 
+//------------------------------5-2-1-0-Algorithm-------------------------
+
+    function questionnaire_ranking(qAndA) 
+    {
+
+        // Answers to behavior questions
+        var ans_q1 = qAndA[0][2] + 1;
+        var ans_q2 = qAndA[1][2] + 1;
+        var ans_q3 = qAndA[2][2] + 1;
+        var ans_q4 = qAndA[3][2] + 1;
+        var ans_q5 = qAndA[4][2] + 1;
+        var ans_q6 = qAndA[5][2] + 1;
+        
+        // Answers to preference questions
+        var ans_q7 = qAndA[6][2] ;
+        var ans_q8 = qAndA[7][2] + 1;
+        var ans_q9 = qAndA[8][2] + 1;
+
+        // Initialize map and set to default weights
+        
+        // fd = food habits
+        // s = sedentary behavior
+        // p = physical activity
+        // dd = drink habits
+
+        var scores = [];
+        scores['fd'] = 1;
+        scores['s'] = 1;
+        scores['p'] = 1;
+        scores['dd'] = 1;
+
+        // Adjust weightings based on patient's responses
+        scores['fd'] = scores['fd'] * ((convertResponse(ans_q5) + ans_q2) - ans_q1) / 4;
+        scores['s'] = scores['s'] * (convertResponse(ans_q6) / 4);
+        scores['p'] = scores['p'] * (ans_q3 / 4);
+        scores['dd'] = scores['dd'] * (ans_q4 / 4);
+
+        // Adjust weight based on patient's preferences
+        var pref_key = convertAnsToKey(ans_q7);
+        var pref_score = (ans_q8 + ans_q9) / 4;
+        scores[pref_key] = scores[pref_key] * pref_score;
+        var focus_score = Math.floor(pref_score);
+        // Sort the map by value to get the rankings for an ideal plan
+        var result = Object.keys(scores).sort(function (a, b) {
+            return scores[b] - scores[a];
+        })
+        var recomendation = [];
+        for (var y = 0; y < result.length ; y++) {
+            if( result[y] == 'fd' )
+                recomendation[y]  =  " underconsumption of fruits and vegitables";
+            if( result[y] == 's' )
+                recomendation[y]  =  " too much screen time";
+            if( result[y] == 'p' )
+                recomendation[y]  =  " lack of active play time";
+            if( result[y] == 'dd' )
+                recomendation[y]  =  " overconsumption of sugary drinks";
+        }
+        return [recomendation, focus_score];  
+    } 
+
+    // Sometimes the responses are in reverse order so we need to covert them
+    function convertResponse(resp)
+    {
+        return (resp*-1) + 5;
+    }
+    
+
+    // Sloppy, but I think its more clear to keep the index's strings rather then intergers for now
+    function convertAnsToKey(resp)
+    {
+        // Make half your plate veggies and fruits = 0
+        // Be more active = 1
+        // Limit screen time = 2
+        // Drink more water and limit sugary drinks = 3
+
+        if(resp == 0) 
+            return 'fd'; 
+        else if(resp == 1)  
+            return 'p'; 
+        else if(resp == 2)  
+            return 's'; 
+        else(resp == 3) 
+            return 'dd'; 
+    }
+
+//----------------------------------------------------------------
     function calculateBMI(weight, height)
     {
         var heightInM = height/100;
