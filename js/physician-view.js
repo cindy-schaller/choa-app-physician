@@ -198,9 +198,9 @@ XDate, setTimeout, getDataSet*/
                 var final_answer = response.group.question[qr_index].answer[0].valueInteger;
                 qAndA.push([(questionnaire.group.question[i].text), (questionnaire.group.question[i].option[final_answer].display), final_answer]);
             }
-            var [result, focus_score] = questionnaire_ranking(qAndA);
-            //console.log(result);
-            //console.log(focus_score);
+            var result = questionnaire_ranking(qAndA);
+            console.log(result);
+
             var blurb_5210 = "5-2-1-0 is an evidence-based prevention message centered on recommendations for Childhood Obesity Assessment, Prevention and Treatment\
             sponsored by the Centers for Disease Control and Prevention (CDC).\
             5-2-1-0 recomends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, \
@@ -231,7 +231,7 @@ XDate, setTimeout, getDataSet*/
         var ans_q6 = qAndA[5][2] + 1;
         
         // Answers to preference questions
-        var ans_q7 = qAndA[6][2] ;
+        var ans_q7 = qAndA[6][2];
         var ans_q8 = qAndA[7][2] + 1;
         var ans_q9 = qAndA[8][2] + 1;
 
@@ -253,16 +253,20 @@ XDate, setTimeout, getDataSet*/
         scores['s'] = scores['s'] * (convertResponse(ans_q6) / 4);
         scores['p'] = scores['p'] * (ans_q3 / 4);
         scores['dd'] = scores['dd'] * (ans_q4 / 4);
-
+        console.log('SCORES')
+        console.log(scores)
+        
         // Adjust weight based on patient's preferences
         var pref_key = convertAnsToKey(ans_q7);
         var pref_score = (ans_q8 + ans_q9) / 4;
-        scores[pref_key] = scores[pref_key] * pref_score;
+        scores[pref_key] = scores[pref_key] / pref_score;
         var focus_score = Math.floor(pref_score);
+        
         // Sort the map by value to get the rankings for an ideal plan
         var result = Object.keys(scores).sort(function (a, b) {
-            return scores[b] - scores[a];
+            return scores[a] - scores[b];
         })
+
         var recomendation = [];
         for (var y = 0; y < result.length ; y++) {
             if( result[y] == 'fd' )
@@ -274,7 +278,7 @@ XDate, setTimeout, getDataSet*/
             if( result[y] == 'dd' )
                 recomendation[y]  =  " overconsumption of sugary drinks";
         }
-        return [recomendation, focus_score];  
+        return recomendation;  
     } 
 
     // Sometimes the responses are in reverse order so we need to covert them
