@@ -51,11 +51,14 @@ XDate, setTimeout, getDataSet*/
 
     function renderPhysicianView(container) {
         $(container).empty();
-        $(container).append("<div></div>").addClass("row");
 
-        var thePatient = $("<div></div>").addClass("col-md-4");
-        thePatient.attr("id", "thePatient-div").attr("width", "50%");
-        $(container).append(thePatient);
+        var topContainer = $("<div></div>").addClass("row");
+        topContainer.attr("id", "thePatient-div");
+        $(container).append(topContainer);
+        var thePatient = $("<div></div>").addClass("col-xs-6 col-xs-offset-1").attr("id", "thePatientInfo-div");
+        topContainer.append(thePatient);
+        var patientDBInfo = $("<div></div>").addClass("col-xs-4");
+        patientDBInfo.attr("id", "patientDBInfo-div");
         var patientID = (window.sessionStorage.getItem('patientID')) ?
             window.sessionStorage.getItem('patientID') : "18791941";
         var patientCall = (function () {
@@ -84,12 +87,12 @@ XDate, setTimeout, getDataSet*/
             });
             return questionnaireResponseCall;
         })();
-        var theAnalysis = $("<div></div>").addClass("col-md-4 col-md-offset-5");
-        theAnalysis.attr("id", "theAnalysis-div").attr("width", "50%");
+        var theAnalysis = $("<div></div>").addClass("row");
+        theAnalysis.attr("id", "theAnalysis-div");
         $(container).append(theAnalysis);
-        var theQuestions = $("<div></div>").addClass("col-md-4 col-md-offset-5");
-        theQuestions.attr("id", "theQuestions-div").attr("width", "50%");
-        $(container).append(theQuestions);
+        var theSurvey = $("<div></div>").addClass("row");
+        theSurvey.attr("id", "theSurvey-div");
+        $(container).append(theSurvey);
         var questionsID = (window.sessionStorage.getItem('questionsID')) ?
             window.sessionStorage.getItem('questions_id') : "18791835";
         var questionnaireCall = (function () {
@@ -133,18 +136,6 @@ XDate, setTimeout, getDataSet*/
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
             thePatient.append($("<div></div>")
-                .addClass("patient-version")
-                .attr("id", "patient-version")
-                .html("Version: " + patientVersion));
-            thePatient.append($("<div></div>")
-                .addClass("patient-lastUpdated")
-                .attr("id", "patient-lastUpdated")
-                .html("Date: " + patientLastUpdated.split("T")[0]));
-            thePatient.append($("<div></div>")
-                .addClass("patient-id")
-                .attr("id", "patient-id")
-                .html("ID: " + patientId));
-            thePatient.append($("<div></div>")
                 .addClass("patient-fullname")
                 .attr("id", "patient-fullname")
                 .html("Name: " + patientName));
@@ -165,6 +156,23 @@ XDate, setTimeout, getDataSet*/
                 .attr("id", "patient-contact")
                 .html("Contact: " + contact));
 
+            topContainer.append(patientDBInfo);
+            patientDBInfo.append($("<div></div>")
+                .append($("<small></small>")
+                    .addClass("patient-version")
+                    .attr("id", "patient-version")
+                    .html("Version: " + patientVersion)));
+            patientDBInfo.append($("<div></div>")
+                .append($("<small></small>")
+                    .addClass("patient-lastUpdated")
+                    .attr("id", "patient-lastUpdated")
+                    .html("Patient information last updated: " + patientLastUpdated.split("T")[0])));
+            patientDBInfo.append($("<div></div>")
+                .append($("<small></small>")
+                    .addClass("patient-id")
+                    .attr("id", "patient-id")
+                    .html("ID: " + patientId)));
+
             if (questionnaireCall.entry) {
                 var questionnaire = questionnaireCall.entry[0].resource;
             }
@@ -176,45 +184,78 @@ XDate, setTimeout, getDataSet*/
             var questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
             var questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
             var responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
-            // TODO add validation and map by linkId
             var qAndA = [];
+            var options = [];
             for(var i = 0; i < questionnaire.group.question.length; i++) {
                 //search for validated by LinkId final answer
                 var question_link_ID = questionnaire.group.question[i].linkId;
                 var qr_index = -1;
                 for (var x = 0; x < response.group.question.length ; x++) {   
-                   //console.log(question_link_ID);
-                   //console.log( qr.resource.group.question[x].linkId);
                    if(question_link_ID == response.group.question[x].linkId){
-                       //console.log( "validated linkId of question to a LinkID in the questionare-response");
                        qr_index = x;
                        break;
                    }
                 }
                 if(qr_index == -1){     
-                    console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionare-response"); 
+                    console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
                     return;
-                }   
+                }
                 var final_answer = response.group.question[qr_index].answer[0].valueInteger;
                 qAndA.push([(questionnaire.group.question[i].text), (questionnaire.group.question[i].option[final_answer].display), final_answer]);
+                for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
+                    options.push([(questionnaire.group.question[i].option[j].code), (questionnaire.group.question[i].option[j].display)])
+                }
             }
             var result = questionnaire_ranking(qAndA);
             console.log(result);
 
             var blurb_5210 = "5-2-1-0 is an evidence-based prevention message centered on recommendations for Childhood Obesity Assessment, Prevention and Treatment\
             sponsored by the Centers for Disease Control and Prevention (CDC).\
-            5-2-1-0 recomends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, \
+            5-2-1-0 recommends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, \
             and 0 Sugary Drinks a day. \
-            The patient was administered the Healthy Eating Questionare and an analysis of the results indicates the 5-2-1-0 order of priority for this patient is as follows: ";
+            The patient was administered the Healthy Eating Questionnaire and an analysis of the results indicates the 5-2-1-0 order of priority for this patient is as follows: ";
+
+            theAnalysis.append($("<hr>"));
             theAnalysis.append($("<div></div>")
-                .addClass("5210Analysis")
-                .attr("id", "question-and-5210Analysis")
-                .html(blurb_5210 + result));
-            theQuestions.append($("<div></div>")
-                .addClass("QandA")
-                .attr("id", "question-and-answer")
-                .html("Questionnaire Responses: : " + qAndA));
-        })
+                .addClass("row")
+                .append($("<a></a>")
+                    .addClass("col-xs-9 col-xs-offset-1 text-justify btn btn-standard")
+                    .attr("id", "5210 Analysis")
+                    .attr("tabindex", "0")
+                    .attr("role", "button")
+                    .attr("color", "dark-grey")
+                    .attr("data-container", "body")
+                    .attr("data-toggle", "popover")
+                    .attr("data-trigger", "focus")
+                    .attr("data-placement", "bottom")
+                    .attr("data-content", blurb_5210)
+                    .popover()
+                    .append($("<b></b>")
+                        .html(result + "  ")
+                        .popover()
+                        .append($("<img>")
+                            .attr("src", "img/ellipsis.png")
+                            .popover()))));
+            theAnalysis.append($("<hr>"));
+
+            alert(JSON.stringify(qAndA));
+            theSurvey.append($("<div></div>")
+                .addClass("row"));
+            for(var i = 0; i < qAndA.length; i++) {
+                
+            }
+            //     .html(qAndA));
+            //alert(JSON.stringify(qAndA));
+            // theAnalysis = $("<div></div>")
+            //     .addClass("btn-group btn-group-justified");
+            // for (var i = 0; i < options.length; i++) {
+            //     theAnalysis.append($("<label></label>")
+            //         .addClass("btn btn-default")
+            //         .append($("<input />"))
+            //         .append(qAndA[i]));
+            // }
+
+        });
     }
 
 //------------------------------5-2-1-0-Algorithm-------------------------
