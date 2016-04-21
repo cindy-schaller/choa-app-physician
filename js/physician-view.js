@@ -123,55 +123,68 @@ XDate, setTimeout, getDataSet*/
             var patientBDay = patient.birthDate ? patient.birthDate : "";
             var address = (patient.address ?
             (patient.address[0].line ?
-                patient.address[0].line + "</br>" : "") +
+            patient.address[0].line + "</br>" : "") +
             (patient.address[0].city ?
-                patient.address[0].city + ", " : "") +
+            patient.address[0].city + ", " : "") +
             (patient.address[0].state ?
-                patient.address[0].state + " " : "") +
+            patient.address[0].state + " " : "") +
             (patient.address[0].postalCode ?
-                patient.address[0].postalCode + "" : "") : "");
+            patient.address[0].postalCode + "" : "") : "");
             var contact = (patient.telecom ?
             (patient.telecom[0].system ?
-                patient.telecom[0].system + " " : "") +
+            patient.telecom[0].system + " " : "") +
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
-            thePatient.append($("<div></div>")
-                .addClass("patient-fullname")
-                .attr("id", "patient-fullname")
-                .html("Name: " + patientName));
-            thePatient.append($("<div></div>")
-                .addClass("patient-gender")
-                .attr("id", "patient-gender")
-                .html("Gender: " + patientGender));
-            thePatient.append($("<div></div>")
-                .addClass("patient-bday")
-                .attr("id", "patient-bday")
-                .html("Birthdate: " + patientBDay));
-            thePatient.append($("<div></div>")
-                .addClass("patient-address")
-                .attr("id", "patient-address")
-                .html("Address: " + address));
-            thePatient.append($("<div></div>")
-                .addClass("patient-contact")
-                .attr("id", "patient-contact")
-                .html("Contact: " + contact));
+            thePatient.append($("<blockquote></blockquote>")
+                .append($("<div></div>")
+                    .addClass("patient-info")
+                    .append($("<div></div>")
+                        .addClass("patient-fullname")
+                        .attr("id", "patient-fullname")
+                        .append($("<strong></strong>")
+                            .html(patientName)))
+                    .append($("<div></div>")
+                        .addClass("patient-contact")
+                        .attr("id", "patient-contact")
+                        .append($("<abbr></abbr>")
+                        .attr("title", "Contact")
+                        .html(contact)))
+                    .append($("<div></div>")
+                        .addClass("patient-address")
+                        .attr("id", "patient-address")
+                        .append($("<address></address>")
+                            .html(address)))
+                    .append($("<div></div>")
+                        .append($("<small></small>")
+                            .addClass("patient-id dt")
+                            .attr("id", "patient-id")
+                            .html("<strong>Patient ID: </strong>" + patientId)))));
 
             topContainer.append(patientDBInfo);
             patientDBInfo.append($("<div></div>")
-                .append($("<small></small>")
-                    .addClass("patient-version")
-                    .attr("id", "patient-version")
-                    .html("Version: " + patientVersion)));
-            patientDBInfo.append($("<div></div>")
-                .append($("<small></small>")
-                    .addClass("patient-lastUpdated")
-                    .attr("id", "patient-lastUpdated")
-                    .html("Patient information last updated: " + patientLastUpdated.split("T")[0])));
-            patientDBInfo.append($("<div></div>")
-                .append($("<small></small>")
-                    .addClass("patient-id")
-                    .attr("id", "patient-id")
-                    .html("ID: " + patientId)));
+                .addClass("patient-info")
+                .append($("<blockquote></blockquote>")
+                    .addClass("blockquote-reverse")
+                    .append($("<div></div>")
+                        .addClass("patient-info")
+                        .append($("<div></div>")
+                            .addClass("patient-gender text-capitalize")
+                            .attr("id", "patient-gender")
+                            .html("<strong>Gender: </strong>" + patientGender))
+                        .append($("<div></div>")
+                            .addClass("patient-bday dt")
+                            .attr("id", "patient-bday")
+                            .html("<strong>Birthdate: </strong>" + patientBDay))
+                        .append($("<small></small>")
+                            .append("<footer></footer>")
+                                .append($("<div></div>")
+                                    .addClass("patient-version")
+                                    .attr("id", "patient-version")
+                                    .html("<strong>DB Version: </strong>" + patientVersion))
+                                .append($("<div></div>")
+                                    .addClass("patient-lastUpdated")
+                                    .attr("id", "patient-lastUpdated")
+                                    .html("<strong>Last updated: </strong>" + patientLastUpdated.split("T")[0]))))));
 
             if (questionnaireCall.entry) {
                 var questionnaire = questionnaireCall.entry[0].resource;
@@ -179,32 +192,31 @@ XDate, setTimeout, getDataSet*/
             if (questionnaireResponseCall.entry) {
                 var response = questionnaireResponseCall.entry[0].resource;
             }
-         
+
             var questionnaireId = (questionnaire.id ? questionnaire.id : "");
             var questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
             var questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
             var responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
             var qAndA = [];
-            var options = [];
             for(var i = 0; i < questionnaire.group.question.length; i++) {
                 //search for validated by LinkId final answer
                 var question_link_ID = questionnaire.group.question[i].linkId;
                 var qr_index = -1;
-                for (var x = 0; x < response.group.question.length ; x++) {   
-                   if(question_link_ID == response.group.question[x].linkId){
-                       qr_index = x;
-                       break;
-                   }
+                for (var x = 0; x < response.group.question.length ; x++) {
+                    //console.log(question_link_ID);
+                    //console.log( qr.resource.group.question[x].linkId);
+                    if(question_link_ID == response.group.question[x].linkId){
+                        //console.log( "validated linkId of question to a LinkID in the questionare-response");
+                        qr_index = x;
+                        break;
+                    }
                 }
-                if(qr_index == -1){     
-                    console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
+                if(qr_index == -1){
+                    console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionare-response");
                     return;
                 }
                 var final_answer = response.group.question[qr_index].answer[0].valueInteger;
-                qAndA.push([(questionnaire.group.question[i].text), (questionnaire.group.question[i].option[final_answer].display), final_answer]);
-                for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
-                    options.push([(questionnaire.group.question[i].option[j].code), (questionnaire.group.question[i].option[j].display)])
-                }
+                qAndA.push({question:(questionnaire.group.question[i].text), answer:(questionnaire.group.question[i].option[final_answer].display), answerCode:final_answer});
             }
             var result = questionnaire_ranking(qAndA);
             console.log(result);
@@ -223,7 +235,6 @@ XDate, setTimeout, getDataSet*/
                     .attr("id", "5210 Analysis")
                     .attr("tabindex", "0")
                     .attr("role", "button")
-                    .attr("color", "dark-grey")
                     .attr("data-container", "body")
                     .attr("data-toggle", "popover")
                     .attr("data-trigger", "focus")
@@ -238,29 +249,54 @@ XDate, setTimeout, getDataSet*/
                             .popover()))));
             theAnalysis.append($("<hr>"));
 
-            alert(JSON.stringify(qAndA));
-            theSurvey.append($("<div></div>")
-                .addClass("row"));
+
+            // theSurvey.append($("<div></div>")
+            //     .addClass("row well panel-group")
+            //     .attr("id", "accordion")
+            //     .attr("role", "tablist")
+            //     .attr("aria-multiselectable", "true")
+            //     .append($("<div></div>")
+            //         .addClass("panel panel-default")
+            //         .append($("<div></div>")
+            //             .addClass("panel-heading")
+            //             .attr("role", "tab")
+            //             .attr("id", "headingOne")
+            //             .append($("<h4></h4>")
+            //                 .addClass("panel-title")
+            //                 .append($("<a></a>")
+            //                     .attr("role", "button")
+            //                     .attr("data-toggle", "collapse")
+            //                     .attr("data-parent", "#accordion")
+            //                     .attr("href", "#collapseOne")
+            //                     .attr("aria-expanded", "true")
+            //                     .attr("aria-controls", "collapseOne")
+            //                     .html("Questionnaire Results"))))));
+            // var theSurveyRow = $("<div></div>")
+            //     .attr("id", "collapseOne")
+            //     .addClass("panel-collapse collapse in")
+            //     .attr("role", "tabpanel")
+            //     .attr("aria-labelledby", "headingOne")
+            //     .append($("<div></div>")
+            //         .addClass("panel-body"));
             for(var i = 0; i < qAndA.length; i++) {
-                
+               var theSurveyRow = $("<div></div>")
+                    .addClass("row well")
+                    .append($("<div></div>")
+                        .addClass("col-xs-offset-1 col-xs-3 bb text-justify")
+                        .append($("<b></b>")
+                            .html(qAndA[i].question)));
+                theSurveyRow.append($("<div></div>")
+                    .addClass("col-xs-8 bb text-justify")
+                    .html(qAndA[i].answer));
+                theSurvey.append(theSurveyRow);
             }
-            //     .html(qAndA));
-            //alert(JSON.stringify(qAndA));
-            // theAnalysis = $("<div></div>")
-            //     .addClass("btn-group btn-group-justified");
-            // for (var i = 0; i < options.length; i++) {
-            //     theAnalysis.append($("<label></label>")
-            //         .addClass("btn btn-default")
-            //         .append($("<input />"))
-            //         .append(qAndA[i]));
-            // }
 
         });
     }
 
 //------------------------------5-2-1-0-Algorithm-------------------------
 
-    function questionnaire_ranking(qAndA) 
+    function questionnaire_ranking(qAndA)
     {
 
         // Answers to behavior questions
@@ -270,14 +306,14 @@ XDate, setTimeout, getDataSet*/
         var ans_q4 = qAndA[3][2] + 1;
         var ans_q5 = qAndA[4][2] + 1;
         var ans_q6 = qAndA[5][2] + 1;
-        
+
         // Answers to preference questions
         var ans_q7 = qAndA[6][2];
         var ans_q8 = qAndA[7][2] + 1;
         var ans_q9 = qAndA[8][2] + 1;
 
         // Initialize map and set to default weights
-        
+
         // fd = food habits
         // s = sedentary behavior
         // p = physical activity
@@ -296,13 +332,13 @@ XDate, setTimeout, getDataSet*/
         scores['dd'] = scores['dd'] * (ans_q4 / 4);
         console.log('SCORES')
         console.log(scores)
-        
+
         // Adjust weight based on patient's preferences
         var pref_key = convertAnsToKey(ans_q7);
         var pref_score = (ans_q8 + ans_q9) / 4;
         scores[pref_key] = scores[pref_key] / pref_score;
         var focus_score = Math.floor(pref_score);
-        
+
         // Sort the map by value to get the rankings for an ideal plan
         var result = Object.keys(scores).sort(function (a, b) {
             return scores[a] - scores[b];
@@ -319,15 +355,15 @@ XDate, setTimeout, getDataSet*/
             if( result[y] == 'dd' )
                 recomendation[y]  =  " overconsumption of sugary drinks";
         }
-        return recomendation;  
-    } 
+        return recomendation;
+    }
 
     // Sometimes the responses are in reverse order so we need to covert them
     function convertResponse(resp)
     {
         return (resp*-1) + 5;
     }
-    
+
 
     // Sloppy, but I think its more clear to keep the index's strings rather then intergers for now
     function convertAnsToKey(resp)
@@ -337,14 +373,14 @@ XDate, setTimeout, getDataSet*/
         // Limit screen time = 2
         // Drink more water and limit sugary drinks = 3
 
-        if(resp == 0) 
-            return 'fd'; 
-        else if(resp == 1)  
-            return 'p'; 
-        else if(resp == 2)  
-            return 's'; 
-        else(resp == 3) 
-            return 'dd'; 
+        if(resp == 0)
+            return 'fd';
+        else if(resp == 1)
+            return 'p';
+        else if(resp == 2)
+            return 's';
+        else(resp == 3)
+            return 'dd';
     }
 
 //----------------------------------------------------------------
