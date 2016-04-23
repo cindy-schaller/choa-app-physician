@@ -299,18 +299,21 @@ XDate, setTimeout, getDataSet*/
     function questionnaire_ranking(qAndA)
     {
 
+        console.log('QUESTION')
+        console.log(qAndA)
+
         // Answers to behavior questions
-        var ans_q1 = qAndA[0][2] + 1;
-        var ans_q2 = qAndA[1][2] + 1;
-        var ans_q3 = qAndA[2][2] + 1;
-        var ans_q4 = qAndA[3][2] + 1;
-        var ans_q5 = qAndA[4][2] + 1;
-        var ans_q6 = qAndA[5][2] + 1;
+        var ans_q1 = qAndA[0]['answerCode'] + 1;
+        var ans_q2 = qAndA[1]['answerCode'] + 1;
+        var ans_q3 = qAndA[2]['answerCode'] + 1;
+        var ans_q4 = qAndA[3]['answerCode'] + 1;
+        var ans_q5 = qAndA[4]['answerCode'] + 1;
+        var ans_q6 = qAndA[5]['answerCode'] + 1;
 
         // Answers to preference questions
-        var ans_q7 = qAndA[6][2];
-        var ans_q8 = qAndA[7][2] + 1;
-        var ans_q9 = qAndA[8][2] + 1;
+        var ans_q7 = qAndA[6]['answerCode'];
+        var ans_q8 = qAndA[7]['answerCode'] + 1;
+        var ans_q9 = qAndA[8]['answerCode'] + 1;
 
         // Initialize map and set to default weights
 
