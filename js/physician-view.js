@@ -51,11 +51,14 @@ XDate, setTimeout, getDataSet*/
 
     function renderPhysicianView(container) {
         $(container).empty();
-        $(container).append("<div></div>").addClass("row");
 
-        var thePatient = $("<div></div>").addClass("col-md-4");
-        thePatient.attr("id", "thePatient-div").attr("width", "50%");
-        $(container).append(thePatient);
+        var topContainer = $("<div></div>").addClass("row");
+        topContainer.attr("id", "thePatient-div");
+        $(container).append(topContainer);
+        var thePatient = $("<div></div>").addClass("col-xs-6 col-xs-offset-1").attr("id", "thePatientInfo-div");
+        topContainer.append(thePatient);
+        var patientDBInfo = $("<div></div>").addClass("col-xs-4");
+        patientDBInfo.attr("id", "patientDBInfo-div");
         var patientID = (window.sessionStorage.getItem('patientID')) ?
             window.sessionStorage.getItem('patientID') : "18791941";
         var patientCall = (function () {
@@ -84,12 +87,12 @@ XDate, setTimeout, getDataSet*/
             });
             return questionnaireResponseCall;
         })();
-        var theAnalysis = $("<div></div>").addClass("col-md-4 col-md-offset-5");
-        theAnalysis.attr("id", "theAnalysis-div").attr("width", "50%");
+        var theAnalysis = $("<div></div>").addClass("row");
+        theAnalysis.attr("id", "theAnalysis-div");
         $(container).append(theAnalysis);
-        var theQuestions = $("<div></div>").addClass("col-md-4 col-md-offset-5");
-        theQuestions.attr("id", "theQuestions-div").attr("width", "50%");
-        $(container).append(theQuestions);
+        var theSurvey = $("<div></div>").addClass("row");
+        theSurvey.attr("id", "theSurvey-div");
+        $(container).append(theSurvey);
         var questionsID = (window.sessionStorage.getItem('questionsID')) ?
             window.sessionStorage.getItem('questions_id') : "18791835";
         var questionnaireCall = (function () {
@@ -120,50 +123,68 @@ XDate, setTimeout, getDataSet*/
             var patientBDay = patient.birthDate ? patient.birthDate : "";
             var address = (patient.address ?
             (patient.address[0].line ?
-                patient.address[0].line + "</br>" : "") +
+            patient.address[0].line + "</br>" : "") +
             (patient.address[0].city ?
-                patient.address[0].city + ", " : "") +
+            patient.address[0].city + ", " : "") +
             (patient.address[0].state ?
-                patient.address[0].state + " " : "") +
+            patient.address[0].state + " " : "") +
             (patient.address[0].postalCode ?
-                patient.address[0].postalCode + "" : "") : "");
+            patient.address[0].postalCode + "" : "") : "");
             var contact = (patient.telecom ?
             (patient.telecom[0].system ?
-                patient.telecom[0].system + " " : "") +
+            patient.telecom[0].system + " " : "") +
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
-            thePatient.append($("<div></div>")
-                .addClass("patient-version")
-                .attr("id", "patient-version")
-                .html("Version: " + patientVersion));
-            thePatient.append($("<div></div>")
-                .addClass("patient-lastUpdated")
-                .attr("id", "patient-lastUpdated")
-                .html("Date: " + patientLastUpdated.split("T")[0]));
-            thePatient.append($("<div></div>")
-                .addClass("patient-id")
-                .attr("id", "patient-id")
-                .html("ID: " + patientId));
-            thePatient.append($("<div></div>")
-                .addClass("patient-fullname")
-                .attr("id", "patient-fullname")
-                .html("Name: " + patientName));
-            thePatient.append($("<div></div>")
-                .addClass("patient-gender")
-                .attr("id", "patient-gender")
-                .html("Gender: " + patientGender));
-            thePatient.append($("<div></div>")
-                .addClass("patient-bday")
-                .attr("id", "patient-bday")
-                .html("Birthdate: " + patientBDay));
-            thePatient.append($("<div></div>")
-                .addClass("patient-address")
-                .attr("id", "patient-address")
-                .html("Address: " + address));
-            thePatient.append($("<div></div>")
-                .addClass("patient-contact")
-                .attr("id", "patient-contact")
-                .html("Contact: " + contact));
+            thePatient.append($("<blockquote></blockquote>")
+                .append($("<div></div>")
+                    .addClass("patient-info")
+                    .append($("<div></div>")
+                        .addClass("patient-fullname")
+                        .attr("id", "patient-fullname")
+                        .append($("<strong></strong>")
+                            .html(patientName)))
+                    .append($("<div></div>")
+                        .addClass("patient-contact")
+                        .attr("id", "patient-contact")
+                        .append($("<abbr></abbr>")
+                        .attr("title", "Contact")
+                        .html(contact)))
+                    .append($("<div></div>")
+                        .addClass("patient-address")
+                        .attr("id", "patient-address")
+                        .append($("<address></address>")
+                            .html(address)))
+                    .append($("<div></div>")
+                        .append($("<small></small>")
+                            .addClass("patient-id dt")
+                            .attr("id", "patient-id")
+                            .html("<strong>Patient ID: </strong>" + patientId)))));
+
+            topContainer.append(patientDBInfo);
+            patientDBInfo.append($("<div></div>")
+                .addClass("patient-info")
+                .append($("<blockquote></blockquote>")
+                    .addClass("blockquote-reverse")
+                    .append($("<div></div>")
+                        .addClass("patient-info")
+                        .append($("<div></div>")
+                            .addClass("patient-gender text-capitalize")
+                            .attr("id", "patient-gender")
+                            .html("<strong>Gender: </strong>" + patientGender))
+                        .append($("<div></div>")
+                            .addClass("patient-bday dt")
+                            .attr("id", "patient-bday")
+                            .html("<strong>Birthdate: </strong>" + patientBDay))
+                        .append($("<small></small>")
+                            .append("<footer></footer>")
+                                .append($("<div></div>")
+                                    .addClass("patient-version")
+                                    .attr("id", "patient-version")
+                                    .html("<strong>DB Version: </strong>" + patientVersion))
+                                .append($("<div></div>")
+                                    .addClass("patient-lastUpdated")
+                                    .attr("id", "patient-lastUpdated")
+                                    .html("<strong>Last updated: </strong>" + patientLastUpdated.split("T")[0]))))));
 
             if (questionnaireCall.entry) {
                 var questionnaire = questionnaireCall.entry[0].resource;
@@ -171,72 +192,131 @@ XDate, setTimeout, getDataSet*/
             if (questionnaireResponseCall.entry) {
                 var response = questionnaireResponseCall.entry[0].resource;
             }
-         
+
             var questionnaireId = (questionnaire.id ? questionnaire.id : "");
             var questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
             var questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
             var responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
-            // TODO add validation and map by linkId
             var qAndA = [];
             for(var i = 0; i < questionnaire.group.question.length; i++) {
                 //search for validated by LinkId final answer
                 var question_link_ID = questionnaire.group.question[i].linkId;
                 var qr_index = -1;
-                for (var x = 0; x < response.group.question.length ; x++) {   
-                   //console.log(question_link_ID);
-                   //console.log( qr.resource.group.question[x].linkId);
-                   if(question_link_ID == response.group.question[x].linkId){
-                       //console.log( "validated linkId of question to a LinkID in the questionare-response");
-                       qr_index = x;
-                       break;
-                   }
+                for (var x = 0; x < response.group.question.length ; x++) {
+                    //console.log(question_link_ID);
+                    //console.log( qr.resource.group.question[x].linkId);
+                    if(question_link_ID == response.group.question[x].linkId){
+                        //console.log( "validated linkId of question to a LinkID in the questionare-response");
+                        qr_index = x;
+                        break;
+                    }
                 }
-                if(qr_index == -1){     
-                    console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionare-response"); 
+                if(qr_index == -1){
+                    console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionare-response");
                     return;
-                }   
+                }
                 var final_answer = response.group.question[qr_index].answer[0].valueInteger;
-                qAndA.push([(questionnaire.group.question[i].text), (questionnaire.group.question[i].option[final_answer].display), final_answer]);
+                qAndA.push({question:(questionnaire.group.question[i].text), answer:(questionnaire.group.question[i].option[final_answer].display), answerCode:final_answer});
             }
             var result = questionnaire_ranking(qAndA);
             console.log(result);
 
             var blurb_5210 = "5-2-1-0 is an evidence-based prevention message centered on recommendations for Childhood Obesity Assessment, Prevention and Treatment\
             sponsored by the Centers for Disease Control and Prevention (CDC).\
-            5-2-1-0 recomends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, \
+            5-2-1-0 recommends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, \
             and 0 Sugary Drinks a day. \
-            The patient was administered the Healthy Eating Questionare and an analysis of the results indicates the 5-2-1-0 order of priority for this patient is as follows: ";
+            The patient was administered the Healthy Eating Questionnaire and an analysis of the results indicates the 5-2-1-0 order of priority for this patient is as follows: ";
+
+            theAnalysis.append($("<hr>"));
             theAnalysis.append($("<div></div>")
-                .addClass("5210Analysis")
-                .attr("id", "question-and-5210Analysis")
-                .html(blurb_5210 + result));
-            theQuestions.append($("<div></div>")
-                .addClass("QandA")
-                .attr("id", "question-and-answer")
-                .html("Questionnaire Responses: : " + qAndA));
-        })
+                .addClass("row")
+                .append($("<a></a>")
+                    .addClass("col-xs-9 col-xs-offset-1 text-justify btn btn-standard")
+                    .attr("id", "5210 Analysis")
+                    .attr("tabindex", "0")
+                    .attr("role", "button")
+                    .attr("data-container", "body")
+                    .attr("data-toggle", "popover")
+                    .attr("data-trigger", "focus")
+                    .attr("data-placement", "bottom")
+                    .attr("data-content", blurb_5210)
+                    .popover()
+                    .append($("<b></b>")
+                        .html(result + "  ")
+                        .popover()
+                        .append($("<img>")
+                            .attr("src", "img/ellipsis.png")
+                            .popover()))));
+            theAnalysis.append($("<hr>"));
+
+
+            // theSurvey.append($("<div></div>")
+            //     .addClass("row well panel-group")
+            //     .attr("id", "accordion")
+            //     .attr("role", "tablist")
+            //     .attr("aria-multiselectable", "true")
+            //     .append($("<div></div>")
+            //         .addClass("panel panel-default")
+            //         .append($("<div></div>")
+            //             .addClass("panel-heading")
+            //             .attr("role", "tab")
+            //             .attr("id", "headingOne")
+            //             .append($("<h4></h4>")
+            //                 .addClass("panel-title")
+            //                 .append($("<a></a>")
+            //                     .attr("role", "button")
+            //                     .attr("data-toggle", "collapse")
+            //                     .attr("data-parent", "#accordion")
+            //                     .attr("href", "#collapseOne")
+            //                     .attr("aria-expanded", "true")
+            //                     .attr("aria-controls", "collapseOne")
+            //                     .html("Questionnaire Results"))))));
+            // var theSurveyRow = $("<div></div>")
+            //     .attr("id", "collapseOne")
+            //     .addClass("panel-collapse collapse in")
+            //     .attr("role", "tabpanel")
+            //     .attr("aria-labelledby", "headingOne")
+            //     .append($("<div></div>")
+            //         .addClass("panel-body"));
+            for(var i = 0; i < qAndA.length; i++) {
+               var theSurveyRow = $("<div></div>")
+                    .addClass("row well")
+                    .append($("<div></div>")
+                        .addClass("col-xs-offset-1 col-xs-3 bb text-justify")
+                        .append($("<b></b>")
+                            .html(qAndA[i].question)));
+                theSurveyRow.append($("<div></div>")
+                    .addClass("col-xs-8 bb text-justify")
+                    .html(qAndA[i].answer));
+                theSurvey.append(theSurveyRow);
+            }
+
+        });
     }
 
 //------------------------------5-2-1-0-Algorithm-------------------------
 
-    function questionnaire_ranking(qAndA) 
+    function questionnaire_ranking(qAndA)
     {
 
+        console.log('QUESTION')
+        console.log(qAndA)
+
         // Answers to behavior questions
-        var ans_q1 = qAndA[0][2] + 1;
-        var ans_q2 = qAndA[1][2] + 1;
-        var ans_q3 = qAndA[2][2] + 1;
-        var ans_q4 = qAndA[3][2] + 1;
-        var ans_q5 = qAndA[4][2] + 1;
-        var ans_q6 = qAndA[5][2] + 1;
-        
+        var ans_q1 = qAndA[0]['answerCode'] + 1;
+        var ans_q2 = qAndA[1]['answerCode'] + 1;
+        var ans_q3 = qAndA[2]['answerCode'] + 1;
+        var ans_q4 = qAndA[3]['answerCode'] + 1;
+        var ans_q5 = qAndA[4]['answerCode'] + 1;
+        var ans_q6 = qAndA[5]['answerCode'] + 1;
+
         // Answers to preference questions
-        var ans_q7 = qAndA[6][2];
-        var ans_q8 = qAndA[7][2] + 1;
-        var ans_q9 = qAndA[8][2] + 1;
+        var ans_q7 = qAndA[6]['answerCode'];
+        var ans_q8 = qAndA[7]['answerCode'] + 1;
+        var ans_q9 = qAndA[8]['answerCode'] + 1;
 
         // Initialize map and set to default weights
-        
+
         // fd = food habits
         // s = sedentary behavior
         // p = physical activity
@@ -255,13 +335,13 @@ XDate, setTimeout, getDataSet*/
         scores['dd'] = scores['dd'] * (ans_q4 / 4);
         console.log('SCORES')
         console.log(scores)
-        
+
         // Adjust weight based on patient's preferences
         var pref_key = convertAnsToKey(ans_q7);
         var pref_score = (ans_q8 + ans_q9) / 4;
         scores[pref_key] = scores[pref_key] / pref_score;
         var focus_score = Math.floor(pref_score);
-        
+
         // Sort the map by value to get the rankings for an ideal plan
         var result = Object.keys(scores).sort(function (a, b) {
             return scores[a] - scores[b];
@@ -278,15 +358,15 @@ XDate, setTimeout, getDataSet*/
             if( result[y] == 'dd' )
                 recomendation[y]  =  " overconsumption of sugary drinks";
         }
-        return recomendation;  
-    } 
+        return recomendation;
+    }
 
     // Sometimes the responses are in reverse order so we need to covert them
     function convertResponse(resp)
     {
         return (resp*-1) + 5;
     }
-    
+
 
     // Sloppy, but I think its more clear to keep the index's strings rather then intergers for now
     function convertAnsToKey(resp)
@@ -296,14 +376,14 @@ XDate, setTimeout, getDataSet*/
         // Limit screen time = 2
         // Drink more water and limit sugary drinks = 3
 
-        if(resp == 0) 
-            return 'fd'; 
-        else if(resp == 1)  
-            return 'p'; 
-        else if(resp == 2)  
-            return 's'; 
-        else(resp == 3) 
-            return 'dd'; 
+        if(resp == 0)
+            return 'fd';
+        else if(resp == 1)
+            return 'p';
+        else if(resp == 2)
+            return 's';
+        else(resp == 3)
+            return 'dd';
     }
 
 //----------------------------------------------------------------
