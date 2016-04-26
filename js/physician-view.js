@@ -108,8 +108,23 @@ XDate, setTimeout, getDataSet*/
             });
             return questionnaireCall;
         })();
-
-        $.when(patientCall, questionnaireResponseCall, questionnaireCall).then(function() {
+        var WeightHeightHeadBMIObservationsCall = (function () {
+            var WeightHeightHeadBMIObservationsCall = null;
+            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
+            //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+            $.ajax({
+                async: false,
+                global: false,
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=3141-9,8302-2,8287-5,39156-5&_count=50',
+                dataType: 'json',
+                success: function (data) {
+                    WeightHeightHeadBMIObservationsCall = data;
+                    console.log( WeightHeightHeadBMIObservationsCall);
+                }
+            });
+            return WeightHeightHeadBMIObservationsCall;
+        })();
+        $.when(patientCall, questionnaireResponseCall, questionnaireCall, WeightHeightHeadBMIObservationsCall).then(function() {
             console.log("thePatient: " + patientCall);
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
