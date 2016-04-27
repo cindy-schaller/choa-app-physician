@@ -42,6 +42,96 @@ XDate, setTimeout, getDataSet*/
             separator : " "
         };
 
+        //Resource Condition   http://hl7.org/fhir/condition-examples.html
+        //Use to record detailed information about conditions, problems or diagnoses recognized by a clinician.
+        
+        //childhood obesity snomed 415530009
+        //http://phinvads.cdc.gov/vads/http:/phinvads.cdc.gov/vads/ViewCodeSystemConcept.action?oid=2.16.840.1.113883.6.96&code=415530009
+
+        //"Problem"  55607006,  
+        // SEVERITY  can be 3 levels:  24484000 Severe, 6736007 Moderate  , 255604002, Mild
+
+        
+        var json_condition_data = {
+          "resourceType": "Condition",
+          "patient": {
+            "reference": "Patient/18791941"
+          },
+          "asserter": {
+            "display": "A. Langeveld"
+          },
+          "dateRecorded": "2013-03-11",
+          "code": {
+            "coding": [
+              {
+                "fhir_comments": [
+                  "  The problem is Childhood obesity "
+                ],
+                "system": "http://snomed.info/sct",
+                "code": "415530009",
+                "display": "Childhood obesity"
+              }
+            ]
+          },
+          "category": {
+            "coding": [
+              {
+                "fhir_comments": [
+                  "  Childhood obesity is certainly a moderate to severe problem  "
+                ],
+                "system": "http://snomed.info/sct",
+                "code": "55607006",
+                "display": "Problem"
+              },
+              {
+                "system": "http://hl7.org/fhir/condition-category",
+                "code": "finding"
+              }
+            ]
+          },
+          "verificationStatus": "confirmed",
+          "severity": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "6736007",
+                "display": "Moderate"
+              }
+            ]
+          },
+          "onsetDateTime": "2013-03-08",
+          "evidence": [
+            {
+              "detail": [
+                {       
+                  "display": "BMI"
+                }
+              ]
+            }
+          ]
+
+        }
+
+        var ObesityObservationPOST = (function (){
+             var ObesityObservationPOST = null;
+                $.ajax({
+                type: 'POST',
+                async: false,
+                global: false,
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Condition',
+                data: JSON.stringify(json_data),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data) {
+                    ObesityObservationPOST = data;
+                    console.log( ObesityObservationPOST);
+                }
+            });
+            return ObesityObservationPOST;
+        })();
+
+
+
     function isPhysicianReferralVisible() 
     {
         return GC.App.getViewType() == "referral";
