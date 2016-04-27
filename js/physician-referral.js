@@ -119,7 +119,7 @@ XDate, setTimeout, getDataSet*/
                 async: false,
                 global: false,
                 url: 'http://52.72.172.54:8080/fhir/baseDstu2/Condition',
-                data: JSON.stringify(json_data),
+                data: JSON.stringify(json_condition_data),
                 dataType: 'json',
                 contentType: 'application/json',
                 success: function (data) {
