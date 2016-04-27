@@ -24,7 +24,7 @@ GC.get_data = function() {
   var smart = FHIR.client({
     serviceUrl: 'http://52.72.172.54:8080/fhir/baseDstu2',
     // We need a better default patient, one with more data to support the GCs
-    patientId: param('patient') != null ? param('patient') : patientID = 'Patient-19454',
+    patientId: param('patient') != null ? param('patient') : patientID = '18791941',
     auth: {
       type: 'none'
     }
@@ -149,6 +149,9 @@ GC.get_data = function() {
       };
 
       function months(d){
+        //d is coming in undefined for some patients so as a temp bug fix replace it with current date so the app does not crash
+        //TODO Josh B, fix this bug
+        d =(d ? d: new XDate());
         return -1 * new XDate(d).diffMonths(new XDate(p.demographics.birthday));
       }
 
