@@ -51,7 +51,6 @@ XDate, setTimeout, getDataSet*/
 
     function renderPhysicianView(container) {
         $(container).empty();
-
         var topContainer = $("<div></div>").addClass("row");
         topContainer.attr("id", "thePatient-div");
         $(container).append(topContainer);
@@ -108,23 +107,83 @@ XDate, setTimeout, getDataSet*/
             });
             return questionnaireCall;
         })();
+
+
+        // var json_data ={
+        //           "resourceType": "Observation",
+        //           "status": "final",
+        //           "code": {
+        //             "coding": [
+        //               {
+        //                 "system": "http://loinc.org",
+        //                 "code": "39156-5",
+        //                 "display": "BMI"
+        //               }
+        //             ]
+        //           },
+        //           "subject": {
+        //             "reference": "Patient/18791941"
+        //           },
+        //            "performer": [{
+        //               "display": "A. Langeveld"
+        //             }],
+        //           "issued": "2013-04-04T13:27:00+01:00", 
+        //           "effectiveDateTime": "2013-04-02",   
+        //           "valueQuantity": {
+        //             "value": 31.0,
+        //           }
+        //         };
+
+        // var WeightHeightHeadBMIObservationsPOST = (function (){
+        //     var WeightHeightHeadBMIObservationsPOST = null;
+        //     //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
+        //     //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+        //     $.ajax({
+        //         type: 'POST',
+        //         async: false,
+        //         global: false,
+        //         url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation',
+        //         data: JSON.stringify(json_data),
+        //         dataType: 'json',
+        //         contentType: 'application/json',
+        //         success: function (data) {
+        //             WeightHeightHeadBMIObservationsPOST = data;
+        //             console.log( WeightHeightHeadBMIObservationsPOST);
+        //         }
+        //     });
+        //     return WeightHeightHeadBMIObservationsPOST;
+        // })();
+
+        
         var WeightHeightHeadBMIObservationsCall = (function () {
             var WeightHeightHeadBMIObservationsCall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
+
             //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
             $.ajax({
                 async: false,
                 global: false,
-                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=3141-9,8302-2,8287-5,39156-5&_count=50',
+                //url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=3141-9,8302-2,8287-5,39156-5&_count=50',
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=39156-5&_count=50',
                 dataType: 'json',
                 success: function (data) {
                     WeightHeightHeadBMIObservationsCall = data;
-                    console.log( WeightHeightHeadBMIObservationsCall);
+                   // console.log( WeightHeightHeadBMIObservationsCall);
                 }
             });
             return WeightHeightHeadBMIObservationsCall;
         })();
-        $.when(patientCall, questionnaireResponseCall, questionnaireCall, WeightHeightHeadBMIObservationsCall).then(function() {
+        //$.when(patientCall, questionnaireResponseCall, questionnaireCall, WeightHeightHeadBMIObservationsCall,WeightHeightHeadBMIObservationsPOST  ).then(function() {
+        $.when(patientCall, questionnaireResponseCall, questionnaireCall, WeightHeightHeadBMIObservationsCall ).then(function() {
+        
+            console.log("thePatient BMI observations: " + WeightHeightHeadBMIObservationsCall);
+            if (WeightHeightHeadBMIObservationsCall.entry) {
+                var BMIObservation = WeightHeightHeadBMIObservationsCall.entry[0].resource;
+            }
+            console.log(BMIObservation);
+            //var patientBMI = (BMIObservation.id ? BMIObservation.id : "");
+
+
             console.log("thePatient: " + patientCall);
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
