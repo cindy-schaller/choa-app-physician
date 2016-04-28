@@ -42,94 +42,7 @@ XDate, setTimeout, getDataSet*/
             separator : " "
         };
 
-        //Resource Condition   http://hl7.org/fhir/condition-examples.html
-        //Use to record detailed information about conditions, problems or diagnoses recognized by a clinician.
         
-        //childhood obesity snomed 415530009
-        //http://phinvads.cdc.gov/vads/http:/phinvads.cdc.gov/vads/ViewCodeSystemConcept.action?oid=2.16.840.1.113883.6.96&code=415530009
-
-        //"Problem"  55607006,  
-        // SEVERITY  can be 3 levels:  24484000 Severe, 6736007 Moderate  , 255604002, Mild
-
-        
-        var json_condition_data = {
-          "resourceType": "Condition",
-          "patient": {
-            "reference": "Patient/18791941"
-          },
-          "asserter": {
-            "display": "A. Langeveld"
-          },
-          "dateRecorded": "2013-03-11",
-          "code": {
-            "coding": [
-              {
-                "fhir_comments": [
-                  "  The problem is Childhood obesity "
-                ],
-                "system": "http://snomed.info/sct",
-                "code": "415530009",
-                "display": "Childhood obesity"
-              }
-            ]
-          },
-          "category": {
-            "coding": [
-              {
-                "fhir_comments": [
-                  "  Childhood obesity is certainly a moderate to severe problem  "
-                ],
-                "system": "http://snomed.info/sct",
-                "code": "55607006",
-                "display": "Problem"
-              },
-              {
-                "system": "http://hl7.org/fhir/condition-category",
-                "code": "finding"
-              }
-            ]
-          },
-          "verificationStatus": "confirmed",
-          "severity": {
-            "coding": [
-              {
-                "system": "http://snomed.info/sct",
-                "code": "6736007",
-                "display": "Moderate"
-              }
-            ]
-          },
-          "onsetDateTime": "2013-03-08",
-          "evidence": [
-            {
-              "detail": [
-                {       
-                  "display": "BMI"
-                }
-              ]
-            }
-          ]
-
-        }
-
-        var ObesityObservationPOST = (function (){
-             var ObesityObservationPOST = null;
-                $.ajax({
-                type: 'POST',
-                async: false,
-                global: false,
-                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Condition',
-                data: JSON.stringify(json_condition_data),
-                dataType: 'json',
-                contentType: 'application/json',
-                success: function (data) {
-                    ObesityObservationPOST = data;
-                    console.log( ObesityObservationPOST);
-                }
-            });
-            return ObesityObservationPOST;
-        })();
-
 
 
     function isPhysicianReferralVisible() 
@@ -138,6 +51,326 @@ XDate, setTimeout, getDataSet*/
     }
 
     
+    // From: Goodman, Alyson B. (CDC/ONDIEH/NCCDPHP) 
+    // Sent: Tuesday, April 26, 2016 5:17 PM
+    // To: Pope, Tia M
+    // Subject: lab testing for clinician facing app
+     
+    // Recommended Laboratory tests for children with obesity include:
+     
+    // Lipid panel (HDL-C, LDL-C, total cholesterol and triglycerides), fasting or non-fasting
+    // Fasting or non-fasting blood glucose
+    // ALT (alanine aminotransferase)
+    // AST (aspartate aminotransferase)
+
+    var json_order_Lipid_Panel_data ={
+      "resourceType": "DiagnosticOrder",
+      "contained": [
+        {
+          "resourceType": "Observation",
+          "id": "fasting",
+          "status": "final",
+          "_status": {
+            "fhir_comments": [
+              "    the mandatory quality flag:    "
+            ]
+          },
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "49541-6",
+                "display": "Fasting status - Reported"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/18791941"
+          },
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/v2/0136",
+                "code": "Y",
+                "display": "Yes"
+              }
+            ]
+          }
+        }
+      ],
+      "subject": {
+        "reference":  "Patient/18791941"
+      },
+      "orderer": {
+        "display": "A. Langeveld"
+      },
+      "identifier": [
+        {
+          "type": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/identifier-type",
+                "code": "PLAC"
+              }
+            ],
+            "text": "Placer"
+          },
+          "system": "urn:oid:1.3.4.5.6.7",
+          "value": "2345234234234"
+        }
+      ],
+      "reason": [
+        {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "415530009",
+              "display": "Childhood obesity"
+            }
+          ]
+        }
+      ],
+      "supportingInformation": [
+        {
+          "reference": "#fasting"
+        }
+      ],
+      "status": "requested",
+      "event": [
+        {
+          "status": "requested",
+          "dateTime": "2013-05-02T16:16:00-07:00",
+          "actor": {
+            "display": "A. Langeveld"
+          }
+        }
+      ],
+      "item": [
+        {
+          "code": {
+            "coding": [
+              {
+                "system": "http://acme.org/tests",
+                "code": "LIPID"
+              }
+            ],
+            "text": "Lipid Panel"
+          },
+          "specimen": [
+            {
+              "reference": "Specimen/101"
+            }
+          ]
+        }
+      ],
+      "note": [
+        {
+          "text": " "
+        }
+      ],
+      "item": [
+        {
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "57698-3"
+              }
+            ],
+            "text": "Lipid panel with direct LDL - Serum or Plasma"
+          }
+        }
+      ]
+    }
+      
+
+   //used to order a lipid panel test 
+   var LipidPanelPOST = (function (){
+        var LipidPanelPOST = null;
+         $.ajax({
+            type: 'POST',
+            async: false,
+            global: false,
+            url: 'http://52.72.172.54:8080/fhir/baseDstu2/DiagnosticOrder',
+            data: JSON.stringify(json_order_Lipid_Panel_data),
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                LipidPanelPOST = data;
+                console.log( LipidPanelPOST);
+            }
+        });
+        return LipidPanelPOST;
+    })(); 
+
+
+
+    var json_ReferralRequest_to_community_coordinator_data ={
+
+       "resourceType": "ReferralRequest",
+       "text": {
+          "status": "generated",
+          "div": "<div>referralRequest to Care Coordinator Team for Patient/18791941 for childhood obesity support</div>"
+       },
+       "status": "pending",
+         "type": {
+          "coding": [
+             {
+                "system": "http://snomed.info/sct",
+                "code": "700274009",
+                "display": "Referral for procedure"
+             }
+          ]
+       },
+       "specialty": {
+          "coding": [
+             {
+                "system": "http://snomed.info/sct",
+                "code": "710915002",
+                "display": "Referral to community service"
+             }
+          ]
+       },
+       "priority": {
+          "coding": [
+             {
+                "system": "http://snomed.info/sct",
+                "code": "394848005",
+                "display": "Normal priority"
+             }
+          ]
+       },
+       "patient": {
+          "reference": "Patient/18791941",
+          "display": "Clark Kent"
+       },
+       "requester": {
+          "display": "Serena Shrink"
+       },
+       "recipient": [
+          {
+             "reference": "Organization/19178873",
+             "display": "Care Coordinator Team "
+          }
+       ],
+       "dateSent": "2014-02-14",
+       "reason": {
+          "coding": [
+             {
+                "fhir_comments": [
+                   "   The problem is Childhood obesity "
+                ],
+                "system": "http://snomed.info/sct",
+                "code": "10001005",
+                "display": "Childhood obesity"
+             }
+          ]
+       },
+       "description": "Clark is suffering childhood obesity with a BMI > 31.0. Clark is being refered to the Care Coordinator Team for help accessing community based resources that will help him in reaching a healthy BMI. 5-2-1-0 is an evidence-based prevention message centered on recommendations for Childhood Obesity Assessment, Prevention and Treatment sponsored by the Centers for Disease Control and Prevention (CDC). 5-2-1-0 recommends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, and 0 Sugary Drinks a day. The patient was administered the Healthy Eating Questionnaire and an analysis of the results indicates the 5-2-1-0 order of priority for this patient is as follows: 1) underconsumption of fruits and vegitables, 2) too much screen time 3) lack of active play time 4) overconsumption of sugary drinks",     
+       "serviceRequested": [
+          {
+             "coding": [
+                {
+                   "system": "http://snomed.info/sct",
+                   "code": "347421000000106",
+                   "display": "community care   for childhood obesity"
+                }
+             ]
+          }
+       ]
+    }
+
+   //used to POST a referralRequest to the community coordinator
+   var CoordinatorReferralPOST = (function (){
+        var CoordinatorReferralPOST = null;
+         $.ajax({
+            type: 'POST',
+            async: false,
+            global: false,
+            url: 'http://52.72.172.54:8080/fhir/baseDstu2/ReferralRequest',
+            data: JSON.stringify(json_ReferralRequest_to_community_coordinator_data),
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                CoordinatorReferralPOST = data;
+                console.log( CoordinatorReferralPOST);
+            }
+        });
+        return CoordinatorReferralPOST;
+    })(); 
+
+
+    //this must be only after the referralrequest 
+    //the "reference": "ReferralRequest/19179006" field **must** be updated to the real ID of the ReferralRequest
+
+    var json_communication_to_community_coordinator_data ={
+    "resourceType": "Communication",
+      "text": {
+         "status": "generated",
+         "div": "<div>a referralRequest has been sent to the childhood obesity patient coordinator </div>"
+      },
+      
+      
+      "category": {
+         "coding": [
+            {
+               "system": "http://acme.org/messagetypes",
+               "code": "notification"
+            }
+         ],
+         "text": "notification"
+      },
+      "sender": {
+         "display": "A. Langeveld"
+      },
+      "recipient": [
+         {
+            "reference": "Organization/19178873"
+         }
+      ],
+      "payload": [
+         {
+            "contentString": "referralRequest for Patient/18791941 for childhood obesity for community cooordination."
+         },
+       {
+            "contentReference": {
+               "fhir_comments": [
+                  " Reference to the referralRequest "
+               ],
+               "reference": "ReferralRequest/19179006"
+            }
+         }
+       ],
+      "status": "pending",
+      "sent": "2014-12-12T18:01:10-08:00",
+      "subject": {
+         "reference": "Patient/18791941"
+      }
+    }
+
+
+//used to POST a communication  to the community coordinator
+   var CoordinatorCommunicationPOST = (function (){
+        var CoordinatorCommunicationPOST = null;
+         $.ajax({
+            type: 'POST',
+            async: false,
+            global: false,
+            url: 'http://52.72.172.54:8080/fhir/baseDstu2/Communication',
+            data: JSON.stringify(json_communication_to_community_coordinator_data),
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                CoordinatorCommunicationPOST = data;
+                console.log( CoordinatorCommunicationPOST);
+            }
+        });
+        return CoordinatorCommunicationPOST;
+    })(); 
+
+
+
+
 
     function renderPhysicianReferral( container ) 
     {
