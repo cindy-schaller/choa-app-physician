@@ -204,24 +204,35 @@ var json_observation_data ={
         {
             throw "Patient ID is a required parameter";
         }
-        $(container).append("<h1 style='font-size: 28px; font-weight:bold;'>Patient Record</h1>");
-        $(container).append("<h1 style='font-size: 16px;'>Patient: " + patientId + "</h1>");
-        $(container).append("<br></br>");
+       
+        var recordHeader = "";
+        var recordBody = "";
+        var recordButtons = "";
+
+        recordHeader += ("<h1 style='font-size: 28px; font-weight:bold;'>Patient Record</h1>");
+        recordHeader += ("<h1 style='font-size: 16px;'>Patient: " + patientId + "</h1>");
+        recordHeader += ("<br></br>");
+
+        recordBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Diagnosis: </h1>");
+        recordBody += ("<textarea rows='6' cols='50'>Obese I</textarea>");
+        recordBody += ("<br></br>");
+        recordBody += ("<br></br>");
         
-        $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Observations: </h1>");
+        recordBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Observations: </h1>");
+        recordBody += ("<textarea rows='6' cols='50'>observations</textarea>");
+        recordBody += ("<br></br>");
+        recordBody += ("<br></br>");
 
-        $(container).append("<textarea rows='6' cols='50'>observations</textarea>");
-        $(container).append("<br></br>");
-        $(container).append("<br></br>");
+        recordBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Order the following lab tests: </h1>");
+        recordBody += ("<h1>Body fat test</h1>");
+        recordBody += ("<h1>Blood pressure test</h1>");
+        recordBody += ("<br></br>");
 
-        $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Lab Results: </h1>");
+        recordButtons += ("<button>Push Diagnosis</button>")
 
-        $(container).append("<textarea rows='6' cols='50'>observations</textarea>");
-        $(container).append("<br></br>");
-        $(container).append("<br></br>");
-
-        $(container).append("<h1>Order the following lab tests:</h1>");
-        $(container).append("<h1>Body fat test</h1>");
+        $(container).append(recordHeader);
+        $(container).append(recordBody);
+        $(container).append(recordButtons);
 
         
     }

@@ -414,7 +414,7 @@ XDate, setTimeout, getDataSet*/
         $(container).append("<br></br>");
 
         $(container).append("<button style='height: 30px; background-color: #bbccff;padding:5px;'>Export Data</button>");
-        $(container).append("<button style='height: 30px; background-color: #bbccff;padding:5px;'>Submit Referrals</button>");
+        $(container).append("<a type='button' href='mailto:someone@CDC.org' style='height: 30px; background-color: #bbccff;padding:5px;'>Submit Referrals</a>");
 
     }
 
