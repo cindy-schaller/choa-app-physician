@@ -96,7 +96,7 @@ var json_observation_data ={
 
 
 
-//Resource Condition   http://hl7.org/fhir/condition-examples.html
+        //Resource Condition   http://hl7.org/fhir/condition-examples.html
         //Use to record detailed information about conditions, problems or diagnoses recognized by a clinician.
         
         //childhood obesity snomed 415530009
@@ -166,7 +166,7 @@ var json_observation_data ={
 
         }
 
-
+           
         //should be triggered by a button labled something like "POST Obesity diagnosis"
         var ObesityConditionPOST = (function (){
              var ObesityConditionPOST = null;
@@ -186,6 +186,139 @@ var json_observation_data ={
             return ObesityConditionPOST;
         })();
 
+    // From: Goodman, Alyson B. (CDC/ONDIEH/NCCDPHP) 
+    // Sent: Tuesday, April 26, 2016 5:17 PM
+    // To: Pope, Tia M
+    // Subject: lab testing for clinician facing app
+     
+    // Recommended Laboratory tests for children with obesity include:
+     
+    // Lipid panel (HDL-C, LDL-C, total cholesterol and triglycerides), fasting or non-fasting
+    // Fasting or non-fasting blood glucose
+    // ALT (alanine aminotransferase)
+    // AST (aspartate aminotransferase)
+
+    var json_order_diagnostic_tests_data ={  
+       "resourceType":"DiagnosticOrder",
+       "subject":{  
+          "reference":"Patient/18791941"
+       },
+       "orderer":{  
+          "display":"A. Langeveld"
+       },
+       "identifier":[  
+          {  
+             "type":{  
+                "coding":[  
+                   {  
+                      "system":"http://hl7.org/fhir/identifier-type",
+                      "code":"PLAC"
+                   }
+                ],
+                "text":"Placer"
+             },
+             "system":"urn:oid:1.3.4.5.6.7",
+             "value":"2345234234234"
+          }
+       ],
+       "reason":[  
+          {  
+             "coding":[  
+                {  
+                   "system":"http://snomed.info/sct",
+                   "code":"415530009",
+                   "display":"Childhood obesity"
+                }
+             ]
+          }
+       ],
+       "supportingInformation":[  
+          {  
+             "reference":"#fasting"
+          }
+       ],
+       "status":"requested",
+       "event":[  
+          {  
+             "status":"requested",
+             "dateTime":"2013-05-02T16:16:00-07:00",
+             "actor":{  
+                "display":"A. Langeveld"
+             }
+          }
+       ],
+       "note":[  
+          {  
+             "text":" This is a full set of tests"
+          }
+       ],
+       "item":[  
+          {  
+             "code":{  
+                "coding":[  
+                   {  
+                      "system":"http://loinc.org",
+                      "code":"1556-0"
+                   }
+                ],
+                "text":"Fasting glucose [Mass/volume] in Capillary blood"
+             }
+          },
+          {  
+             "code":{  
+                "coding":[  
+                   {  
+                      "system":"http://loinc.org",
+                      "code":"1742-6"
+                   }
+                ],
+                "text":"Alanine aminotransferase [Enzymatic activity/volume] in Serum or Plasma"
+             }
+          },
+          {  
+             "code":{  
+                "coding":[  
+                   {  
+                      "system":"http://loinc.org",
+                      "code":"1920-8"
+                   }
+                ],
+                "text":"Alanine aminotransferase [Enzymatic activity/volume] in Serum or Plasma"
+             }
+          },
+          {  
+             "code":{  
+                "coding":[  
+                   {  
+                      "system":"http://loinc.org",
+                      "code":"57698-3"
+                   }
+                ],
+                "text":"Lipid panel with direct LDL - Serum or Plasma"
+             }
+          }
+       ]
+    }
+      
+
+   //used to order a full set of diagnostic tests 
+   var DiagnosticOrderPOST = (function (){
+        var DiagnosticOrderPOST = null;
+         $.ajax({
+            type: 'POST',
+            async: false,
+            global: false,
+            url: 'http://52.72.172.54:8080/fhir/baseDstu2/DiagnosticOrder',
+            data: JSON.stringify(json_order_diagnostic_tests_data),
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                DiagnosticOrderPOST = data;
+                console.log( DiagnosticOrderPOST);
+            }
+        });
+        return DiagnosticOrderPOST;
+    })(); 
 
 
     function renderPhysicianRecord( container ) 
