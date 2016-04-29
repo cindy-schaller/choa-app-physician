@@ -401,7 +401,7 @@
             theSurvey.append($("<div></div>")
                 .html("<hr>")
                 .append($("<h1></h1>")
-                    .addClass("text-center text-muted")
+                    .addClass("text-center text-muted btn-group-sm")
                     .html("Questionnaire responses")));
             for(var i = 0; i < questionnaire.group.question.length; i++) {
                 var options = [];
@@ -418,7 +418,7 @@
                                 .addClass("btn-group btn-group-sm")
                                 .attr("role", "group")
                                 .append($("<a></a>")
-                                    .addClass("btn btn-primary btn-responsive active disabled")
+                                    .addClass("btn btn-default btn-responsive active disabled")
                                     .attr("type", "button")
                                     .html(options[j])));                        }
                         else {
