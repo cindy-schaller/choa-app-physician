@@ -344,15 +344,20 @@ XDate, setTimeout, getDataSet*/
                 var final_answer = response.group.question[qr_index].answer[0].valueInteger;
                 qAndA.push({question:(questionnaire.group.question[i].text), answer:(questionnaire.group.question[i].option[final_answer].display), answerCode:final_answer});
             }
-            var result = questionnaire_ranking(qAndA);
-            console.log(result);
+            var ranking_results = questionnaire_ranking(qAndA);
+            var result = ranking_results['recommendation']
+
+            console.log("RESULTS")
+            console.log(result)
+            console.log("FOCUS SCORE")
+            console.log(ranking_results['focus_score'])
 
             var blurb_5210 = "5-2-1-0 is an evidence-based prevention message centered on recommendations for Childhood Obesity Assessment, Prevention and Treatment\
             sponsored by the <abbr title='Centers for Disease Control and Prevention'>CDC</abbr>.\
             5-2-1-0 recommends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, \
             and 0 Sugary Drinks a day.";
 
-            var focus_score = 3; //temp until arun fixes his code
+            var focus_score = ranking_results['focus_score']
             var analysisRow = $("<div></div>")
                 .addClass("btn-group btn-group-sm")
                 .attr("data-toggle", "buttons")
@@ -449,15 +454,15 @@ XDate, setTimeout, getDataSet*/
         var recommendation = [];
         for (var y = 0; y < result.length ; y++) {
             if( result[y] == 'fd' )
-                recommendation[y]  =  " Underconsumption of fruits and vegetables";
+                recommendation[y]  =  " Make half your plate veggies and fruits";
             if( result[y] == 's' )
-                recommendation[y]  =  " Too much screen time";
+                recommendation[y]  =  " Limit screen time";
             if( result[y] == 'p' )
-                recommendation[y]  =  " Lack of active play time";
+                recommendation[y]  =  " Be more active";
             if( result[y] == 'dd' )
-                recommendation[y]  =  " Overconsumption of sugary drinks";
+                recommendation[y]  =  " Drink more water and limit sugary drinks";
         }
-        return recommendation;
+        return {recommendation : recommendation, focus_score : focus_score};
     }
 
     // Sometimes the responses are in reverse order so we need to covert them
