@@ -160,8 +160,7 @@ XDate, setTimeout, getDataSet*/
             $.ajax({
                 async: false,
                 global: false,
-                //url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=3141-9,8302-2,8287-5,39156-5&_count=50',
-                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=39156-5&_count=50',
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=3141-9,8302-2,8287-5,39156-5&_count=50',
                 dataType: 'json',
                 success: function (data) {
                     WeightHeightHeadBMIObservationsCall = data;
