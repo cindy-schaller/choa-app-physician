@@ -200,7 +200,7 @@ window.GC = (function(NS) {
         
         // Header --------------------------------------------------------------
         STR_2996 : {
-            en : "Physician View",
+            en : "Physician view",
             es : "Médico:Ver",
             bg : "лекар:изглед"
         },
@@ -441,17 +441,17 @@ window.GC = (function(NS) {
             bg : "Цветове"
         },
         STR_3042 : {
-            en : "PARENT",
+            en : "Parent",
             es : "PADRE",
             bg : "РОДИТЕЛ"
         },
         STR_3043 : {
-            en : "TABLE",
+            en : "Table",
             es : "ТABLA",
             bg : "ТАБЛИЦА"
         },
         STR_3044 : {
-            en : "GRAPHS",
+            en : "Graphs",
             es : "GRÁFICOS",
             bg : "ГРАФИКИ"
         },
@@ -635,7 +635,7 @@ window.GC = (function(NS) {
         STR_3160  : { en : "Week", es : "Semana", bg : "Седмица" },
         STR_3161  : { en : "Day", es : "Día", bg : "Ден" },
         STR_3162  : { en : "Auto", es : "Automático", bg : "Автоматично" },
-        STR_3166  : { en : "PATIENTS", es : "PACIENTES", bg : "Пациенти"},
+        STR_3166  : { en : "Patients", es : "PACIENTES", bg : "Пациенти"},
 
         // End Of Header Translations-----------------------------------------------------------------------------------------------------------------
         
