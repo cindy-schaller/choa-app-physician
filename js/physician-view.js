@@ -112,7 +112,7 @@
             var patientBMICall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
 
-            //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+            //Note LOINC Codes: 39156-5 for BMI Observations
             $.ajax({
                 async: false,
                 global: false,
@@ -120,7 +120,6 @@
                 dataType: 'json',
                 success: function (data) {
                     patientBMICall = data;
-                    // console.log( WeightHeightHeadBMIObservationsCall);
                 }
             });
             return patientBMICall;
@@ -130,7 +129,7 @@
             var patientWeightCall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
 
-            //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+            //Note LOINC Codes: 3141-9 for Weight Observations
             $.ajax({
                 async: false,
                 global: false,
@@ -138,7 +137,6 @@
                 dataType: 'json',
                 success: function (data) {
                     patientWeightCall = data;
-                    // console.log( WeightHeightHeadBMIObservationsCall);
                 }
             });
             return patientWeightCall;
@@ -148,7 +146,7 @@
             var patientHeightCall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
 
-            //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+            //Note LOINC Codes: 8302-2 for Height BMI Observations
             $.ajax({
                 async: false,
                 global: false,
@@ -156,7 +154,6 @@
                 dataType: 'json',
                 success: function (data) {
                     patientHeightCall = data;
-                    // console.log( WeightHeightHeadBMIObservationsCall);
                 }
             });
             return patientHeightCall;
@@ -347,7 +344,7 @@
             var blurb_5210 = "5-2-1-0 is an evidence-based prevention message centered on recommendations for Childhood Obesity Assessment, Prevention and Treatment\
             sponsored by the <abbr title='Centers for Disease Control and Prevention'>CDC</abbr>.\
             5-2-1-0 recommends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, \
-            and 0 Sugary Drinks a day.";
+            and 0 Sugary Drinks a day. Highlighted text indicates actions the patient should take";
 
             var focus_score = ranking_results['focus_score'];
             var analysisRow = $("<div></div>")
