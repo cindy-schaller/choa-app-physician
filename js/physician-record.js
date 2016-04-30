@@ -76,7 +76,7 @@ var json_observation_data ={
         //this function can be used to POST notes the physician makes in the Observation input box on phys-record tab
         //json_observation_data is set up currently as a BMI observation but that should be changed
         //the physician notes should be placed in one (which one??) of the fields in the json struct
-        var ObeseObservationsPOST = (function (){
+        var ObeseObservationsPOST = function (){
             var ObeseObservationsPOST = null;
              $.ajax({
                 type: 'POST',
@@ -92,7 +92,7 @@ var json_observation_data ={
                 }
             });
             return ObeseObservationsPOST;
-        })();
+        };
 
 
 
@@ -168,7 +168,7 @@ var json_observation_data ={
 
 
         //should be triggered by a button labled something like "POST Obesity diagnosis"
-        var ObesityConditionPOST = (function (){
+        var ObesityConditionPOST = function (){
              var ObesityConditionPOST = null;
                 $.ajax({
                 type: 'POST',
@@ -184,7 +184,8 @@ var json_observation_data ={
                 }
             });
             return ObesityConditionPOST;
-        })();
+        };
+
 
 
 
@@ -214,12 +215,12 @@ var json_observation_data ={
         recordHeader += ("<br></br>");
 
         recordBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Diagnosis: </h1>");
-        recordBody += ("<textarea rows='6' cols='50'>"+localStorage.getItem("BMI") + " - Obese I</textarea>");
+        recordBody += ("<textarea id='diagnosis-text' rows='6' cols='50'>"+localStorage.getItem("BMI") + " - Obese I</textarea>");
         recordBody += ("<br></br>");
         recordBody += ("<br></br>");
         
         recordBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Observations: </h1>");
-        recordBody += ("<textarea rows='6' cols='50'>observations</textarea>");
+        recordBody += ("<textarea id='diagnosis-obs' rows='6' cols='50'>observations</textarea>");
         recordBody += ("<br></br>");
         recordBody += ("<br></br>");
 
@@ -228,11 +229,30 @@ var json_observation_data ={
         recordBody += ("<h1>Blood pressure test</h1>");
         recordBody += ("<br></br>");
 
-        recordButtons += ("<button>Push Diagnosis</button>")
+        recordButtons += ("<button id='diagnosis-btn'>Push Diagnosis & Observations</button>")
 
         $(container).append(recordHeader);
         $(container).append(recordBody);
         $(container).append(recordButtons);
+
+
+        //DIANOSIS BUTTON
+        console.log("DIANOSIS BUTTON");
+        console.log($("#diagnosis-text").val());
+        $('#diagnosis-btn').click(function() {
+          json_condition_data.category.coding[0].diagnosis = $("#diagnosis-text").val();
+          json_condition_data.category.coding[0].fhir_comments = $('#diagnosis-obs').val();
+          json_observation_data.observations =  $('#diagnosis-obs').val();
+          alert('Diagnosis & Observations submitted!');
+
+          console.log("json_condition_data");
+          console.log(json_condition_data);
+          console.log("json_observation_data");
+          console.log(json_observation_data);
+
+          ObesityConditionPOST();     
+          ObeseObservationsPOST();     
+        })
 
         
     }
