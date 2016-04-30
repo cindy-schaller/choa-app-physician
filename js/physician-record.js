@@ -8,7 +8,8 @@ XDate, setTimeout, getDataSet*/
 {
 
     "use strict";
-
+    var patientID = (window.sessionStorage.getItem('patientid_global')) ?
+                window.sessionStorage.getItem('patientid_global') : "18791941";
     var selectedIndex = -1,
 
         /**
@@ -61,7 +62,7 @@ var json_observation_data ={
                     ]
                   },
                   "subject": {
-                    "reference": "Patient/18791941"
+                    "reference": "Patient/" + patientID
                   },
                    "performer": [{
                       "display": "A. Langeveld"
@@ -109,7 +110,7 @@ var json_observation_data ={
         var json_condition_data = {
           "resourceType": "Condition",
           "patient": {
-            "reference": "Patient/18791941"
+            "reference": "Patient/" + patientID
           },
           "asserter": {
             "display": "A. Langeveld"
@@ -202,7 +203,7 @@ var json_observation_data ={
     var json_order_diagnostic_tests_data ={  
        "resourceType":"DiagnosticOrder",
        "subject":{  
-          "reference":"Patient/18791941"
+          "reference":"Patient/" + patientID
        },
        "orderer":{  
           "display":"A. Langeveld"
@@ -331,8 +332,8 @@ var json_observation_data ={
 
         
 
-        //hardcoded for now
-        var patientId = 18791941;
+        
+        var patientId = patientID;
     
         if(!patientId)
         {
