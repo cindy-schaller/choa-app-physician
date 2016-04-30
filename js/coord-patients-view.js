@@ -89,11 +89,12 @@
 
         $("#patient-table tbody").on('click', 'tr', function () {
             console.log(thedatatable.row(this).data());
-            if (thedatatable.row(this).data()[1] == "") return;
-            window.sessionStorage.setItem('patient_id', thedatatable.row(this).data()[1]);
-            window.sessionStorage.setItem('patientid_global', thedatatable.row(this).data()[1]);
+            var new_patient_id = thedatatable.row(this).data()[1];
+            if (!new_patient_id || (new_patient_id == "")) return;
+            GC.App.setPatientId(new_patient_id)
+            GC.App.setViewType("view");
 
-            GC.App.setViewType("psmessages");
+            GC.App.setViewType("view");
             location.href = '/?patient=' + thedatatable.row(this).data()[1];
         });
 

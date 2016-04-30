@@ -1,9 +1,9 @@
 /*global Chart, GC, PointSet, Raphael, XDate, console,
  Raphael*/
-/*jslint eqeq: true, nomen: true, plusplus: true, newcap: true */ 
+/*jslint eqeq: true, nomen: true, plusplus: true, newcap: true */
 
 
-(function(NS, $) {
+function gc_app_js (NS, $) {
 
     //"use strict";
 
@@ -471,7 +471,16 @@
             "width" : "auto"
         });
     };
-    
+
+    NS.App.setPatientId = function(new_patient_id) {
+        if (new_patient_id && (new_patient_id != window.sessionStorage.getItem('patient_id'))) {
+            window.sessionStorage.setItem('patient_id', new_patient_id);
+            call_load_functions_js();
+            GC.get_data();
+            window.sessionStorage.removeItem('view');
+        }
+    };
+
     NS.App.viewAnnotations = function() {
         if (ANNOTATIONS_WINDOW === null || ANNOTATIONS_WINDOW.closed) {
             ANNOTATIONS_WINDOW = window.open("annotations.html", "annotationsWindow", "resizable=yes,scrollbars=yes,centerscreen=yes,status=yes,width=800,height=600,dependent=yes,dialog=yes");
@@ -1528,4 +1537,4 @@
 
     return NS;
 
-}(GC, jQuery)); 
+}gc_app_js(GC, jQuery);
