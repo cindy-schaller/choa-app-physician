@@ -482,7 +482,7 @@
             }
             else
             {
-                $(container).append("\n\n\nThe pattient has not completed the Healthy Eating Survey.");
+                $(container).append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
 
             } 
 

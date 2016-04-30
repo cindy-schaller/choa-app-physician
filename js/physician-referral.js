@@ -11,7 +11,7 @@ XDate, setTimeout, getDataSet*/
     var patientID = (window.sessionStorage.getItem('patientid_global')) ?
                 window.sessionStorage.getItem('patientid_global') : "18791941";
     var selectedIndex = -1,
-
+    
         /**
          * The cached value from GC.App.getMetrics()
          */
@@ -246,6 +246,7 @@ XDate, setTimeout, getDataSet*/
         var referralHeader = "";
         var referralBody = "";
         var referralButtons = "";
+        var emailBody = "";
 
         referralHeader += ("<div id='physician-referral-header' class='physician-referral-container'>");
         referralHeader += ("<h1 style='font-size: 28px; font-weight:bold;'>Physician's Referral</h1>");
@@ -266,7 +267,7 @@ XDate, setTimeout, getDataSet*/
         referralBody += ("<option value='E66.2'>Morbid (severe) obesity with alveolar hypoventilation (E66.2)</option>");
         referralBody += ("<option value='E66.3'>Overweight (E66.3)</option>");
         referralBody += ("<option value='E66.8'>Other Obesity (E66.8)</option>");
-        referralBody += ("<option value='E66.9'>Obesity, unspecified(E66.9)</option>");
+        referralBody += ("<option selected='selected' value='E66.9'>Obesity, unspecified(E66.9)</option>");
         referralBody += ("<option value='E63.6'>Underweight(R63.6)</option>");
         referralBody += ("</select>");
         referralBody += ("<br></br>");
@@ -276,9 +277,18 @@ XDate, setTimeout, getDataSet*/
         referralBody += ("<br></br>");
         referralBody += ("</div>");
 
+        emailBody += "Diagnosis: ";
+        emailBody += localStorage.getItem("icd");
+        console.log("EMAIL ICD SELECTION");
+        console.log(localStorage.getItem("icd"));
+
+        emailBody += " Recommendations:";
+        emailBody += window.sessionStorage.getItem("analysis");
+        console.log("EMAIL BODY");
+        console.log(emailBody);
 
         referralButtons += ("<div id='physician-referral-buttons' class='physician-referral-container'>");
-        referralButtons += ("<a id='ref-export' type='button' href='mailto:someone@CDC.org' style='margin-right: 10px;'>Export Data</button>");
+        referralButtons += ("<a id='ref-export' type='button' href='mailto:someone@CDC.gov?subject=Physician%20Referral&body="+emailBody+"' style='margin-right: 10px;'>Export Data</button>");
         referralButtons += ("<a id='ref-submit' type='button' style='margin-right: 10px;'>Submit Referrals</a>");
         referralButtons += ("</div>");
 
@@ -290,7 +300,7 @@ XDate, setTimeout, getDataSet*/
         $('#ref-submit').click(function() {
           //pass in q-based recommendation & icd-10 code
           json_ReferralRequest_to_community_coordinator_data.description = $('#ref-recs').val();
-          json_ReferralRequest_to_community_coordinator_data.icd = $('#icd-selection').val();
+          json_ReferralRequest_to_community_coordinator_data.icd = $('#icd-selection option:selected').text();
           
           //post request to community-facing app
           CoordinatorReferralPOST();
@@ -299,8 +309,16 @@ XDate, setTimeout, getDataSet*/
           console.log("json_ReferralRequest_to_community_coordinator_data");
           console.log(json_ReferralRequest_to_community_coordinator_data);
         });
-
-        
+         $('select').change(function () {
+             var optionSelected = $(this).find("option:selected");
+             localStorage.setItem("icd",optionSelected);
+             localStorage.setItem("icd",optionSelected);
+         });
+        $('select').on('change', function () {
+             var selectedValue = this.selectedOptions[0].value;
+             localStorage.setItem("icd",selectedValue);
+             localStorage.setItem("icd",selectedValue);
+        });
 
     }
 
