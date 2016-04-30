@@ -220,8 +220,8 @@ XDate, setTimeout, getDataSet*/
               }
           });
           return CoordinatorCommunicationPOST;
-      })(); 
-  }
+      }); 
+  });
 
 
 
@@ -274,7 +274,7 @@ XDate, setTimeout, getDataSet*/
 
     
 
-    NS.PhysicianRecord = 
+    NS.PhysicianReferral = 
     {
         render : function() 
         {
