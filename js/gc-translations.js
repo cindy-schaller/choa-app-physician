@@ -200,17 +200,17 @@ window.GC = (function(NS) {
         
         // Header --------------------------------------------------------------
         STR_2996 : {
-            en : "Phys:View",
+            en : "Physician View",
             es : "Médico:Ver",
             bg : "лекар:изглед"
         },
         STR_2997 : {
-            en : "Phys:Record",
+            en : "Record",
             es : "Médico:grabar",
             bg : "лекар:рекорд"
         },
         STR_2998 : {
-            en : "Phys:Referral",
+            en : "Referral",
             es : "Médico:remisión",
             bg : "лекар:сезиране"
         },

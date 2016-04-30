@@ -305,13 +305,13 @@
             case "patients":
                 GC.PatientsView.render();
                 break;
-            case "p-view":
+            case "view":
                 GC.PhysicianView.render();
                 break;
-            case "p-record":
+            case "record":
                 GC.PhysicianRecord.render();
                 break;  
-            case "p-referral":
+            case "referral":
                 GC.PhysicianReferral.render();
                 break;      
             default:
@@ -880,23 +880,30 @@
                 $("#view-clinical")[type == "graphs" ? "show" : "hide"]();
                 $("#view-parental")[type == "parent" ? "show" : "hide"]();
                 $("#view-table"   )[type == "table"  ? "show" : "hide"]();
-                $("#view-patients") [type == "patients"    ? "show" : "hide"]();
-                $("#view-physician") [type == "view"    ? "show" : "hide"]();
-                $("#view-record") [type == "record"    ? "show" : "hide"]();
-                $("#view-referral") [type == "referral"    ? "show" : "hide"]();
-               
+                $("#view-patients") [type == "patients" ? "show" : "hide"]();
+                $("#view-physician") [type == "view" ? "show" : "hide"]();
+                $("#view-record") [type == "record" ? "show" : "hide"]();
+                $("#view-referral") [type == "referral" ? "show" : "hide"]();
                 $("html")
                 .toggleClass("has-patient-header", !GC.Preferences.prop("hidePatientHeader"))
                 .toggleClass("view-clinical", type == "graphs" || type == "table")
                 .toggleClass("view-parental", type == "parent")
                 .toggleClass("view-charts", type == "graphs")
-                .toggleClass("view-table", type == "table");
+                .toggleClass("view-table", type == "table")
+                .toggleClass("view-patients", type == "patients")
+                .toggleClass("view-physician", type == "view")
+                .toggleClass("view-record", type == "record")
+                .toggleClass("view-referral", type == "referral");
 
                 //hide parent tab
                 if ( ! GC.Preferences._data.isParentTabShown) {
                     $("#parent-tab")["hide"]();
                     $("#view-parental")["hide"]();
                 }
+
+                //hide gc header
+                $("#time-ranges") [(type == "patients" || type == "view" || type == "record" || type == "referral") ? "hide" : "show"]();
+                $("#info-bar")    [(type == "patients" || type == "view" || type == "record" || type == "referral") ? "hide" : "show"]();
 
                 setStageHeight();
 
