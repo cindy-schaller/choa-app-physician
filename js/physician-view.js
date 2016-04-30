@@ -112,7 +112,7 @@
             var patientBMICall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
 
-            //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+            //Note LOINC Codes: 39156-5 for BMI Observations
             $.ajax({
                 async: false,
                 global: false,
@@ -120,7 +120,6 @@
                 dataType: 'json',
                 success: function (data) {
                     patientBMICall = data;
-                    // console.log( WeightHeightHeadBMIObservationsCall);
                 }
             });
             return patientBMICall;
@@ -130,7 +129,7 @@
             var patientWeightCall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
 
-            //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+            //Note LOINC Codes: 3141-9 for Weight Observations
             $.ajax({
                 async: false,
                 global: false,
@@ -138,7 +137,6 @@
                 dataType: 'json',
                 success: function (data) {
                     patientWeightCall = data;
-                    // console.log( WeightHeightHeadBMIObservationsCall);
                 }
             });
             return patientWeightCall;
@@ -148,7 +146,7 @@
             var patientHeightCall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
 
-            //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+            //Note LOINC Codes: 8302-2 for Height BMI Observations
             $.ajax({
                 async: false,
                 global: false,
@@ -156,7 +154,6 @@
                 dataType: 'json',
                 success: function (data) {
                     patientHeightCall = data;
-                    // console.log( WeightHeightHeadBMIObservationsCall);
                 }
             });
             return patientHeightCall;
@@ -239,9 +236,9 @@
                     BMIClassification = "BMI: ー"
             }
 
-            thePatient.append($("<blockquote></blockquote>") 
-                .append($("<div></div>") 
-                    .addClass("patient-info") 
+            thePatient.append($("<blockquote></blockquote>")
+                .append($("<div></div>")
+                    .addClass("patient-info")
                     .append($("<div></div>")
                         .addClass("patient-fullname")
                         .attr("id", "patient-fullname")
@@ -258,14 +255,14 @@
                         .attr("id", "patient-address")
                         .append($("<address></address>")
                             .html(address)))
-                    .append($("<div></div>") 
+                    .append($("<div></div>")
                         .attr("id", "patient-BMI")
                         .append(BMIClassification))
                     .append($("<small></small>")
                         .append($("<div></div>")
                             .addClass("patient-gender text-capitalize")
                             .attr("id", "patient-gender")
-                            .html("<strong>Patient ID: </strong>" + patientId)))));  
+                            .html("<strong>Patient ID: </strong>" + patientId)))));
 
             topContainer.append(patientInfo);
             patientInfo.append($("<div></div>")
@@ -293,16 +290,16 @@
                         .html("<strong>Height: </strong>" + height + " " + heightUnit))
 
                     /*.append($("<div></div>")
-                        .append($("<footer></footer>")
-                            .append("<small></small>")
-                            .append($("<div></div>")
-                                .addClass("patient-version")
-                                .attr("id", "patient-version")
-                                .html("<strong>DB Version: </strong>" + patientVersion))
-                            .append($("<div></div>")
-                                .addClass("patient-lastUpdated")
-                                .attr("id", "patient-lastUpdated")
-                                .html("<strong>Last updated: </strong>" + patientLastUpdated.split("T")[0]))))*/));
+                     .append($("<footer></footer>")
+                     .append("<small></small>")
+                     .append($("<div></div>")
+                     .addClass("patient-version")
+                     .attr("id", "patient-version")
+                     .html("<strong>DB Version: </strong>" + patientVersion))
+                     .append($("<div></div>")
+                     .addClass("patient-lastUpdated")
+                     .attr("id", "patient-lastUpdated")
+                     .html("<strong>Last updated: </strong>" + patientLastUpdated.split("T")[0]))))*/));
 
             if (questionnaireCall.entry) {
                 var questionnaire = questionnaireCall.entry[0].resource;
@@ -321,20 +318,17 @@
                 var question_link_ID = questionnaire.group.question[i].linkId;
                 var qr_index = -1;
                 for (var x = 0; x < response.group.question.length ; x++) {
-                    //console.log(question_link_ID);
-                    //console.log( qr.resource.group.question[x].linkId);
                     if(question_link_ID == response.group.question[x].linkId){
-                        //console.log( "validated linkId of question to a LinkID in the questionare-response");
                         qr_index = x;
                         break;
                     }
                 }
                 if(qr_index == -1){
-                    console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionare-response");
+                    console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
                     return;
                 }
-                var final_answer = response.group.question[qr_index].answer[0].valueInteger;
-                qAndA.push({question:(questionnaire.group.question[i].text), answer:(questionnaire.group.question[i].option[final_answer].display), answerCode:final_answer});
+                var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
+                qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
 
             }
             var ranking_results = questionnaire_ranking(qAndA);
@@ -345,11 +339,12 @@
             console.log(result);
             console.log("FOCUS SCORE");
             console.log(ranking_results['focus_score']);
+            window.sessionStorage.setItem("analysis", result);
 
             var blurb_5210 = "5-2-1-0 is an evidence-based prevention message centered on recommendations for Childhood Obesity Assessment, Prevention and Treatment\
             sponsored by the <abbr title='Centers for Disease Control and Prevention'>CDC</abbr>.\
             5-2-1-0 recommends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, \
-            and 0 Sugary Drinks a day.";
+            and 0 Sugary Drinks a day. Highlighted text indicates actions the patient should take";
 
             var focus_score = ranking_results['focus_score'];
             var analysisRow = $("<div></div>")
@@ -405,23 +400,23 @@
                     .attr("data-toggle", "buttons")
                     .attr("role", "group")
                 for (var j = 0; j < options.length; j++) {
-                        if (qAndA[i].answerCode == j) {
-                            surveyRow.append($("<div></div>")
-                                .addClass("btn-group btn-group-sm")
-                                .attr("role", "group")
-                                .append($("<a></a>")
-                                    .addClass("btn btn-default btn-responsive active disabled")
-                                    .attr("type", "button")
-                                    .html(options[j])));                        }
-                        else {
-                            surveyRow.append($("<div></div>")
-                                .addClass("btn-group btn-group-sm")
-                                .attr("role", "group")
-                                .append($("<a></a>")
-                                    .addClass("btn btn-default btn-responsive disabled")
-                                    .attr("type", "button")
-                                    .html(options[j])));
-                        }
+                    if (qAndA[i].answerCode == j) {
+                        surveyRow.append($("<div></div>")
+                            .addClass("btn-group btn-group-sm")
+                            .attr("role", "group")
+                            .append($("<a></a>")
+                                .addClass("btn btn-default btn-responsive active disabled")
+                                .attr("type", "button")
+                                .html(options[j])));                        }
+                    else {
+                        surveyRow.append($("<div></div>")
+                            .addClass("btn-group btn-group-sm")
+                            .attr("role", "group")
+                            .append($("<a></a>")
+                                .addClass("btn btn-default btn-responsive disabled")
+                                .attr("type", "button")
+                                .html(options[j])));
+                    }
                 }
                 theSurvey.append($("<div></div>")
                     .addClass("row well")
