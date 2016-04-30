@@ -477,7 +477,7 @@
 
         // Adjust weight based on patient's preferences
         var pref_key = convertAnsToKey(ans_q7);
-        var pref_score = (ans_q8 + ans_q9) / 4;
+        var pref_score = (ans_q8 + ans_q9) / 2;
         scores[pref_key] = scores[pref_key] / pref_score;
         var focus_score = Math.floor(pref_score);
 
