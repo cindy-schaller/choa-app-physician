@@ -108,92 +108,65 @@
             return questionnaireCall;
         })();
 
-
-        // var json_data ={
-        //           "resourceType": "Observation",
-        //           "status": "final",
-        //           "code": {
-        //             "coding": [
-        //               {
-        //                 "system": "http://loinc.org",
-        //                 "code": "39156-5",
-        //                 "display": "BMI"
-        //               }
-        //             ]
-        //           },
-        //           "subject": {
-        //             "reference": "Patient/18791941"
-        //           },
-        //            "performer": [{
-        //               "display": "A. Langeveld"
-        //             }],
-        //           "issued": "2013-04-04T13:27:00+01:00",
-        //           "effectiveDateTime": "2013-04-02",
-        //           "valueQuantity": {
-        //             "value": 31.0,
-        //           }
-        //         };
-
-        // var WeightHeightHeadBMIObservationsPOST = (function (){
-        //     var WeightHeightHeadBMIObservationsPOST = null;
-        //     //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
-        //     //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
-        //     $.ajax({
-        //         type: 'POST',
-        //         async: false,
-        //         global: false,
-        //         url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation',
-        //         data: JSON.stringify(json_data),
-        //         dataType: 'json',
-        //         contentType: 'application/json',
-        //         success: function (data) {
-        //             WeightHeightHeadBMIObservationsPOST = data;
-        //             console.log( WeightHeightHeadBMIObservationsPOST);
-        //         }
-        //     });
-        //     return WeightHeightHeadBMIObservationsPOST;
-        // })();
-
-
-        var WeightHeightHeadBMIObservationsCall = (function () {
-            var WeightHeightHeadBMIObservationsCall = null;
+        var patientBMICall = (function () {
+            var patientBMICall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
 
             //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
             $.ajax({
                 async: false,
                 global: false,
-                //url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=3141-9,8302-2,8287-5,39156-5&_count=50',
                 url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=39156-5&_count=50',
                 dataType: 'json',
                 success: function (data) {
-                    WeightHeightHeadBMIObservationsCall = data;
+                    patientBMICall = data;
                     // console.log( WeightHeightHeadBMIObservationsCall);
                 }
             });
-            return WeightHeightHeadBMIObservationsCall;
+            return patientBMICall;
         })();
-        //$.when(patientCall, questionnaireResponseCall, questionnaireCall, WeightHeightHeadBMIObservationsCall,WeightHeightHeadBMIObservationsPOST  ).then(function() {
-        $.when(patientCall, questionnaireResponseCall, questionnaireCall, WeightHeightHeadBMIObservationsCall ).then(function() {
 
-            console.log("thePatient BMI observations: " + JSON.stringify(WeightHeightHeadBMIObservationsCall));
-            if (WeightHeightHeadBMIObservationsCall.entry) {
-                var BMIObservation = WeightHeightHeadBMIObservationsCall.entry[0].resource;
-            }
-            console.log(BMIObservation);
-            //var patientBMI = (BMIObservation.id ? BMIObservation.id : "");
+        var patientWeightCall = (function () {
+            var patientWeightCall = null;
+            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
 
+            //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+            $.ajax({
+                async: false,
+                global: false,
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=3141-9&_count=50',
+                dataType: 'json',
+                success: function (data) {
+                    patientWeightCall = data;
+                    // console.log( WeightHeightHeadBMIObservationsCall);
+                }
+            });
+            return patientWeightCall;
+        })();
 
-            console.log("thePatient: " + patientCall);
+        var patientHeightCall = (function () {
+            var patientHeightCall = null;
+            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
+
+            //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+            $.ajax({
+                async: false,
+                global: false,
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=8302-2&_count=50',
+                dataType: 'json',
+                success: function (data) {
+                    patientHeightCall = data;
+                    // console.log( WeightHeightHeadBMIObservationsCall);
+                }
+            });
+            return patientHeightCall;
+        })();
+
+        $.when(patientCall, questionnaireResponseCall, questionnaireCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
+
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
             }
-            if (WeightHeightHeadBMIObservationsCall.entry) {
-                var bmiVitals = WeightHeightHeadBMIObservationsCall.entry[0].resource;
-            }
-
-            console.log(patient);
-            console.log(bmiVitals);
 
             var patientId = (patient.id ? patient.id : "");
             var patientVersion = (patient.meta.versionId) ? patient.meta.versionId : "";
@@ -216,8 +189,14 @@
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
 
-            var BMI = bmiVitals.valueQuantity.value;
+            var BMI = patientBMICall.entry[0].resource.valueQuantity.value ? patientBMICall.entry[0].resource.valueQuantity.value : "";
+            var weight = patientWeightCall.entry[0].resource.valueQuantity.value ? patientWeightCall.entry[0].resource.valueQuantity.value : "";
+            var weightUnit = patientWeightCall.entry[0].resource.valueQuantity.unit ? patientWeightCall.entry[0].resource.valueQuantity.unit : "";
+            var height = patientHeightCall.entry[0].resource.valueQuantity.value ? patientHeightCall.entry[0].resource.valueQuantity.value : "";
+            var heightUnit = patientHeightCall.entry[0].resource.valueQuantity.unit ? patientHeightCall.entry[0].resource.valueQuantity.unit : "";
+
             console.log("BMI " + BMI);
+
             var BMIClassification;
             switch (true) {
                 case (BMI <= 18.5):
@@ -258,6 +237,7 @@
                 default:
                     BMIClassification = "BMI: ー"
             }
+
             thePatient.append($("<blockquote></blockquote>") 
                 .append($("<div></div>") 
                     .addClass("patient-info") 
@@ -291,8 +271,6 @@
                 .addClass("patient-info")
                 .append($("<blockquote></blockquote>")
                     .addClass("blockquote-reverse")
-                    .attr("id", "patient-BMI")
-                    .append(BMIClassification)
                     .append($("<div></div>")
                         .addClass("patient-gender text-capitalize")
                         .attr("id", "patient-gender")
@@ -302,6 +280,18 @@
                         .attr("id", "patient-bday")
                         .html("<strong>Birthdate: </strong>" + patientBDay))
                     .append($("<div></div>")
+                        .attr("id", "patient-BMI")
+                        .append(BMIClassification))
+                    .append($("<div></div>")
+                        .addClass("patient-weight")
+                        .attr("id", "patient-weight")
+                        .html("<strong>Weight: </strong>" + weight + " " + weightUnit))
+                    .append($("<div></div>")
+                        .addClass("patient-height")
+                        .attr("id", "patient-height")
+                        .html("<strong>Height: </strong>" + height + " " + heightUnit))
+
+                    /*.append($("<div></div>")
                         .append($("<footer></footer>")
                             .append("<small></small>")
                             .append($("<div></div>")
@@ -311,7 +301,7 @@
                             .append($("<div></div>")
                                 .addClass("patient-lastUpdated")
                                 .attr("id", "patient-lastUpdated")
-                                .html("<strong>Last updated: </strong>" + patientLastUpdated.split("T")[0]))))));
+                                .html("<strong>Last updated: </strong>" + patientLastUpdated.split("T")[0]))))*/));
 
             if (questionnaireCall.entry) {
                 var questionnaire = questionnaireCall.entry[0].resource;
