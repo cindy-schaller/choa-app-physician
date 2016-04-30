@@ -208,31 +208,36 @@ var json_observation_data ={
        
         var recordHeader = "";
         var recordBody = "";
+        var recordTests = "";
         var recordButtons = "";
 
-        recordHeader += ("<h1 style='font-size: 28px; font-weight:bold;'>Patient Record</h1>");
-        recordHeader += ("<h1 style='font-size: 16px;'>Patient: " + patientId + "</h1>");
+        recordHeader += ("<p style='font-size: 28px; font-weight:bold;'>Physician's Record</p>");
+        recordHeader += ("<p style='font-size: 16px;'>Patient: " + patientId + "</p>");
         recordHeader += ("<br></br>");
 
-        recordBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Diagnosis: </h1>");
+        recordBody += ("<p style='font-size: 20px; font-weight:bold;'>Diagnosis: </p>");
         recordBody += ("<textarea id='diagnosis-text' rows='6' cols='50'>"+localStorage.getItem("BMI") + " - Obese I</textarea>");
         recordBody += ("<br></br>");
-        recordBody += ("<br></br>");
         
-        recordBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Observations: </h1>");
+        recordBody += ("<p style='font-size: 20px; font-weight:bold;'>Observations: </p>");
         recordBody += ("<textarea id='diagnosis-obs' rows='6' cols='50'>observations</textarea>");
         recordBody += ("<br></br>");
-        recordBody += ("<br></br>");
 
-        recordBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Order the following lab tests: </h1>");
-        recordBody += ("<h1>Body fat test</h1>");
-        recordBody += ("<h1>Blood pressure test</h1>");
-        recordBody += ("<br></br>");
+        recordTests += ("<p style='font-size: 20px; font-weight:bold;'>Lab Tests: </p>");
+        recordTests +=("<div id='record-tests'>");
+        recordTests +=("<input class='record-test' type='checkbox' name='LabTest' value='Alanine aminotransferase'>Alanine aminotransferase [Enzymatic activity/volume] in Serum or Plasma</option>");
+        recordTests +=("<br></br><input class='record-test' type='checkbox' name='LabTest' value='Aspartate aminotransferase'>Aspartate aminotransferase [Enzymatic activity/volume] in Serum or Plasma</option>");
+        recordTests +=("<br></br><input class='record-test' type='checkbox' name='LabTest' checked value='Fasting glucose'>Fasting glucose [Mass/volume] in Capillary blood</option>");
+        recordTests +=("<br></br><input class='record-test' type='checkbox' name='LabTest' value='Lipid Panel'>Lipid panel with direct LDL - Serum or Plasma</option>");
+        recordTests +=("</div'>");
+        recordTests += ("<br></br>");
 
-        recordButtons += ("<button id='diagnosis-btn'>Push Diagnosis & Observations</button>")
+
+        recordButtons += ("<button id='diagnosis-btn' class='physician-btn'>Push Diagnosis & Observations</button>")
 
         $(container).append(recordHeader);
         $(container).append(recordBody);
+        $(container).append(recordTests);
         $(container).append(recordButtons);
 
 
@@ -243,7 +248,7 @@ var json_observation_data ={
           json_condition_data.category.coding[0].diagnosis = $("#diagnosis-text").val();
           json_condition_data.category.coding[0].fhir_comments = $('#diagnosis-obs').val();
           json_observation_data.observations =  $('#diagnosis-obs').val();
-          alert('Diagnosis & Observations submitted!');
+          alert('[SUCCESS] Diagnosis & Observations submitted');
 
           console.log("json_condition_data");
           console.log(json_condition_data);
@@ -253,7 +258,6 @@ var json_observation_data ={
           ObesityConditionPOST();     
           ObeseObservationsPOST();     
         })
-
         
     }
 

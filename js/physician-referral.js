@@ -130,7 +130,7 @@ XDate, setTimeout, getDataSet*/
     }
 
    //used to POST a referralRequest to the community coordinator
-   var CoordinatorReferralPOST = (function (){
+   var CoordinatorReferralPOST = function (){
         var CoordinatorReferralPOST = null;
          $.ajax({
             type: 'POST',
@@ -146,7 +146,7 @@ XDate, setTimeout, getDataSet*/
             }
         });
         return CoordinatorReferralPOST;
-    })(); 
+    }; 
 
 
     $.when(CoordinatorReferralPOST ).then(function() 
@@ -204,7 +204,7 @@ XDate, setTimeout, getDataSet*/
 
 
      //used to POST a communication  to the community coordinator
-     var CoordinatorCommunicationPOST = (function (){
+     var CoordinatorCommunicationPOST = function (){
           var CoordinatorCommunicationPOST = null;
            $.ajax({
               type: 'POST',
@@ -220,7 +220,7 @@ XDate, setTimeout, getDataSet*/
               }
           });
           return CoordinatorCommunicationPOST;
-      }); 
+      }; 
   });
 
 
@@ -242,33 +242,57 @@ XDate, setTimeout, getDataSet*/
         {
             throw "Patient ID is a required parameter";
         }
-      
+        var referralHeader = "";
+        var referralBody = "";
+        var referralButtons = "";
 
-        $(container).append("<h1 style='font-size: 28px; font-weight:bold;'>Patient Referral</h1>");
-        $(container).append("<h1 style='font-size: 16px;'>Patient: " + patientId + "</h1>");
-        $(container).append("<br></br>");
+        referralHeader += ("<h1 style='font-size: 28px; font-weight:bold;'>Physician's Referral</h1>");
+        referralHeader += ("<h1 style='font-size: 16px;'>Patient: " + patientId + "</h1>");
 
-        $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Recommendations based on questionnaire: </h1>");
+        referralBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Recommendations based on questionnaire: </h1>");
 
-        $(container).append("<textarea rows='5' cols='50'>" + localStorage.getItem("analysis") + "</textarea>");
-        $(container).append("<br></br>");
+        referralBody += ("<textarea id='ref-recs' rows='5' cols='50'>" + localStorage.getItem("analysis") + "</textarea>");
 
-        $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Physician recommendations (ICD-10): </h1>");
+        referralBody += ("<h1 style='font-size: 20px; font-weight:bold;'>ICD-10 code (Physician use only): </h1>");
 
-        $(container).append("<textarea rows='5' cols='50'>ICD-10 codes:</textarea>");
-        $(container).append("<br></br>");
+        referralBody += ("<select id='icd-selection'>");
+        referralBody += ("<option value='E66.01'>Morbid Obesity (E66.01)</option>");
+        referralBody += ("<option value='E66.09'>Other obesity due to excess calories(E66.09)</option>");
+        referralBody += ("<option value='E66.1'>Drug-induced obesity (E66.1)</option>");
+        referralBody += ("<option value='E66.2'>Morbid (severe) obesity with alveolar hypoventilation (E66.2)</option>");
+        referralBody += ("<option value='E66.3'>Overweight (E66.3)</option>");
+        referralBody += ("<option value='E66.8'>Other Obesity (E66.8)</option>");
+        referralBody += ("<option value='E66.9'>Obesity, unspecified(E66.9)</option>");
+        referralBody += ("<option value='E63.6'>Underweight(R63.6)</option>");
+        referralBody += ("</select>");
+        referralBody += ("<br></br>");
 
-        $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Lab Test Recommendations: </h1>");
+        referralBody += ("<h1 style='font-size:20px'>Lab Results:</h1>");
+        referralBody += ("<p><em>Lab in progress</em></p>");
+        referralBody += ("<br></br>");
 
-        $(container).append("<textarea rows='5' cols='50'>Lab-based Referrals:</textarea>");
-        $(container).append("<br></br>");
+        referralButtons += ("<a id='ref-export' type='button' href='mailto:someone@CDC.org' style='margin-right: 10px; height: 30px; background-color: #bbccff;padding:5px;'>Export Data</button>");
+        referralButtons += ("<a id='ref-submit' type='button' style='margin-right: 10px; height: 30px; background-color: #bbccff;padding:5px;'>Submit Referrals</a>");
 
-        $(container).append("<h1>Order the following lab tests:</h1>");
-        $(container).append("<h1>Body fat test</h1>");
-        $(container).append("<br></br>");
+        $(container).append(referralHeader);
+        $(container).append(referralBody);
+        $(container).append(referralButtons);
 
-        $(container).append("<button style='height: 30px; background-color: #bbccff;padding:5px;'>Export Data</button>");
-        $(container).append("<a type='button' href='mailto:someone@CDC.org' style='height: 30px; background-color: #bbccff;padding:5px;'>Submit Referrals</a>");
+
+        $('#ref-submit').click(function() {
+          //pass in q-based recommendation & icd-10 code
+          json_ReferralRequest_to_community_coordinator_data.description = $('#ref-recs').val();
+          json_ReferralRequest_to_community_coordinator_data.icd = $('#icd-selection').val();
+          
+          //post request to community-facing app
+          CoordinatorReferralPOST();
+          
+          alert('[SUCCESS] Referral Submitted');
+          console.log("json_ReferralRequest_to_community_coordinator_data");
+          console.log(json_ReferralRequest_to_community_coordinator_data);
+        });
+
+        
 
     }
 
