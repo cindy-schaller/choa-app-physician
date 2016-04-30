@@ -51,158 +51,7 @@ XDate, setTimeout, getDataSet*/
     }
 
     
-    // From: Goodman, Alyson B. (CDC/ONDIEH/NCCDPHP) 
-    // Sent: Tuesday, April 26, 2016 5:17 PM
-    // To: Pope, Tia M
-    // Subject: lab testing for clinician facing app
-     
-    // Recommended Laboratory tests for children with obesity include:
-     
-    // Lipid panel (HDL-C, LDL-C, total cholesterol and triglycerides), fasting or non-fasting
-    // Fasting or non-fasting blood glucose
-    // ALT (alanine aminotransferase)
-    // AST (aspartate aminotransferase)
-
-    var json_order_Lipid_Panel_data ={
-      "resourceType": "DiagnosticOrder",
-      "contained": [
-        {
-          "resourceType": "Observation",
-          "id": "fasting",
-          "status": "final",
-          "_status": {
-            "fhir_comments": [
-              "    the mandatory quality flag:    "
-            ]
-          },
-          "code": {
-            "coding": [
-              {
-                "system": "http://loinc.org",
-                "code": "49541-6",
-                "display": "Fasting status - Reported"
-              }
-            ]
-          },
-          "subject": {
-            "reference": "Patient/18791941"
-          },
-          "valueCodeableConcept": {
-            "coding": [
-              {
-                "system": "http://hl7.org/fhir/v2/0136",
-                "code": "Y",
-                "display": "Yes"
-              }
-            ]
-          }
-        }
-      ],
-      "subject": {
-        "reference":  "Patient/18791941"
-      },
-      "orderer": {
-        "display": "A. Langeveld"
-      },
-      "identifier": [
-        {
-          "type": {
-            "coding": [
-              {
-                "system": "http://hl7.org/fhir/identifier-type",
-                "code": "PLAC"
-              }
-            ],
-            "text": "Placer"
-          },
-          "system": "urn:oid:1.3.4.5.6.7",
-          "value": "2345234234234"
-        }
-      ],
-      "reason": [
-        {
-          "coding": [
-            {
-              "system": "http://snomed.info/sct",
-              "code": "415530009",
-              "display": "Childhood obesity"
-            }
-          ]
-        }
-      ],
-      "supportingInformation": [
-        {
-          "reference": "#fasting"
-        }
-      ],
-      "status": "requested",
-      "event": [
-        {
-          "status": "requested",
-          "dateTime": "2013-05-02T16:16:00-07:00",
-          "actor": {
-            "display": "A. Langeveld"
-          }
-        }
-      ],
-      "item": [
-        {
-          "code": {
-            "coding": [
-              {
-                "system": "http://acme.org/tests",
-                "code": "LIPID"
-              }
-            ],
-            "text": "Lipid Panel"
-          },
-          "specimen": [
-            {
-              "reference": "Specimen/101"
-            }
-          ]
-        }
-      ],
-      "note": [
-        {
-          "text": " "
-        }
-      ],
-      "item": [
-        {
-          "code": {
-            "coding": [
-              {
-                "system": "http://loinc.org",
-                "code": "57698-3"
-              }
-            ],
-            "text": "Lipid panel with direct LDL - Serum or Plasma"
-          }
-        }
-      ]
-    }
-      
-
-   //used to order a lipid panel test 
-   var LipidPanelPOST = (function (){
-        var LipidPanelPOST = null;
-         $.ajax({
-            type: 'POST',
-            async: false,
-            global: false,
-            url: 'http://52.72.172.54:8080/fhir/baseDstu2/DiagnosticOrder',
-            data: JSON.stringify(json_order_Lipid_Panel_data),
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function (data) {
-                LipidPanelPOST = data;
-                console.log( LipidPanelPOST);
-            }
-        });
-        return LipidPanelPOST;
-    })(); 
-
+    
 
 
     var json_ReferralRequest_to_community_coordinator_data ={
@@ -300,74 +149,79 @@ XDate, setTimeout, getDataSet*/
     })(); 
 
 
-    //this must be only after the referralrequest 
-    //the "reference": "ReferralRequest/19179006" field **must** be updated to the real ID of the ReferralRequest
+    $.when(CoordinatorReferralPOST ).then(function() 
+    {
+      //this must be only after the referralrequest 
+      //the "reference": "ReferralRequest/19179006" field **must** be updated 
+      //to the real ID of the ReferralRequest
 
-    var json_communication_to_community_coordinator_data ={
-    "resourceType": "Communication",
-      "text": {
-         "status": "generated",
-         "div": "<div>a referralRequest has been sent to the childhood obesity patient coordinator </div>"
-      },
-      
-      
-      "category": {
-         "coding": [
-            {
-               "system": "http://acme.org/messagetypes",
-               "code": "notification"
-            }
+      //CoordinatorReferralPOST can be parsed to get the correct ID number
+
+      var json_communication_to_community_coordinator_data ={
+      "resourceType": "Communication",
+        "text": {
+           "status": "generated",
+           "div": "<div>a referralRequest has been sent to the childhood obesity patient coordinator </div>"
+        },
+        
+        
+        "category": {
+           "coding": [
+              {
+                 "system": "http://acme.org/messagetypes",
+                 "code": "notification"
+              }
+           ],
+           "text": "notification"
+        },
+        "sender": {
+           "display": "A. Langeveld"
+        },
+        "recipient": [
+           {
+              "reference": "Organization/19178873"
+           }
+        ],
+        "payload": [
+           {
+              "contentString": "referralRequest for Patient/18791941 for childhood obesity for community cooordination."
+           },
+         {
+              "contentReference": {
+                 "fhir_comments": [
+                    " Reference to the referralRequest "
+                 ],
+                 "reference": "ReferralRequest/19179006"
+              }
+           }
          ],
-         "text": "notification"
-      },
-      "sender": {
-         "display": "A. Langeveld"
-      },
-      "recipient": [
-         {
-            "reference": "Organization/19178873"
-         }
-      ],
-      "payload": [
-         {
-            "contentString": "referralRequest for Patient/18791941 for childhood obesity for community cooordination."
-         },
-       {
-            "contentReference": {
-               "fhir_comments": [
-                  " Reference to the referralRequest "
-               ],
-               "reference": "ReferralRequest/19179006"
-            }
-         }
-       ],
-      "status": "pending",
-      "sent": "2014-12-12T18:01:10-08:00",
-      "subject": {
-         "reference": "Patient/18791941"
+        "status": "pending",
+        "sent": "2014-12-12T18:01:10-08:00",
+        "subject": {
+           "reference": "Patient/18791941"
+        }
       }
-    }
 
 
-//used to POST a communication  to the community coordinator
-   var CoordinatorCommunicationPOST = (function (){
-        var CoordinatorCommunicationPOST = null;
-         $.ajax({
-            type: 'POST',
-            async: false,
-            global: false,
-            url: 'http://52.72.172.54:8080/fhir/baseDstu2/Communication',
-            data: JSON.stringify(json_communication_to_community_coordinator_data),
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function (data) {
-                CoordinatorCommunicationPOST = data;
-                console.log( CoordinatorCommunicationPOST);
-            }
-        });
-        return CoordinatorCommunicationPOST;
-    })(); 
-
+     //used to POST a communication  to the community coordinator
+     var CoordinatorCommunicationPOST = (function (){
+          var CoordinatorCommunicationPOST = null;
+           $.ajax({
+              type: 'POST',
+              async: false,
+              global: false,
+              url: 'http://52.72.172.54:8080/fhir/baseDstu2/Communication',
+              data: JSON.stringify(json_communication_to_community_coordinator_data),
+              dataType: 'json',
+              contentType: 'application/json',
+              success: function (data) {
+                  CoordinatorCommunicationPOST = data;
+                  console.log( CoordinatorCommunicationPOST);
+              }
+          });
+          return CoordinatorCommunicationPOST;
+      })(); 
+  }
 
 
 
