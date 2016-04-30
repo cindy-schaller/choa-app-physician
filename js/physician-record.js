@@ -345,10 +345,13 @@ var json_observation_data ={
         var recordTests = "";
         var recordButtons = "";
 
+        recordHeader += ("<div id='physician-record-header' class='physician-record-container'>");
         recordHeader += ("<p style='font-size: 28px; font-weight:bold;'>Physician's Record</p>");
         recordHeader += ("<p style='font-size: 16px;'>Patient: " + patientId + "</p>");
         recordHeader += ("<br></br>");
+        recordHeader += ("</div>");
 
+        recordBody += ("<div id='physician-record-body' class='physician-record-container'>");
         recordBody += ("<p style='font-size: 20px; font-weight:bold;'>Diagnosis: </p>");
         recordBody += ("<textarea id='diagnosis-text' rows='6' cols='50'>"+localStorage.getItem("BMI") + " - Obese I</textarea>");
         recordBody += ("<br></br>");
@@ -356,7 +359,9 @@ var json_observation_data ={
         recordBody += ("<p style='font-size: 20px; font-weight:bold;'>Observations: </p>");
         recordBody += ("<textarea id='diagnosis-obs' rows='6' cols='50'>observations</textarea>");
         recordBody += ("<br></br>");
+        recordBody += ("</div>");
 
+        recordTests += ("<div id='physician-record-tests' class='physician-record-container'>");
         recordTests += ("<p style='font-size: 20px; font-weight:bold;'>Lab Tests: </p>");
         recordTests +=("<div id='record-tests'>");
         recordTests +=("<input class='record-test' type='checkbox' name='LabTest' value='Alanine aminotransferase'>Alanine aminotransferase [Enzymatic activity/volume] in Serum or Plasma</option>");
@@ -365,9 +370,12 @@ var json_observation_data ={
         recordTests +=("<br></br><input class='record-test' type='checkbox' name='LabTest' value='Lipid Panel'>Lipid panel with direct LDL - Serum or Plasma</option>");
         recordTests +=("</div'>");
         recordTests += ("<br></br>");
+        recordTests += ("</div>");
 
 
-        recordButtons += ("<button id='diagnosis-btn' class='physician-btn'>Push Diagnosis & Observations</button>")
+        recordButtons += ("<div id='physician-record-buttons' class='physician-record-container'>");
+        recordButtons += ("<button id='diagnosis-btn' class='physician-btn'>Push Diagnosis & Observations</button>");
+        recordButtons += ("</div>");
 
         $(container).append(recordHeader);
         $(container).append(recordBody);

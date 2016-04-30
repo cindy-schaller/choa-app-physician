@@ -247,9 +247,12 @@ XDate, setTimeout, getDataSet*/
         var referralBody = "";
         var referralButtons = "";
 
+        referralHeader += ("<div id='physician-referral-header' class='physician-referral-container'>");
         referralHeader += ("<h1 style='font-size: 28px; font-weight:bold;'>Physician's Referral</h1>");
         referralHeader += ("<h1 style='font-size: 16px;'>Patient: " + patientId + "</h1>");
+        referralHeader += ("</div>");
 
+        referralBody += ("<div id='physician-referral-body' class='physician-referral-container'>");
         referralBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Recommendations based on questionnaire: </h1>");
 
         referralBody += ("<textarea id='ref-recs' rows='5' cols='50'>" + window.sessionStorage.getItem("analysis") + "</textarea>");
@@ -269,11 +272,15 @@ XDate, setTimeout, getDataSet*/
         referralBody += ("<br></br>");
 
         referralBody += ("<h1 style='font-size:20px'>Lab Results:</h1>");
-        referralBody += ("<p><em>Lab in progress</em></p>");
+        referralBody += ("<p style='font-style:italic;'>Lab in progress</p>");
         referralBody += ("<br></br>");
+        referralBody += ("</div>");
 
-        referralButtons += ("<a id='ref-export' type='button' href='mailto:someone@CDC.org' style='margin-right: 10px; height: 30px; background-color: #bbccff;padding:5px;'>Export Data</button>");
-        referralButtons += ("<a id='ref-submit' type='button' style='margin-right: 10px; height: 30px; background-color: #bbccff;padding:5px;'>Submit Referrals</a>");
+
+        referralButtons += ("<div id='physician-referral-buttons' class='physician-referral-container'>");
+        referralButtons += ("<a id='ref-export' type='button' href='mailto:someone@CDC.org' style='margin-right: 10px;'>Export Data</button>");
+        referralButtons += ("<a id='ref-submit' type='button' style='margin-right: 10px;'>Submit Referrals</a>");
+        referralButtons += ("</div>");
 
         $(container).append(referralHeader);
         $(container).append(referralBody);
