@@ -252,7 +252,7 @@ XDate, setTimeout, getDataSet*/
 
         referralBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Recommendations based on questionnaire: </h1>");
 
-        referralBody += ("<textarea id='ref-recs' rows='5' cols='50'>" + localStorage.getItem("analysis") + "</textarea>");
+        referralBody += ("<textarea id='ref-recs' rows='5' cols='50'>" + window.sessionStorage.getItem("analysis") + "</textarea>");
 
         referralBody += ("<h1 style='font-size: 20px; font-weight:bold;'>ICD-10 code (Physician use only): </h1>");
 

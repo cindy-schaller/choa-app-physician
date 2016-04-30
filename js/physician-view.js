@@ -316,31 +316,101 @@
             var questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
             var responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
             var qAndA = [];
-            for(var i = 0; i < questionnaire.group.question.length; i++) {
+
+            console.log(questionnaire);
+            console.log(questionnaire.group.question.length);
+
+            console.log(response);
+            console.log(response.group.question.length );
+
+            var LUT =[];
+            for(var i = 0; i < questionnaire.group.question.length; i++) 
+            {
                 //search for validated by LinkId final answer
                 var question_link_ID = questionnaire.group.question[i].linkId;
+                
+                //console.log( question_link_ID);
+
                 var qr_index = -1;
-                for (var x = 0; x < response.group.question.length ; x++) {
-                    //console.log(question_link_ID);
-                    //console.log( qr.resource.group.question[x].linkId);
-                    if(question_link_ID == response.group.question[x].linkId){
+                
+                for (var x = 0; x < response.group.question.length ; x++) 
+                {
+                    //console.log( response.group.question[x].linkId);
+                    if(question_link_ID == response.group.question[x].linkId)
+                    {
                         //console.log( "validated linkId of question to a LinkID in the questionare-response");
                         qr_index = x;
+                        LUT[i] = x;
                         break;
                     }
                 }
-                if(qr_index == -1){
+                if(qr_index == -1)
+                {
                     console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionare-response");
                     return;
                 }
-                var final_answer = response.group.question[qr_index].answer[0].valueInteger;
-                qAndA.push({question:(questionnaire.group.question[i].text), answer:(questionnaire.group.question[i].option[final_answer].display), answerCode:final_answer});
-
+                
             }
-            var ranking_results = questionnaire_ranking(qAndA);
-            var result = ranking_results['recommendation'];
-            localStorage.setItem("analysis", result);
+            
+            //console.log(LUT);
 
+            //validated so just parse out answer without checking
+                
+                
+            for(var i = 0; i < questionnaire.group.question.length; i++) 
+            {
+                var final_answer = response.group.question[LUT[i]].answer[0].valueInteger;
+                
+                if(final_answer  == 'undefined')
+                {
+                    console.log("final_answer undefined");
+                    //random placeholder to prevent crash
+                    final_answer = 1;
+
+                }
+                else
+                {
+                    console.log(final_answer - 1);
+                    console.log("fn =" + final_answer);
+                }
+
+               //qAndA.push(
+               //{  question:(questionnaire.group.question[i].text), 
+               //   answer:(questionnaire.group.question[i].option[final_answer].display), 
+               //   answerCode:final_answer});
+
+                var question = questionnaire.group.question[LUT[i]].text;
+                if(question  == 'undefined')
+                {
+                    console.log("question undefined");
+                    //random placeholder to prevent crash
+                    question = "undefined";
+
+                }
+                console.log("q =" + question);
+                
+                var answer =   questionnaire.group.question[LUT[i]].option[final_answer-1].display;
+                if(answer  == 'undefined')
+                {
+                    console.log("answer undefined");
+                    //random placeholder to prevent crash
+                    answer = "undefined";
+
+                }
+                console.log("a = " +answer); 
+               
+                var answerCode = final_answer;
+                qAndA.push(question, answer, answerCode);
+            }
+
+            
+            //console.log('QUESTION');
+
+            var ranking_results = questionnaire_ranking(qAndA);
+            console.log(ranking_results);
+            var result = ranking_results['recommendation'];
+            console.log(result);
+            window.sessionStorage.setItem("analysis", result);
             console.log("RESULTS");
             console.log(result);
             console.log("FOCUS SCORE");
