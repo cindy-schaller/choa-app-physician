@@ -8,7 +8,8 @@ XDate, setTimeout, getDataSet*/
 {
 
     "use strict";
-
+    var patientID = (window.sessionStorage.getItem('patientid_global')) ?
+                window.sessionStorage.getItem('patientid_global') : "18791941";
     var selectedIndex = -1,
 
         /**
@@ -59,7 +60,7 @@ XDate, setTimeout, getDataSet*/
        "resourceType": "ReferralRequest",
        "text": {
           "status": "generated",
-          "div": "<div>referralRequest to Care Coordinator Team for Patient/18791941 for childhood obesity support</div>"
+          "div": "<div>referralRequest to Care Coordinator Team for Patient/" + patientID + " for childhood obesity support</div>"
        },
        "status": "pending",
          "type": {
@@ -90,7 +91,7 @@ XDate, setTimeout, getDataSet*/
           ]
        },
        "patient": {
-          "reference": "Patient/18791941",
+          "reference": "Patient/" + patientID,
           "display": "Clark Kent"
        },
        "requester": {
@@ -184,7 +185,7 @@ XDate, setTimeout, getDataSet*/
         ],
         "payload": [
            {
-              "contentString": "referralRequest for Patient/18791941 for childhood obesity for community cooordination."
+              "contentString": "referralRequest for Patient/" + patientID + " for childhood obesity for community cooordination."
            },
          {
               "contentReference": {
@@ -198,7 +199,7 @@ XDate, setTimeout, getDataSet*/
         "status": "pending",
         "sent": "2014-12-12T18:01:10-08:00",
         "subject": {
-           "reference": "Patient/18791941"
+           "reference": "Patient/" + patientID
         }
       }
 
@@ -235,8 +236,8 @@ XDate, setTimeout, getDataSet*/
 
         
 
-        //hardcoded for now
-        var patientId = 18791941;
+        //
+        var patientId =  patientID;
     
         if(!patientId)
         {

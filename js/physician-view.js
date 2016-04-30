@@ -58,8 +58,8 @@
         topContainer.append(thePatient);
         var patientInfo = $("<div></div>").addClass("col-xs-4");
         patientInfo.attr("id", "patientInfo-div");
-        var patientID = (window.sessionStorage.getItem('patientID')) ?
-            window.sessionStorage.getItem('patientID') : "18791941";
+        var patientID = (window.sessionStorage.getItem('patientid_global')) ?
+            window.sessionStorage.getItem('patientid_global') : "18791941";
         var patientCall = (function () {
             var patientCall = null;
             $.ajax({
