@@ -415,7 +415,7 @@
                             surveyRow.append($("<div></div>")
                                 .addClass("btn-group btn-group-sm")
                                 .attr("role", "group")
-                                .append($("<button></button>")
+                                .append($("<a></a>")
                                     .addClass("btn btn-default btn-responsive disabled")
                                     .attr("type", "button")
                                     .html(options[j])));
