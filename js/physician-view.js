@@ -8,6 +8,7 @@
 {
 
     "use strict";
+    var patientID = (window.sessionStorage.getItem('patientid_global')); 
 
     var selectedIndex = -1,
         PATIENT,
@@ -58,8 +59,10 @@
         topContainer.append(thePatient);
         var patientInfo = $("<div></div>").addClass("col-xs-4");
         patientInfo.attr("id", "patientInfo-div");
-        var patientID = (window.sessionStorage.getItem('patientid_global')) ?
-            window.sessionStorage.getItem('patientid_global') : "18791941";
+        
+        //var patientID = (window.sessionStorage.getItem('patientid_global')) ?
+        //    window.sessionStorage.getItem('patientid_global') : "18791941";
+
         var patientCall = (function () {
             var patientCall = null;
             $.ajax({
@@ -185,12 +188,46 @@
             patient.telecom[0].system + " " : "") +
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
-
-            var BMI = patientBMICall.entry[0].resource.valueQuantity.value ? patientBMICall.entry[0].resource.valueQuantity.value : "";
-            var weight = patientWeightCall.entry[0].resource.valueQuantity.value ? patientWeightCall.entry[0].resource.valueQuantity.value : "";
-            var weightUnit = patientWeightCall.entry[0].resource.valueQuantity.unit ? patientWeightCall.entry[0].resource.valueQuantity.unit : "";
-            var height = patientHeightCall.entry[0].resource.valueQuantity.value ? patientHeightCall.entry[0].resource.valueQuantity.value : "";
-            var heightUnit = patientHeightCall.entry[0].resource.valueQuantity.unit ? patientHeightCall.entry[0].resource.valueQuantity.unit : "";
+            
+            var BMI = 0.0;
+            if(patientBMICall)
+                if(patientBMICall.entry)
+                if(patientBMICall.entry[0])
+                    if(patientBMICall.entry[0].resource)
+                        if(patientBMICall.entry[0].resource.valueQuantity)
+                            BMI = patientBMICall.entry[0].resource.valueQuantity.value ? patientBMICall.entry[0].resource.valueQuantity.value : "";
+             
+            var weight
+            if(patientWeightCall)
+                if(patientWeightCall.entry)
+                if(patientWeightCall.entry[0])
+                    if(patientWeightCall.entry[0].resource)
+                        if(patientWeightCall.entry[0].resource.valueQuantity)
+                            var weight = patientWeightCall.entry[0].resource.valueQuantity.value ? patientWeightCall.entry[0].resource.valueQuantity.value : "";
+            
+            var weightUnit = 0.0;
+            if(patientWeightCall)
+                if(patientWeightCall.entry)
+                if(patientWeightCall.entry[0])
+                    if(patientWeightCall.entry[0].resource)
+                        if(patientWeightCall.entry[0].resource.valueQuantity)
+                            weightUnit = patientWeightCall.entry[0].resource.valueQuantity.unit ? patientWeightCall.entry[0].resource.valueQuantity.unit : "";
+  
+            var height = 0.0;
+            if(patientHeightCall)
+                if(patientHeightCall.entry)
+                if(patientHeightCall.entry[0])
+                    if(patientHeightCall.entry[0].resource)
+                        if(patientHeightCall.entry[0].resource.valueQuantity)
+                            height = patientHeightCall.entry[0].resource.valueQuantity.value ? patientHeightCall.entry[0].resource.valueQuantity.value : "";
+     
+            var heightUnit =  0.0;
+            if(patientHeightCall)
+                if(patientHeightCall.entry)
+                if(patientHeightCall.entry[0])
+                    if(patientHeightCall.entry[0].resource)
+                        if(patientHeightCall.entry[0].resource.valueQuantity)
+                            heightUnit = patientHeightCall.entry[0].resource.valueQuantity.unit ? patientHeightCall.entry[0].resource.valueQuantity.unit : "";
 
             console.log("BMI " + BMI);
             localStorage.setItem("BMI", BMI);
@@ -309,26 +346,41 @@
             }
 
             var questionnaireId = (questionnaire.id ? questionnaire.id : "");
-            var questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
-            var questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
-            var responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
-            var qAndA = [];
-            for(var i = 0; i < questionnaire.group.question.length; i++) {
-                //search for validated by LinkId final answer
-                var question_link_ID = questionnaire.group.question[i].linkId;
-                var qr_index = -1;
-                for (var x = 0; x < response.group.question.length ; x++) {
-                    if(question_link_ID == response.group.question[x].linkId){
-                        qr_index = x;
-                        break;
+            
+            var questionnaireVersion = "";
+            var questionnaireLastUpdated = "";
+        
+            if(questionnaire.meta)
+            {
+                questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
+                questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
+                          
+            }
+            var responseLastUpdated = "";
+            if(response)
+            {
+                if(response.meta)
+                    responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
+            
+  
+
+                var qAndA = [];
+                for(var i = 0; i < questionnaire.group.question.length; i++) {
+                    //search for validated by LinkId final answer
+                    var question_link_ID = questionnaire.group.question[i].linkId;
+                    var qr_index = -1;
+                    for (var x = 0; x < response.group.question.length ; x++) {
+                        if(question_link_ID == response.group.question[x].linkId){
+                            qr_index = x;
+                            break;
+                        }
                     }
-                }
-                if(qr_index == -1){
-                    console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
-                    return;
-                }
-                var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
-                qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
+                    if(qr_index == -1){
+                        console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
+                        return;
+                    }
+                    var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
+                    qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
 
             }
             var ranking_results = questionnaire_ranking(qAndA);
@@ -426,7 +478,14 @@
                             .html(qAndA[i].question)))
                     .append($("<div></div>")
                         .append(surveyRow)));
+            	}
             }
+            else
+            {
+                $(container).append("\n\n\nThe pattient has not completed the Healthy Eating Survey.");
+
+            } 
+
         });
     }
 
