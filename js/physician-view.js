@@ -196,6 +196,7 @@
             var heightUnit = patientHeightCall.entry[0].resource.valueQuantity.unit ? patientHeightCall.entry[0].resource.valueQuantity.unit : "";
 
             console.log("BMI " + BMI);
+            localStorage.setItem("BMI", BMI);
 
             var BMIClassification;
             switch (true) {
@@ -338,6 +339,7 @@
             }
             var ranking_results = questionnaire_ranking(qAndA);
             var result = ranking_results['recommendation'];
+            localStorage.setItem("analysis", result);
 
             console.log("RESULTS");
             console.log(result);

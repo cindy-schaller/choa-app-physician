@@ -250,7 +250,7 @@ XDate, setTimeout, getDataSet*/
 
         $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Recommendations based on questionnaire: </h1>");
 
-        $(container).append("<textarea rows='5' cols='50'>Recommendations:</textarea>");
+        $(container).append("<textarea rows='5' cols='50'>" + localStorage.getItem("analysis") + "</textarea>");
         $(container).append("<br></br>");
 
         $(container).append("<h1 style='font-size: 20px; font-weight:bold;'>Physician recommendations (ICD-10): </h1>");

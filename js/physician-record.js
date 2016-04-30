@@ -214,7 +214,7 @@ var json_observation_data ={
         recordHeader += ("<br></br>");
 
         recordBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Diagnosis: </h1>");
-        recordBody += ("<textarea rows='6' cols='50'>Obese I</textarea>");
+        recordBody += ("<textarea rows='6' cols='50'>"+localStorage.getItem("BMI") + " - Obese I</textarea>");
         recordBody += ("<br></br>");
         recordBody += ("<br></br>");
         
