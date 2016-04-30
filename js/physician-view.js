@@ -1,7 +1,7 @@
 /*global
-Chart, GC, PointSet, Raphael, console, $,
-jQuery, debugLog,
-XDate, setTimeout, getDataSet*/
+ Chart, GC, PointSet, Raphael, console, $,
+ jQuery, debugLog,
+ XDate, setTimeout, getDataSet*/
 
 /*jslint undef: true, eqeq: true, nomen: true, plusplus: true, forin: true*/
 (function(NS, $)
@@ -56,8 +56,8 @@ XDate, setTimeout, getDataSet*/
         $(container).append(topContainer);
         var thePatient = $("<div></div>").addClass("col-xs-6 col-xs-offset-1").attr("id", "thePatientInfo-div");
         topContainer.append(thePatient);
-        var patientDBInfo = $("<div></div>").addClass("col-xs-4");
-        patientDBInfo.attr("id", "patientDBInfo-div");
+        var patientInfo = $("<div></div>").addClass("col-xs-4");
+        patientInfo.attr("id", "patientDBInfo-div");
         var patientID = (window.sessionStorage.getItem('patientID')) ?
             window.sessionStorage.getItem('patientID') : "18791941";
         var patientCall = (function () {
@@ -86,9 +86,12 @@ XDate, setTimeout, getDataSet*/
             });
             return questionnaireResponseCall;
         })();
-        var theAnalysis = $("<div></div>").addClass("row");
+        var theAnalysis = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
         theAnalysis.attr("id", "theAnalysis-div");
         $(container).append(theAnalysis);
+        var theSurvey = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
+        theSurvey.attr("id", "theSurvey-div");
+        $(container).append(theSurvey);
         var questionsID = (window.sessionStorage.getItem('questionsID')) ?
             window.sessionStorage.getItem('questions_id') : "18791835";
         var questionnaireCall = (function () {
@@ -105,92 +108,65 @@ XDate, setTimeout, getDataSet*/
             return questionnaireCall;
         })();
 
-
-        // var json_data ={
-        //           "resourceType": "Observation",
-        //           "status": "final",
-        //           "code": {
-        //             "coding": [
-        //               {
-        //                 "system": "http://loinc.org",
-        //                 "code": "39156-5",
-        //                 "display": "BMI"
-        //               }
-        //             ]
-        //           },
-        //           "subject": {
-        //             "reference": "Patient/18791941"
-        //           },
-        //            "performer": [{
-        //               "display": "A. Langeveld"
-        //             }],
-        //           "issued": "2013-04-04T13:27:00+01:00", 
-        //           "effectiveDateTime": "2013-04-02",   
-        //           "valueQuantity": {
-        //             "value": 31.0,
-        //           }
-        //         };
-
-        // var WeightHeightHeadBMIObservationsPOST = (function (){
-        //     var WeightHeightHeadBMIObservationsPOST = null;
-        //     //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
-        //     //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
-        //     $.ajax({
-        //         type: 'POST',
-        //         async: false,
-        //         global: false,
-        //         url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation',
-        //         data: JSON.stringify(json_data),
-        //         dataType: 'json',
-        //         contentType: 'application/json',
-        //         success: function (data) {
-        //             WeightHeightHeadBMIObservationsPOST = data;
-        //             console.log( WeightHeightHeadBMIObservationsPOST);
-        //         }
-        //     });
-        //     return WeightHeightHeadBMIObservationsPOST;
-        // })();
-
-        
-        var WeightHeightHeadBMIObservationsCall = (function () {
-            var WeightHeightHeadBMIObservationsCall = null;
+        var patientBMICall = (function () {
+            var patientBMICall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
 
             //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
             $.ajax({
                 async: false,
                 global: false,
-                //url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=3141-9,8302-2,8287-5,39156-5&_count=50',
                 url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=39156-5&_count=50',
                 dataType: 'json',
                 success: function (data) {
-                    WeightHeightHeadBMIObservationsCall = data;
-                   // console.log( WeightHeightHeadBMIObservationsCall);
+                    patientBMICall = data;
+                    // console.log( WeightHeightHeadBMIObservationsCall);
                 }
             });
-            return WeightHeightHeadBMIObservationsCall;
+            return patientBMICall;
         })();
-        //$.when(patientCall, questionnaireResponseCall, questionnaireCall, WeightHeightHeadBMIObservationsCall,WeightHeightHeadBMIObservationsPOST  ).then(function() {
-        $.when(patientCall, questionnaireResponseCall, questionnaireCall, WeightHeightHeadBMIObservationsCall ).then(function() {
-        
-            console.log("thePatient BMI observations: " + JSON.stringify(WeightHeightHeadBMIObservationsCall));
-            if (WeightHeightHeadBMIObservationsCall.entry) {
-                var BMIObservation = WeightHeightHeadBMIObservationsCall.entry[0].resource;
-            }
-            console.log(BMIObservation);
-            //var patientBMI = (BMIObservation.id ? BMIObservation.id : "");
 
+        var patientWeightCall = (function () {
+            var patientWeightCall = null;
+            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
 
-            console.log("thePatient: " + patientCall);
+            //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+            $.ajax({
+                async: false,
+                global: false,
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=3141-9&_count=50',
+                dataType: 'json',
+                success: function (data) {
+                    patientWeightCall = data;
+                    // console.log( WeightHeightHeadBMIObservationsCall);
+                }
+            });
+            return patientWeightCall;
+        })();
+
+        var patientHeightCall = (function () {
+            var patientHeightCall = null;
+            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
+
+            //Note LOINC Codes: 3141-9, 8302-2, 8287-5, 39156-5 are for Weight, Height, Head Circumference, and BMI Observations
+            $.ajax({
+                async: false,
+                global: false,
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=8302-2&_count=50',
+                dataType: 'json',
+                success: function (data) {
+                    patientHeightCall = data;
+                    // console.log( WeightHeightHeadBMIObservationsCall);
+                }
+            });
+            return patientHeightCall;
+        })();
+
+        $.when(patientCall, questionnaireResponseCall, questionnaireCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
+
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
             }
-            if (WeightHeightHeadBMIObservationsCall.entry) {
-                var bmiVitals = WeightHeightHeadBMIObservationsCall.entry[0].resource;
-            }
-
-            console.log(patient);
-            console.log(bmiVitals);
 
             var patientId = (patient.id ? patient.id : "");
             var patientVersion = (patient.meta.versionId) ? patient.meta.versionId : "";
@@ -213,12 +189,15 @@ XDate, setTimeout, getDataSet*/
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
 
-            var BMI = bmiVitals.valueQuantity.value;
+            var BMI = patientBMICall.entry[0].resource.valueQuantity.value ? patientBMICall.entry[0].resource.valueQuantity.value : "";
+            var weight = patientWeightCall.entry[0].resource.valueQuantity.value ? patientWeightCall.entry[0].resource.valueQuantity.value : "";
+            var weightUnit = patientWeightCall.entry[0].resource.valueQuantity.unit ? patientWeightCall.entry[0].resource.valueQuantity.unit : "";
+            var height = patientHeightCall.entry[0].resource.valueQuantity.value ? patientHeightCall.entry[0].resource.valueQuantity.value : "";
+            var heightUnit = patientHeightCall.entry[0].resource.valueQuantity.unit ? patientHeightCall.entry[0].resource.valueQuantity.unit : "";
+
             console.log("BMI " + BMI);
+
             var BMIClassification;
-            if(30 < BMI <= 35) {
-                console.log("duh");
-            }
             switch (true) {
                 case (BMI <= 18.5):
                     BMIClassification = $("<div></div>")
@@ -258,14 +237,10 @@ XDate, setTimeout, getDataSet*/
                 default:
                     BMIClassification = "BMI: ー"
             }
-            thePatient.append($("<blockquote></blockquote>")
-                .append($("<div></div>")
-                    .addClass("patient-info")
-                    .append($("<div></div>")
-                        .addClass("patient-id")
-                        .attr("id", "patient-id")
-                        .append($("<small></small>")
-                            .html("<strong>Patient ID: </strong>" + patientId)))
+
+            thePatient.append($("<blockquote></blockquote>") 
+                .append($("<div></div>") 
+                    .addClass("patient-info") 
                     .append($("<div></div>")
                         .addClass("patient-fullname")
                         .attr("id", "patient-fullname")
@@ -282,35 +257,51 @@ XDate, setTimeout, getDataSet*/
                         .attr("id", "patient-address")
                         .append($("<address></address>")
                             .html(address)))
-                    .append($("<div></div>")
-                        .addClass()
+                    .append($("<div></div>") 
                         .attr("id", "patient-BMI")
                         .append(BMIClassification))
                     .append($("<small></small>")
                         .append($("<div></div>")
                             .addClass("patient-gender text-capitalize")
                             .attr("id", "patient-gender")
-                            .html("<strong>Gender: </strong>" + patientGender))
-                        .append($("<div></div>")
-                            .addClass("patient-bday dt")
-                            .attr("id", "patient-bday")
-                            .html("<strong>Birthdate: </strong>" + patientBDay)))));
+                            .html("<strong>Patient ID: </strong>" + patientId)))));  
 
-            topContainer.append(patientDBInfo);
-            patientDBInfo.append($("<div></div>")
+            topContainer.append(patientInfo);
+            patientInfo.append($("<div></div>")
                 .addClass("patient-info")
                 .append($("<blockquote></blockquote>")
                     .addClass("blockquote-reverse")
-                    .append($("<small></small>")
-                        .append("<footer></footer>")
-                        .append($("<div></div>")
-                            .addClass("patient-version")
+                    .append($("<div></div>")
+                        .addClass("patient-gender text-capitalize")
+                        .attr("id", "patient-gender")
+                        .html("<strong>Gender: </strong>" + patientGender))
+                    .append($("<div></div>")
+                        .addClass("patient-bday dt")
+                        .attr("id", "patient-bday")
+                        .html("<strong>Birthdate: </strong>" + patientBDay))
+                    .append($("<div></div>")
+                        .attr("id", "patient-BMI")
+                        .append(BMIClassification))
+                    .append($("<div></div>")
+                        .addClass("patient-weight")
+                        .attr("id", "patient-weight")
+                        .html("<strong>Weight: </strong>" + weight + " " + weightUnit))
+                    .append($("<div></div>")
+                        .addClass("patient-height")
+                        .attr("id", "patient-height")
+                        .html("<strong>Height: </strong>" + height + " " + heightUnit))
+
+                    /*.append($("<div></div>")
+                        .append($("<footer></footer>")
+                            .append("<small></small>")
+                            .append($("<div></div>")
+                                .addClass("patient-version")
                                 .attr("id", "patient-version")
                                 .html("<strong>DB Version: </strong>" + patientVersion))
-                        .append($("<div></div>")
-                            .addClass("patient-lastUpdated")
-                            .attr("id", "patient-lastUpdated")
-                            .html("<strong>Last updated: </strong>" + patientLastUpdated.split("T")[0])))));
+                            .append($("<div></div>")
+                                .addClass("patient-lastUpdated")
+                                .attr("id", "patient-lastUpdated")
+                                .html("<strong>Last updated: </strong>" + patientLastUpdated.split("T")[0]))))*/));
 
             if (questionnaireCall.entry) {
                 var questionnaire = questionnaireCall.entry[0].resource;
@@ -343,21 +334,22 @@ XDate, setTimeout, getDataSet*/
                 }
                 var final_answer = response.group.question[qr_index].answer[0].valueInteger;
                 qAndA.push({question:(questionnaire.group.question[i].text), answer:(questionnaire.group.question[i].option[final_answer].display), answerCode:final_answer});
+
             }
             var ranking_results = questionnaire_ranking(qAndA);
-            var result = ranking_results['recommendation']
+            var result = ranking_results['recommendation'];
 
-            console.log("RESULTS")
-            console.log(result)
-            console.log("FOCUS SCORE")
-            console.log(ranking_results['focus_score'])
+            console.log("RESULTS");
+            console.log(result);
+            console.log("FOCUS SCORE");
+            console.log(ranking_results['focus_score']);
 
             var blurb_5210 = "5-2-1-0 is an evidence-based prevention message centered on recommendations for Childhood Obesity Assessment, Prevention and Treatment\
             sponsored by the <abbr title='Centers for Disease Control and Prevention'>CDC</abbr>.\
             5-2-1-0 recommends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, \
             and 0 Sugary Drinks a day.";
 
-            var focus_score = ranking_results['focus_score']
+            var focus_score = ranking_results['focus_score'];
             var analysisRow = $("<div></div>")
                 .addClass("btn-group btn-group-sm")
                 .attr("data-toggle", "buttons")
@@ -385,16 +377,59 @@ XDate, setTimeout, getDataSet*/
             theAnalysis.append($("<div></div>")
                 .addClass("row well")
                 .append($("<div></div>")
-                    .addClass("col-sm-2 col-xs-offset-1 bb")
+                    .addClass("text-center")
                     .append($("<h4></h4>")
-                        .html("Recommendations: ")))
-                        .append($("<div></div>")
-                            .addClass("col-sm-9 bb")
-                            .append(analysisRow)));
+                        .html("5-2-1-0 analysis recommendations:")))
+                .append($("<div></div>")
+                    .addClass("col-sm-11 col-sm-offset-1 bb")
+                    .append(analysisRow)));
             theAnalysis.append($("<div></div>")
-                .addClass("col-xs-9 col-xs-offset-2 bb text-justify 5210-div")
+                .addClass("col-xs-12 bb text-justify 5210-div")
                 .append($("<small></small>")
                     .html(blurb_5210)));
+
+            theSurvey.append($("<div></div>")
+                .html("<hr>")
+                .append($("<h1></h1>")
+                    .addClass("text-center text-muted btn-group-sm")
+                    .html("Questionnaire responses")));
+            for(var i = 0; i < questionnaire.group.question.length; i++) {
+                var options = [];
+                for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
+                    options.push(questionnaire.group.question[i].option[j].display);
+                }
+                var surveyRow = $("<div></div>")
+                    .addClass("btn-group btn-group-justified")
+                    .attr("data-toggle", "buttons")
+                    .attr("role", "group")
+                for (var j = 0; j < options.length; j++) {
+                        if (qAndA[i].answerCode == j) {
+                            surveyRow.append($("<div></div>")
+                                .addClass("btn-group btn-group-sm")
+                                .attr("role", "group")
+                                .append($("<a></a>")
+                                    .addClass("btn btn-default btn-responsive active disabled")
+                                    .attr("type", "button")
+                                    .html(options[j])));                        }
+                        else {
+                            surveyRow.append($("<div></div>")
+                                .addClass("btn-group btn-group-sm")
+                                .attr("role", "group")
+                                .append($("<button></button>")
+                                    .addClass("btn btn-default btn-responsive disabled")
+                                    .attr("type", "button")
+                                    .html(options[j])));
+                        }
+                }
+                theSurvey.append($("<div></div>")
+                    .addClass("row well")
+                    .append($("<div></div>")
+                        .addClass("text-center text-muted")
+                        .append($("<h4></h4>")
+                            .html(qAndA[i].question)))
+                    .append($("<div></div>")
+                        .append(surveyRow)));
+            }
         });
     }
 
@@ -491,13 +526,13 @@ XDate, setTimeout, getDataSet*/
     }
 
 //----------------------------------------------------------------
-    
+
     NS.PhysicianView =
     {
         render : function()
         {
 
-                renderPhysicianView("#view-physician");
+            renderPhysicianView("#view-physician");
 
         }
     };
@@ -539,7 +574,7 @@ XDate, setTimeout, getDataSet*/
             {
                 renderPhysicianView("#view-physician");
             });
-       }
+        }
     });
 
 }(GC, jQuery));
