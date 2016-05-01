@@ -3,29 +3,29 @@
 /*jslint eqeq: true, nomen: true, plusplus: true, newcap: true */
 
 
-function gc_app_js (NS, $) {
+(function(NS, $) {
 
     //"use strict";
 
     NS.App = {};
 
-    var DEBUG_MODE = NS.chartSettings.appEnvironment === "DEVELOPMENT", 
-        leftPane = null, 
-        parentalDarwn = false, 
-        drawn = false, 
-        PATIENT = null, 
-        BIRTH_XDATE = new XDate(), 
-        MIN_WEEK_DIFF = NS.chartSettings.minTimeInterval / NS.Constants.TIME.WEEK, 
-        BROADCASTER = $("html"), 
+    var DEBUG_MODE = NS.chartSettings.appEnvironment === "DEVELOPMENT",
+        leftPane = null,
+        parentalDarwn = false,
+        drawn = false,
+        PATIENT = null,
+        BIRTH_XDATE = new XDate(),
+        MIN_WEEK_DIFF = NS.chartSettings.minTimeInterval / NS.Constants.TIME.WEEK,
+        BROADCASTER = $("html"),
         PRIMARY_CHART_TYPE = "CDC",
         CORRECTION_CHART_TYPE = "CDC", // CDC, WHO etc.
-        START_WEEK = 0, 
-        END_WEEK = 26.08928571428572, 
-        START_AGE_MOS = null, 
-        END_AGE_MOS = null, 
-        GENDER = null, 
-        RENDER_FOR_PRINT = $("html").is(".before-print"), 
-        PRINT_WINDOW = null, 
+        START_WEEK = 0,
+        END_WEEK = 26.08928571428572,
+        START_AGE_MOS = null,
+        END_AGE_MOS = null,
+        GENDER = null,
+        RENDER_FOR_PRINT = $("html").is(".before-print"),
+        PRINT_WINDOW = null,
         ANNOTATIONS_WINDOW = null,
         imagesToPreload = [
             "img/pview/HeadCircumferenceIcon.png",
@@ -48,8 +48,8 @@ function gc_app_js (NS, $) {
             //"img/pview/pinkMotherHeightImage.png",
             //"img/pview/pinkTeenHeightImage.png",
             //"img/pview/pinkToddlerHeightImage.png"
-        ], 
-        
+        ],
+
         getStartAgeMos,
         getEndAgeMos;
 
@@ -58,7 +58,7 @@ function gc_app_js (NS, $) {
             console.log(a);
         }
     };
-    
+
     // gender ------------------------------------------------------------------
     function getGender() {
         if (!GENDER) {
@@ -213,7 +213,7 @@ function gc_app_js (NS, $) {
             var values = this.value.split(":"),
                 start  = GC.Util.floatVal(values[0]),
                 end    = GC.Util.floatVal(values[1]);
-            
+
             // If the given age is within this time range 
             if (start <= weeks && end >= weeks) {
                 setStartWeek(start, true);
@@ -225,11 +225,11 @@ function gc_app_js (NS, $) {
     }
 
     function getFitRange() {
-        var first = PATIENT.getFirstModelEntry(), 
-            last = PATIENT.getLastModelEntry(), 
-            step, 
+        var first = PATIENT.getFirstModelEntry(),
+            last = PATIENT.getLastModelEntry(),
+            step,
             firstAge,
-            lastAge, 
+            lastAge,
             range;
 
         if (!first || !last) {
@@ -310,17 +310,17 @@ function gc_app_js (NS, $) {
                 break;
             case "record":
                 GC.PhysicianRecord.render();
-                break;  
+                break;
             case "referral":
                 GC.PhysicianReferral.render();
-                break;      
+                break;
             default:
                 break;
         }
 
         drawn = true;
     }
-    
+
     function togglePatientEditable(bEditable) {
         $('[name="fader-height"]').stepInput( bEditable ? "enable" : "disable");
         $('[name="mother-height"]').stepInput( bEditable ? "enable" : "disable");
@@ -330,7 +330,7 @@ function gc_app_js (NS, $) {
         $('[name="EDD"]').datepicker( bEditable ? "enable" : "disable");
         //$(".add-entry").toggleClass("ui-state-disabled", !bEditable);
     }
-    
+
     function togglePatientDataEditable(bEditable) {
         $(".add-entry").toggleClass("ui-state-disabled", !bEditable);
     }
@@ -376,13 +376,13 @@ function gc_app_js (NS, $) {
         $("html").attr("lang", lang).trigger("set:language", [lang]);
         return this;
     };
-    
-    
+
+
     NS.Util.createProperty(NS.App, {
         name : "correctionAge",
         inputName : "correction-age"
     });
-    
+
     NS.Util.createProperty(NS.App, {
         name : "viewType",
         getter : function() {
@@ -405,28 +405,28 @@ function gc_app_js (NS, $) {
     NS.App.dialog = function(url, args, options) {
 
         $("#dialog")
-        .empty()
-        .html(
-            '<div class="content">' + 
-            '<p style="text-align:center">' + 
-            '<img src="img/spinner.gif" />' + 
-            '<br />' + 
-            '<br />' + 
-            NS.str("STR_Loading") + 
-            '</p>' + 
-            '</div>'
-        )
-        .data("dialogProxy", {
-            "arguments" : $.makeArray(args)
-        })
-        .dialog("close")
-        .dialog("option", $.extend({
-            minWidth : 300,
-            width : 300,
-            title : NS.str("STR_Loading"),
-            position : "center"
-        }, options)).dialog("open");
-        
+            .empty()
+            .html(
+                '<div class="content">' +
+                '<p style="text-align:center">' +
+                '<img src="img/spinner.gif" />' +
+                '<br />' +
+                '<br />' +
+                NS.str("STR_Loading") +
+                '</p>' +
+                '</div>'
+            )
+            .data("dialogProxy", {
+                "arguments" : $.makeArray(args)
+            })
+            .dialog("close")
+            .dialog("option", $.extend({
+                minWidth : 300,
+                width : 300,
+                title : NS.str("STR_Loading"),
+                position : "center"
+            }, options)).dialog("open");
+
         setTimeout(function() {
             $("#dialog").find("> .content").load(url, function() {
                 NS.Util.translateHTML(this);
@@ -462,7 +462,7 @@ function gc_app_js (NS, $) {
             "width" : "auto"
         });
     };
-    
+
     NS.App.aboutAppDialog = function() {
         GC.App.dialog("about-dialog.html", null, {
             "modal" : false,
@@ -470,15 +470,6 @@ function gc_app_js (NS, $) {
             "height" : "auto",
             "width" : "auto"
         });
-    };
-
-    NS.App.setPatientId = function(new_patient_id) {
-        if (new_patient_id && (new_patient_id != window.sessionStorage.getItem('patient_id'))) {
-            window.sessionStorage.setItem('patient_id', new_patient_id);
-            call_load_functions_js();
-            GC.get_data();
-            window.sessionStorage.removeItem('view');
-        }
     };
 
     NS.App.viewAnnotations = function() {
@@ -572,7 +563,7 @@ function gc_app_js (NS, $) {
             case GC.DataType.STRING:
                 out = String(x);
                 break;
-                
+
             default:
                 throw "Undefined data type";
         }
@@ -648,14 +639,14 @@ function gc_app_js (NS, $) {
         };
 
     }());
-    
+
     // =========================================================================
     // End of selection methods
     // =========================================================================
 
     $(function initUI() {
 
-        var stage = $("#stage"), 
+        var stage = $("#stage"),
             QUEUE = new GC.Util.TaskQueue({
                 onChange : function(task) {
                     $("#loading-indicator .msg").text(task.description);
@@ -666,27 +657,27 @@ function gc_app_js (NS, $) {
                     });
                 }
             });
-        
+
         function createLanguageSelectors() {
-            var len = 0, 
+            var len = 0,
                 enabledLocales = [],
                 cur = GC.App.getLanguage();
-            
+
             $.each(GC.locales, function(i, locale) {
                 if (locale.enabled) {
                     enabledLocales[len++] = locale;
                 }
             });
-            
+
             $(".language-selector").each(function(i, o) {
                 $(o).empty();
-                
-                
+
+
                 // Display the 2 languages as toggle-button
                 if (len == 2) {
                     var input = $('<input class="toggle-button" type="hidden" name="language" />').attr({
-                        "value" : cur, 
-                        "data-value1" : enabledLocales[0].langAbbr, 
+                        "value" : cur,
+                        "data-value1" : enabledLocales[0].langAbbr,
                         "data-value2" : enabledLocales[1].langAbbr,
                         "data-label1" : enabledLocales[0].language,
                         "data-label2" : enabledLocales[1].language
@@ -694,8 +685,8 @@ function gc_app_js (NS, $) {
                         GC.App.setLanguage($(this).val());
                     }).appendTo(o);
                     $.createToggleButton(input);
-                } 
-                
+                }
+
                 // Display the one or more than two languages as select
                 else {
                     var html = '<select name="language" class="styled language-select">';
@@ -703,7 +694,7 @@ function gc_app_js (NS, $) {
                         html += '<option value="' + locale.langAbbr + '">' + locale.language + '</option>';
                     });
                     html += '</select>';
-                    
+
                     $(o)
                         .append('<span data-translatecontent="STR_0">' + GC.str("STR_0") + '</span>: ')
                         .append(
@@ -713,7 +704,7 @@ function gc_app_js (NS, $) {
                         );
                 }
             });
-            
+
             $("html").bind("set:language", function(e, lang) {
                 $(".language-selector select").val(lang);
                 NS.Util.translateHTML();
@@ -820,19 +811,19 @@ function gc_app_js (NS, $) {
 
         function loadData(done) {
 
-            var SMART_NS = "http://smarthealthit.org/terms#", 
-              capabilities = {
-                preferences : {
-                  read  : false,
-                  write : false,
-                  unset : false
-                },
-                scratchpad : {
-                  read  : false,
-                  write : false,
-                  unset : false
-                }
-              };
+            var SMART_NS = "http://smarthealthit.org/terms#",
+                capabilities = {
+                    preferences : {
+                        read  : false,
+                        write : false,
+                        unset : false
+                    },
+                    scratchpad : {
+                        read  : false,
+                        write : false,
+                        unset : false
+                    }
+                };
 
             GC.SMART_READY = true;
             $("window").trigger("smartready");
@@ -847,36 +838,36 @@ function gc_app_js (NS, $) {
             onModelsReady();
             // Patient
             GC.get_data().done(
-            function(data) {
-              GC.currentPatient = PATIENT = new GC.Patient(
-                data.demographics, 
-                data.vitals, 
-                null, //allergies, 
-                data.familyHistory,
-                null,//	annotations, 
-                data.boneAge
-              );
-              GC.translatePreemieDatasets(PATIENT);
-              done();
-            }).fail(function(response){
-              var msg = response.responseText;
-              console.log("Failed.");
-              $("#loading-indicator h2").html(msg); 
-              if (response.status === 404) {
-                $("#loading-indicator h2").append($("<button>Make me a fake one!</button>"));
-                $("#loading-indicator button").click(function(){
-                  $.get("/my/ccda/fixture").success(function(){
-                    window.location.href = window.location.href;
-                  });
-                });
-              }
+                function(data) {
+                    GC.currentPatient = PATIENT = new GC.Patient(
+                        data.demographics,
+                        data.vitals,
+                        null, //allergies, 
+                        data.familyHistory,
+                        null,//	annotations, 
+                        data.boneAge
+                    );
+                    GC.translatePreemieDatasets(PATIENT);
+                    done();
+                }).fail(function(response){
+                var msg = response.responseText;
+                console.log("Failed.");
+                $("#loading-indicator h2").html(msg);
+                if (response.status === 404) {
+                    $("#loading-indicator h2").append($("<button>Make me a fake one!</button>"));
+                    $("#loading-indicator button").click(function(){
+                        $.get("/my/ccda/fixture").success(function(){
+                            window.location.href = window.location.href;
+                        });
+                    });
+                }
             });
         }
 
         function initUIControls(done) {
-            
+
             createLanguageSelectors();
-            
+
             // Choose view type
             // =================================================================
 
@@ -894,15 +885,15 @@ function gc_app_js (NS, $) {
                 $("#view-record") [type == "record" ? "show" : "hide"]();
                 $("#view-referral") [type == "referral" ? "show" : "hide"]();
                 $("html")
-                .toggleClass("has-patient-header", !GC.Preferences.prop("hidePatientHeader"))
-                .toggleClass("view-clinical", type == "graphs" || type == "table")
-                .toggleClass("view-parental", type == "parent")
-                .toggleClass("view-charts", type == "graphs")
-                .toggleClass("view-table", type == "table")
-                .toggleClass("view-patients", type == "patients")
-                .toggleClass("view-physician", type == "view")
-                .toggleClass("view-record", type == "record")
-                .toggleClass("view-referral", type == "referral");
+                    .toggleClass("has-patient-header", !GC.Preferences.prop("hidePatientHeader"))
+                    .toggleClass("view-clinical", type == "graphs" || type == "table")
+                    .toggleClass("view-parental", type == "parent")
+                    .toggleClass("view-charts", type == "graphs")
+                    .toggleClass("view-table", type == "table")
+                    .toggleClass("view-patients", type == "patients")
+                    .toggleClass("view-physician", type == "view")
+                    .toggleClass("view-record", type == "record")
+                    .toggleClass("view-referral", type == "referral");
 
                 //hide parent tab
                 if ( ! GC.Preferences._data.isParentTabShown) {
@@ -926,15 +917,15 @@ function gc_app_js (NS, $) {
             // Time range tabs and Zoom In
             // =================================================================
             (function() {
-                
+
                 function updateTabRadioState() {
                     $(this).closest('label').toggleClass("active", this.checked);
                 }
-                
+
                 function onTimeRangeTabChange() {
                     $(this).closest("#time-ranges").find("input").each(updateTabRadioState);
                 }
-                
+
                 var selectedTab;
 
                 var fitRange = GC.App.getFitRange();
@@ -985,7 +976,7 @@ function gc_app_js (NS, $) {
                 });
 
             }());
-            
+
 
             // Toggle settings button
             // =================================================================
@@ -999,9 +990,9 @@ function gc_app_js (NS, $) {
             // =================================================================
             function onDataSetsChange() {
                 var isDSPremature = (GC.DATA_SETS[PRIMARY_CHART_TYPE + "_LENGTH"]||{}).isPremature ||
-                                    (GC.DATA_SETS[PRIMARY_CHART_TYPE + "_WEIGHT"]||{}).isPremature ||
-                                    (GC.DATA_SETS[PRIMARY_CHART_TYPE + "_HEADC" ]||{}).isPremature ||
-                                    (GC.DATA_SETS[PRIMARY_CHART_TYPE + "_BMI"   ]||{}).isPremature;
+                    (GC.DATA_SETS[PRIMARY_CHART_TYPE + "_WEIGHT"]||{}).isPremature ||
+                    (GC.DATA_SETS[PRIMARY_CHART_TYPE + "_HEADC" ]||{}).isPremature ||
+                    (GC.DATA_SETS[PRIMARY_CHART_TYPE + "_BMI"   ]||{}).isPremature;
 
                 $("#the-tab").toggleClass(
                     "double",
@@ -1014,7 +1005,7 @@ function gc_app_js (NS, $) {
                         "Leave only the left data source as primary" :
                         "Add secondary data source"
                 );
-                
+
                 $("html").toggleClass("premature", !!isDSPremature);
             }
 
@@ -1094,29 +1085,29 @@ function gc_app_js (NS, $) {
                     startAge = 0,
                     endAge   = 20,
                     gender;
-                    
+
                 if (patient) {
                     startAge = 0;//GC.App.getStartAgeMos();
                     endAge   = 20 * 12; //GC.App.getStartAgeMos();
                     gender   = GC.App.getGender();
-                    
+
                     if (GC.getDataSet(src, "LENGTH", gender, startAge, endAge) ||
                         GC.getDataSet(src, "WEIGHT", gender, startAge, endAge) ||
                         GC.getDataSet(src, "HEADC" , gender, startAge, endAge) ||
                         GC.getDataSet(src, "BMI"   , gender, startAge, endAge)) {
-                        return true;    
+                        return true;
                     }
                 }
-                return false; 
+                return false;
             }
-            
+
             $("#primary-ds, #secondary-ds").menuButton("forEachOption", function(o) {
                 this.setIndexEnabled(o.index, hasData(o.value));
             });
             // =============================================================
-            
-            
-            
+
+
+
 
             // checkbox-button
             // =================================================================
@@ -1141,7 +1132,7 @@ function gc_app_js (NS, $) {
                     );
                 }
             });
-            
+
             // Uncomment the following if [name="gest-correction-treshold"] should be initialy disabled on FENTON
             //onDataSetsChange();
 
@@ -1218,7 +1209,7 @@ function gc_app_js (NS, $) {
                 renderMidParentalHeight();
                 $("#not-bio-parents-info")[!PATIENT.midParentalHeight ? "show" : "hide"]();
             });
-            
+
             // PATIENT inputs
             // =================================================================
 
@@ -1379,24 +1370,24 @@ function gc_app_js (NS, $) {
 
         function showLastRecOrSelection() {
 
-            var lastRec = PATIENT.getLastModelEntry(), 
-                rec = GC.SELECTION.selected.record || lastRec, 
-                date, 
+            var lastRec = PATIENT.getLastModelEntry(),
+                rec = GC.SELECTION.selected.record || lastRec,
+                date,
                 age;
 
             if (!rec) {
                 $(".last-recording").hide();
                 return;
             }
-            
+
             date = (new XDate(PATIENT.DOB)).addMonths(rec.agemos);
-            
+
             age = new GC.TimeInterval(PATIENT.DOB, date);
 
             $(".last-recording").show().find("> span").html(
                 rec === lastRec ?
-                GC.str("STR_6047") :
-                GC.str("STR_6048")
+                    GC.str("STR_6047") :
+                    GC.str("STR_6048")
             );
 
             // Display the last-recording date
@@ -1407,7 +1398,7 @@ function gc_app_js (NS, $) {
         }
 
         function setUIValues(done) {
-            
+
             // fontFamily
             GC.Preferences.bind("set:fontFamily", function(e) {
                 $("body").css("fontFamily", e.data.newValue);
@@ -1420,15 +1411,15 @@ function gc_app_js (NS, $) {
                 setStageHeight();
             });
             $("body").css("fontSize", GC.chartSettings.fontSize);
-            
+
             // Display app version
             $(".version").text(GC.chartSettings.version.asString());
 
             GC.Preferences.bind("set:dateFormat", showLastRecOrSelection);
-            
+
             togglePatientEditable(GC.chartSettings.patientFamilyHistoryEditable);
             togglePatientDataEditable(GC._isPatientDataEditable);
-            
+
             done();
         }
 
@@ -1510,7 +1501,7 @@ function gc_app_js (NS, $) {
         QUEUE.add(NS.str("STR_LoadingCurveData"),loadDataSets);
 
         QUEUE.add(NS.str("STR_LoadingData"), loadData);
-        
+
         QUEUE.add(NS.str("STR_PreloadImages"), function(done) {
             $.each(imagesToPreload, function(i, src) {
                 var img = new Image();
@@ -1518,7 +1509,7 @@ function gc_app_js (NS, $) {
             });
             done();
         });
-        
+
         QUEUE
             .add(NS.str("STR_SetInitialState"), setInitialState)
             .add(NS.str("STR_InitializeUIControls"), initUIControls)
@@ -1531,10 +1522,10 @@ function gc_app_js (NS, $) {
             .add(NS.str("STR_AllDone"), function(done) {
                 done();
             });
-        
+
         QUEUE.start();
     });
 
     return NS;
 
-}gc_app_js(GC, jQuery);
+}(GC, jQuery)); 
