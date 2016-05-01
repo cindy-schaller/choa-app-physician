@@ -182,10 +182,12 @@ var json_observation_data ={
                 success: function (data) {
                     ObesityConditionPOST = data;
                     console.log( ObesityConditionPOST);
+                    alert(ObesityConditionPOST.issue[0].diagnostics);
                 }
             });
             return ObesityConditionPOST;
         };
+
 
 
     // From: Goodman, Alyson B. (CDC/ONDIEH/NCCDPHP) 
@@ -302,25 +304,24 @@ var json_observation_data ={
        ]
     }
       
-
-   //used to order a full set of diagnostic tests 
-   var DiagnosticOrderPOST = (function (){
-        var DiagnosticOrderPOST = null;
-         $.ajax({
-            type: 'POST',
-            async: false,
-            global: false,
-            url: 'http://52.72.172.54:8080/fhir/baseDstu2/DiagnosticOrder',
-            data: JSON.stringify(json_order_diagnostic_tests_data),
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function (data) {
-                DiagnosticOrderPOST = data;
-                console.log( DiagnosticOrderPOST);
-            }
-        });
-        return DiagnosticOrderPOST;
-    })(); 
+       //used to order a full set of diagnostic tests 
+       var DiagnosticOrderPOST = function (){
+            var DiagnosticOrderPOST = null;
+             $.ajax({
+                type: 'POST',
+                async: false,
+                global: false,
+                url: 'http://52.72.172.54:8080/fhir/baseDstu2/DiagnosticOrder',
+                data: JSON.stringify(json_order_diagnostic_tests_data),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data) {
+                    DiagnosticOrderPOST = data;
+                    console.log( DiagnosticOrderPOST);
+                    alert(DiagnosticOrderPOST.issue[0].diagnostics);
+                }
+            });
+        };
 
 
     function renderPhysicianRecord( container ) 
@@ -387,10 +388,14 @@ var json_observation_data ={
         console.log("DIANOSIS BUTTON");
         console.log($("#diagnosis-text").val());
         $('#diagnosis-btn').click(function() {
+
+
+
+
           json_condition_data.category.coding[0].diagnosis = $("#diagnosis-text").val();
           json_condition_data.category.coding[0].fhir_comments = $('#diagnosis-obs').val();
           json_observation_data.observations =  $('#diagnosis-obs').val();
-          alert('[SUCCESS] Diagnosis & Observations submitted');
+          alert('[SUCCESS] Diagnosis & Observations & Diagnostic Order submitted');
 
           console.log("json_condition_data");
           console.log(json_condition_data);
@@ -398,7 +403,8 @@ var json_observation_data ={
           console.log(json_observation_data);
 
           ObesityConditionPOST();     
-          ObeseObservationsPOST();     
+          ObeseObservationsPOST();  
+          DiagnosticOrderPOST();
         })
         
     }

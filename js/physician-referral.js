@@ -8,10 +8,12 @@ XDate, setTimeout, getDataSet*/
 {
 
     "use strict";
+
+    var refreq_ID = "19179006";
     var patientID = (window.sessionStorage.getItem('patientid_global')) ?
                 window.sessionStorage.getItem('patientid_global') : "18791941";
     var selectedIndex = -1,
-    
+
         /**
          * The cached value from GC.App.getMetrics()
          */
@@ -143,69 +145,85 @@ XDate, setTimeout, getDataSet*/
             contentType: 'application/json',
             success: function (data) {
                 CoordinatorReferralPOST = data;
-                console.log( CoordinatorReferralPOST);
-            }
+                console.log( CoordinatorReferralPOST.valueOf());
+                alert(CoordinatorReferralPOST.issue[0].diagnostics);
+                var value = CoordinatorReferralPOST.issue[0].diagnostics;
+                var num =  value.match(/\d+/g);
+                refreq_ID = num[0];
+        
+                POSTcomm();
+            },
+            
         });
         return CoordinatorReferralPOST;
     }; 
 
-
-    $.when(CoordinatorReferralPOST ).then(function() 
+    function POSTcomm() 
     {
+       
       //this must be only after the referralrequest 
       //the "reference": "ReferralRequest/19179006" field **must** be updated 
       //to the real ID of the ReferralRequest
 
       //CoordinatorReferralPOST can be parsed to get the correct ID number
 
-      var json_communication_to_community_coordinator_data ={
-      "resourceType": "Communication",
-        "text": {
-           "status": "generated",
-           "div": "<div>a referralRequest has been sent to the childhood obesity patient coordinator </div>"
-        },
-        
-        
-        "category": {
-           "coding": [
-              {
-                 "system": "http://acme.org/messagetypes",
-                 "code": "notification"
-              }
-           ],
-           "text": "notification"
-        },
-        "sender": {
-           "display": "A. Langeveld"
-        },
-        "recipient": [
-           {
-              "reference": "Organization/19178873"
-           }
-        ],
-        "payload": [
-           {
-              "contentString": "referralRequest for Patient/" + patientID + " for childhood obesity for community cooordination."
-           },
-         {
-              "contentReference": {
-                 "fhir_comments": [
-                    " Reference to the referralRequest "
-                 ],
-                 "reference": "ReferralRequest/19179006"
-              }
-           }
-         ],
-        "status": "pending",
-        "sent": "2014-12-12T18:01:10-08:00",
-        "subject": {
-           "reference": "Patient/" + patientID
-        }
-      }
+      //post request to community-facing app
+          CoordinatorCommunicationPOST();
+          
+         
+     };
+
+      
 
 
      //used to POST a communication  to the community coordinator
      var CoordinatorCommunicationPOST = function (){
+
+    var json_communication_to_community_coordinator_data ={
+          "resourceType": "Communication",
+            "text": {
+               "status": "generated",
+               "div": "<div>a referralRequest has been sent to the childhood obesity patient coordinator </div>"
+            },
+            
+            
+            "category": {
+               "coding": [
+                  {
+                     "system": "http://acme.org/messagetypes",
+                     "code": "notification"
+                  }
+               ],
+               "text": "notification"
+            },
+            "sender": {
+               "display": "A. Langeveld"
+            },
+            "recipient": [
+               {
+                  "reference": "Organization/19178873"
+               }
+            ],
+            "payload": [
+               {
+                  "contentString": "referralRequest for Patient/" + patientID + " for childhood obesity for community cooordination."
+               },
+             {
+                  "contentReference": {
+                     "fhir_comments": [
+                        " Reference to the referralRequest "
+                     ],
+                     "reference": "ReferralRequest/" + refreq_ID
+                  }
+               }
+             ],
+            "status": "pending",
+            "sent": "2014-12-12T18:01:10-08:00",
+            "subject": {
+               "reference": "Patient/" + patientID
+            }
+          }
+      
           var CoordinatorCommunicationPOST = null;
            $.ajax({
               type: 'POST',
@@ -217,12 +235,16 @@ XDate, setTimeout, getDataSet*/
               contentType: 'application/json',
               success: function (data) {
                   CoordinatorCommunicationPOST = data;
+                  console.log( json_ReferralRequest_to_community_coordinator_data);
+                  console.log(json_communication_to_community_coordinator_data);
                   console.log( CoordinatorCommunicationPOST);
+                  alert(CoordinatorCommunicationPOST.issue[0].diagnostics);
+         
               }
           });
-          return CoordinatorCommunicationPOST;
+          //return CoordinatorCommunicationPOST;
       }; 
-  });
+  
 
 
 
