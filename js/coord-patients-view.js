@@ -4,6 +4,22 @@
  XDate, setTimeout, getDataSet*/
 
 /*jslint undef: true, eqeq: true, nomen: true, plusplus: true, forin: true*/
+
+/*
+
+Acedemic Honesty, Georgia Tech Honor Code: Authorship of this file:
+
+The Security Council CDC Healthy Weight Coordinator-Facing Application
+is derived from the SMART Pediatric Growth Chart app, with in-depth
+modification to handle coordinator-specific overview needs, as well as
+modifications to some of the patient-specific panels for healthy weight
+interaction / coordination needs.
+
+The Security Council team is one of the Georgia Tech teams selected
+to complete an aspect of CDC's healthy weight application projects. 
+
+*/
+
 (function(NS, $) {
 
     "use strict";
