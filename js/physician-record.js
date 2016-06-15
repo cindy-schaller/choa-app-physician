@@ -9,7 +9,7 @@ XDate, setTimeout, getDataSet*/
 
     "use strict";
     var patientID = (window.sessionStorage.getItem('patientid_global')) ?
-                window.sessionStorage.getItem('patientid_global') : "18791941";
+                window.sessionStorage.getItem('patientid_global') : "11034584";
     var selectedIndex = -1,
 
         /**
