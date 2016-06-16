@@ -1,12 +1,13 @@
 Instructions to run our CDC Physician Facing App:
-1.  Install Node.JS
-2.  If on Windows, add the path to Node.JS to your environmental variables
+1.  Install Node.JS from https://nodejs.org 
+2.  If on Windows, add the path to Node.JS to your environmental variables (this is already done for you if you downloaded and installed the .msi) 
 
-Then install http-server:
-3.  npm install http-server -g
+Then install http-server from a terminal window (if on windows, the "Node.js command prompt" is provided as a link during the installation):
+3.  `npm install http-server -g`
 
 To run the server execute the following command:
-4.  http-server /path/to/index.html
+4.  `http-server /path/to/index.html`
+5.  local app should now be available at localhost:8080 in your browser
 
 Below are the requirements to run the SMART Growth Chart components of our app
 
