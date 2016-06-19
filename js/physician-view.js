@@ -8,7 +8,7 @@
 {
 
     "use strict";
-    var patientID = (window.sessionStorage.getItem('patientid_global')); 
+    var patientID = 11034584;
 
     var selectedIndex = -1,
         PATIENT,
@@ -96,7 +96,7 @@
         theSurvey.attr("id", "theSurvey-div");
         $(container).append(theSurvey);
         var questionsID = (window.sessionStorage.getItem('questionsID')) ?
-            window.sessionStorage.getItem('questions_id') : "18791835";
+            window.sessionStorage.getItem('questions_id') : "11034668";
         var questionnaireCall = (function () {
             var questionnaireCall = null;
             $.ajax({

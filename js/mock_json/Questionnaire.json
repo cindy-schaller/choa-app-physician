@@ -1,0 +1,325 @@
+<Bundle xmlns="http://hl7.org/fhir">
+   <id value="52927a6a-28c9-4773-b610-13b674e0655f"/>
+   <meta>
+      <lastUpdated value="2016-06-17T19:28:59.379-04:00"/>
+   </meta>
+   <type value="searchset"/>
+   <total value="1"/>
+   <link>
+      <relation value="self"/>
+      <url value="http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?_raw=true&amp;_id=11034668"/>
+   </link>
+   <entry>
+      <fullUrl value="http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire/11034668"/>
+      <resource>
+         <Questionnaire xmlns="http://hl7.org/fhir">
+            <id value="11034668"/>
+            <meta>
+               <versionId value="3"/>
+               <lastUpdated value="2016-06-14T22:19:30.502-04:00"/>
+            </meta>
+            <text>
+               <status value="generated"/>
+               <div xmlns="http://www.w3.org/1999/xhtml"> 
+                  <p> 
+                     <b>Generated Narrative with Details</b> 
+                  </p> 
+                  <p> 
+                     <b>id</b>: questionnaire-healthy-habits-adolescent 
+                  </p> 
+                  <p> 
+                     <b>status</b>: published 
+                  </p> 
+                  <p> 
+                     <b>title</b>: Healthy Habits Tracker 
+                  </p> 
+               </div>
+            </text>
+            <status value="draft"/>
+            <group>
+               <linkId value="root"/>
+               <title value="Healthy Habits Tracker (adolescent)"/>
+               <required value="true"/>
+               <question>
+                  <linkId value="1"/>
+                  <text value="I eat veggies and fruits:"/>
+                  <type value="integer"/>
+                  <required value="true"/>
+                  <repeats value="false"/>
+                  <option>
+                     <code value="1"/>
+                     <display value="0-1 times a day"/>
+                  </option>
+                  <option>
+                     <code value="2"/>
+                     <display value="1-2 times a day"/>
+                  </option>
+                  <option>
+                     <code value="3"/>
+                     <display value="3-4 times a day"/>
+                  </option>
+                  <option>
+                     <code value="4"/>
+                     <display value="5 or more times a day"/>
+                  </option>
+                  <group>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-lowRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q1L.jpg"/>
+                     </extension>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-highRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q1R.jpg"/>
+                     </extension>
+                  </group>
+               </question>
+               <question>
+                  <linkId value="2"/>
+                  <text value="I eat out:"/>
+                  <type value="integer"/>
+                  <required value="true"/>
+                  <repeats value="false"/>
+                  <option>
+                     <code value="1"/>
+                     <display value="More than 4 times a week"/>
+                  </option>
+                  <option>
+                     <code value="2"/>
+                     <display value="3-4 times a week"/>
+                  </option>
+                  <option>
+                     <code value="3"/>
+                     <display value="1-2 times a week"/>
+                  </option>
+                  <option>
+                     <code value="4"/>
+                     <display value="0-1 times a week"/>
+                  </option>
+                  <group>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-lowRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q2L.jpg"/>
+                     </extension>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-highRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q2R.jpg"/>
+                     </extension>
+                  </group>
+               </question>
+               <question>
+                  <linkId value="3"/>
+                  <text value="I am active:"/>
+                  <type value="integer"/>
+                  <required value="true"/>
+                  <repeats value="false"/>
+                  <option>
+                     <code value="1"/>
+                     <display value="Not very often"/>
+                  </option>
+                  <option>
+                     <code value="2"/>
+                     <display value="Less than 30 minutes a day"/>
+                  </option>
+                  <option>
+                     <code value="3"/>
+                     <display value="30-60 minutes a day"/>
+                  </option>
+                  <option>
+                     <code value="4"/>
+                     <display value="More than 60 minutes a day"/>
+                  </option>
+                  <group>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-lowRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q3L.jpg"/>
+                     </extension>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-highRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q3R.jpg"/>
+                     </extension>
+                  </group>
+               </question>
+               <question>
+                  <linkId value="4"/>
+                  <text value="I have sweet drinks (soda, sweet tea, sports drinks, 100% fruit juice, other fruit drinks):"/>
+                  <type value="integer"/>
+                  <required value="true"/>
+                  <repeats value="false"/>
+                  <option>
+                     <code value="1"/>
+                     <display value="3 or more cups a day"/>
+                  </option>
+                  <option>
+                     <code value="2"/>
+                     <display value="2 cups a day"/>
+                  </option>
+                  <option>
+                     <code value="3"/>
+                     <display value="1 cup a day"/>
+                  </option>
+                  <option>
+                     <code value="4"/>
+                     <display value="Not very often"/>
+                  </option>
+                  <group>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-lowRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q4L.jpg"/>
+                     </extension>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-highRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q4R.jpg"/>
+                     </extension>
+                  </group>
+               </question>
+               <question>
+                  <linkId value="5"/>
+                  <text value="I eat foods like brownies, muffins, cakes or cookies:"/>
+                  <type value="integer"/>
+                  <required value="true"/>
+                  <repeats value="false"/>
+                  <option>
+                     <code value="1"/>
+                     <display value="3 or more times a day"/>
+                  </option>
+                  <option>
+                     <code value="2"/>
+                     <display value="2 times a day"/>
+                  </option>
+                  <option>
+                     <code value="3"/>
+                     <display value="1 time a day"/>
+                  </option>
+                  <option>
+                     <code value="4"/>
+                     <display value="Not very often"/>
+                  </option>
+                  <group>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-lowRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q5L.jpg"/>
+                     </extension>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-highRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q5R.jpg"/>
+                     </extension>
+                  </group>
+               </question>
+               <question>
+                  <linkId value="6"/>
+                  <text value="I watch television, play video games, spend (non-school related) time on a computer, tablet or cell phone:"/>
+                  <type value="integer"/>
+                  <required value="true"/>
+                  <repeats value="false"/>
+                  <option>
+                     <code value="1"/>
+                     <display value="5 or more hours a day"/>
+                  </option>
+                  <option>
+                     <code value="2"/>
+                     <display value="3-4 hours a day"/>
+                  </option>
+                  <option>
+                     <code value="3"/>
+                     <display value="1-2 hours a day"/>
+                  </option>
+                  <option>
+                     <code value="4"/>
+                     <display value="1 hour a day"/>
+                  </option>
+                  <option>
+                     <code value="5"/>
+                     <display value="Not very often"/>
+                  </option>
+                  <group>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-lowRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q6L.jpg"/>
+                     </extension>
+                     <extension url="http://54.164.154.218:8000/fhir/StructureDefinition/questionnaire-highRangeImage">
+                        <valueString value="http://54.164.154.218:8000/images/adolescent/Q6R.jpg"/>
+                     </extension>
+                  </group>
+               </question>
+               <question>
+                  <linkId value="7"/>
+                  <text value="If you could work on one healthy habit, which would it be?"/>
+                  <type value="integer"/>
+                  <required value="true"/>
+                  <repeats value="false"/>
+                  <option>
+                     <code value="1"/>
+                     <display value="Make half your plate veggies and fruits"/>
+                  </option>
+                  <option>
+                     <code value="2"/>
+                     <display value="Be more active"/>
+                  </option>
+                  <option>
+                     <code value="3"/>
+                     <display value="Limit screen time"/>
+                  </option>
+                  <option>
+                     <code value="4"/>
+                     <display value="Drink more water and limit sugary drinks"/>
+                  </option>
+               </question>
+               <question>
+                  <linkId value="8"/>
+                  <text value="How important is it to you to work on this healthy habit?"/>
+                  <type value="integer"/>
+                  <required value="true"/>
+                  <repeats value="false"/>
+                  <option>
+                     <code value="1"/>
+                     <display value="1"/>
+                  </option>
+                  <option>
+                     <code value="2"/>
+                     <display value="2"/>
+                  </option>
+                  <option>
+                     <code value="3"/>
+                     <display value="3"/>
+                  </option>
+                  <option>
+                     <code value="4"/>
+                     <display value="4"/>
+                  </option>
+                  <group>
+                     <extension url="http://hl7.org/fhir/StructureDefinition/questionnaire-lowRangeLabel">
+                        <valueString value="NOT AT ALL"/>
+                     </extension>
+                     <extension url="http://hl7.org/fhir/StructureDefinition/questionnaire-highRangeLabel">
+                        <valueString value="VERY"/>
+                     </extension>
+                  </group>
+               </question>
+               <question>
+                  <linkId value="9"/>
+                  <text value="How confident are you that you can improve this healthy habit?"/>
+                  <type value="integer"/>
+                  <required value="true"/>
+                  <repeats value="false"/>
+                  <option>
+                     <code value="1"/>
+                     <display value="1"/>
+                  </option>
+                  <option>
+                     <code value="2"/>
+                     <display value="2"/>
+                  </option>
+                  <option>
+                     <code value="3"/>
+                     <display value="3"/>
+                  </option>
+                  <option>
+                     <code value="4"/>
+                     <display value="4"/>
+                  </option>
+                  <group>
+                     <extension url="http://hl7.org/fhir/StructureDefinition/questionnaire-lowRangeLabel">
+                        <valueString value="NOT AT ALL"/>
+                     </extension>
+                     <extension url="http://hl7.org/fhir/StructureDefinition/questionnaire-highRangeLabel">
+                        <valueString value="VERY"/>
+                     </extension>
+                  </group>
+               </question>
+            </group>
+         </Questionnaire>
+      </resource>
+      <search>
+         <mode value="match"/>
+      </search>
+   </entry>
+</Bundle>
