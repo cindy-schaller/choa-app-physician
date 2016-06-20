@@ -61,7 +61,7 @@
         patientInfo.attr("id", "patientInfo-div");
         
         //var patientID = (window.sessionStorage.getItem('patientid_global')) ?
-        //    window.sessionStorage.getItem('patientid_global') : "11034584";
+        //    window.sessionStorage.getItem('patientid_global') : "18791941";
 
         var patientCall = (function () {
             var patientCall = null;
@@ -96,7 +96,7 @@
         theSurvey.attr("id", "theSurvey-div");
         $(container).append(theSurvey);
         var questionsID = (window.sessionStorage.getItem('questionsID')) ?
-            window.sessionStorage.getItem('questions_id') : "11034671";
+            window.sessionStorage.getItem('questions_id') : "18791835";
         var questionnaireCall = (function () {
             var questionnaireCall = null;
             $.ajax({
