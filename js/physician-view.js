@@ -61,7 +61,7 @@
         patientInfo.attr("id", "patientInfo-div");
         
         //var patientID = (window.sessionStorage.getItem('patientid_global')) ?
-        //    window.sessionStorage.getItem('patientid_global') : "11034584";
+        //    window.sessionStorage.getItem('patientid_global') : "18791941";
 
         var patientCall = (function () {
             var patientCall = null;
