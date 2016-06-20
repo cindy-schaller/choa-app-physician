@@ -11,13 +11,14 @@
       "relation":"self",
       "url":"http://52.72.172.54:8080/fhir/baseDstu2/Observation?code=39156-5&subject%3APatient=11034584"
     }
-  ]
+  ],
   "entry":[
     {
       "resource":{
         "valueQuantity":[
           {
-            "value": "70"
+            "value": "70",
+            "unit": "kg"
           }
         ]
       }

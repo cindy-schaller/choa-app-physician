@@ -189,7 +189,7 @@
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
             
-            var BMI = 0.0;
+            var BMI = 31.0;
             if(patientBMICall)
                 if(patientBMICall.entry)
                 if(patientBMICall.entry[0])
@@ -197,7 +197,7 @@
                         if(patientBMICall.entry[0].resource.valueQuantity)
                             BMI = patientBMICall.entry[0].resource.valueQuantity.value ? patientBMICall.entry[0].resource.valueQuantity.value : "";
              
-            var weight
+            var weight = 70;
             if(patientWeightCall)
                 if(patientWeightCall.entry)
                 if(patientWeightCall.entry[0])
@@ -205,7 +205,7 @@
                         if(patientWeightCall.entry[0].resource.valueQuantity)
                             var weight = patientWeightCall.entry[0].resource.valueQuantity.value ? patientWeightCall.entry[0].resource.valueQuantity.value : "";
             
-            var weightUnit = 0.0;
+            var weightUnit = "kg";
             if(patientWeightCall)
                 if(patientWeightCall.entry)
                 if(patientWeightCall.entry[0])
@@ -213,7 +213,7 @@
                         if(patientWeightCall.entry[0].resource.valueQuantity)
                             weightUnit = patientWeightCall.entry[0].resource.valueQuantity.unit ? patientWeightCall.entry[0].resource.valueQuantity.unit : "";
   
-            var height = 0.0;
+            var height = 150;
             if(patientHeightCall)
                 if(patientHeightCall.entry)
                 if(patientHeightCall.entry[0])
@@ -221,7 +221,7 @@
                         if(patientHeightCall.entry[0].resource.valueQuantity)
                             height = patientHeightCall.entry[0].resource.valueQuantity.value ? patientHeightCall.entry[0].resource.valueQuantity.value : "";
      
-            var heightUnit =  0.0;
+            var heightUnit =  "cm";
             if(patientHeightCall)
                 if(patientHeightCall.entry)
                 if(patientHeightCall.entry[0])
