@@ -345,9 +345,11 @@
                 var response = questionnaireResponseCall.entry[0].resource;
             }
             
+            var questionnaireId = "";
             if (questionnaire) {
-                var questionnaireId = (questionnaire.id ? questionnaire.id : "");
+                questionnaireId = (questionnaire.id ? questionnaire.id : "");
             }
+
             var questionnaireVersion = "";
             var questionnaireLastUpdated = "";
         
