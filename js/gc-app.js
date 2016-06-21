@@ -303,7 +303,7 @@
                 $("#print-button").html("Print Table");
                 break;
             case "patients":
-                GC.PatientsView.render();
+                //GC.PatientsView.render();
                 break;
             case "view":
                 GC.PhysicianView.render();

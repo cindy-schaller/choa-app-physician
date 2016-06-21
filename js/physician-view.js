@@ -8,7 +8,8 @@
 {
 
     "use strict";
-    var patientID = 11034584;
+    var patientID = (window.sessionStorage.getItem('patientid_global')) ?
+                window.sessionStorage.getItem('patientid_global') : "11034584";
 
     var selectedIndex = -1,
         PATIENT,
@@ -60,8 +61,7 @@
         var patientInfo = $("<div></div>").addClass("col-xs-4");
         patientInfo.attr("id", "patientInfo-div");
         
-        //var patientID = (window.sessionStorage.getItem('patientid_global')) ?
-        //    window.sessionStorage.getItem('patientid_global') : "11034584";
+        
 
         var patientCall = (function () {
             var patientCall = null;
@@ -344,17 +344,21 @@
             if (questionnaireResponseCall.entry) {
                 var response = questionnaireResponseCall.entry[0].resource;
             }
-
-            var questionnaireId = (questionnaire.id ? questionnaire.id : "");
             
+            var questionnaireId = "";
+            if (questionnaire) {
+                questionnaireId = (questionnaire.id ? questionnaire.id : "");
+            }
+
             var questionnaireVersion = "";
             var questionnaireLastUpdated = "";
         
-            if(questionnaire.meta)
-            {
-                questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
-                questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
-                          
+            if (questionnaire) {
+                if(questionnaire.meta){
+                    questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
+                    questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
+                              
+                }
             }
             var responseLastUpdated = "";
             if(response)
