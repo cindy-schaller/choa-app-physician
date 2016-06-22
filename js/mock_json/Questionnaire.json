@@ -9,12 +9,12 @@
    "link":[
       {
          "relation":"self",
-         "url":"http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?_id=11034668"
+         "url":"https://mihin.shib.al/fhir/baseDstu2/Questionnaire?_id=11034668"
       }
    ],
    "entry":[
       {
-         "fullUrl":"http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire/11034668",
+         "fullUrl":"https://mihin.shib.al/fhir/baseDstu2/Questionnaire/11034668",
          "resource":{
             "resourceType":"Questionnaire",
             "id":"11034668",

@@ -9,12 +9,12 @@
    "link":[
       {
          "relation":"self",
-         "url":"http://52.72.172.54:8080/fhir/baseDstu2/Patient?_id=11034584"
+         "url":"https://mihin.shib.al/fhir/baseDstu2/Patient?_id=11034584"
       }
    ],
    "entry":[
       {
-         "fullUrl":"http://52.72.172.54:8080/fhir/baseDstu2/Patient/11034584",
+         "fullUrl":"https://mihin.shib.al/fhir/baseDstu2/Patient/11034584",
          "resource":{
             "resourceType":"Patient",
             "id":"11034584",

@@ -68,7 +68,7 @@
             $.ajax({
                 async: false,
                 global: false,
-                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Patient?_id=' + patientID,
+                url: 'https://mihin.shib.al/fhir/baseDstu2/Patient?_id=' + patientID,
                 dataType: 'json',
                 success: function (data) {
                     patientCall = data;
@@ -81,7 +81,7 @@
             $.ajax({
                 async: false,
                 global: false,
-                url: 'http://52.72.172.54:8080/fhir/baseDstu2/QuestionnaireResponse?patient=' + patientID,
+                url: 'https://mihin.shib.al/fhir/baseDstu2/QuestionnaireResponse?patient=' + patientID,
                 dataType: 'json',
                 success: function (data) {
                     questionnaireResponseCall = data;
@@ -102,7 +102,7 @@
             $.ajax({
                 async: false,
                 global: false,
-                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?_id=' + questionsID,
+                url: 'https://mihin.shib.al/fhir/baseDstu2/Questionnaire?_id=' + questionsID,
                 dataType: 'json',
                 success: function (data) {
                     questionnaireCall = data;
@@ -119,7 +119,7 @@
             $.ajax({
                 async: false,
                 global: false,
-                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=39156-5&_count=50',
+                url: 'https://mihin.shib.al/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=39156-5&_count=50',
                 dataType: 'json',
                 success: function (data) {
                     patientBMICall = data;
@@ -136,7 +136,7 @@
             $.ajax({
                 async: false,
                 global: false,
-                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=3141-9&_count=50',
+                url: 'https://mihin.shib.al/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=3141-9&_count=50',
                 dataType: 'json',
                 success: function (data) {
                     patientWeightCall = data;
@@ -153,7 +153,7 @@
             $.ajax({
                 async: false,
                 global: false,
-                url: 'http://52.72.172.54:8080/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=8302-2&_count=50',
+                url: 'https://mihin.shib.al/fhir/baseDstu2/Observation?subject:Patient=' + patientID + '&code=8302-2&_count=50',
                 dataType: 'json',
                 success: function (data) {
                     patientHeightCall = data;

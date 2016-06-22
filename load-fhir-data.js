@@ -25,7 +25,7 @@ GC.get_data = function() {
   var patientID = (window.sessionStorage.getItem('patientid_global')) ?
                 window.sessionStorage.getItem('patientid_global') : "11034584";
   var smart = FHIR.client({
-    serviceUrl: 'http://52.72.172.54:8080/fhir/baseDstu2',
+    serviceUrl: 'https://mihin.shib.al/fhir/baseDstu2',
     // We need a better default patient, one with more data to support the GCs
     patientId: param('patient') != null ? param('patient') : patientID = '11034584',
     auth: {
