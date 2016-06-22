@@ -8,7 +8,8 @@
 {
 
     "use strict";
-    var patientID = (window.sessionStorage.getItem('patientid_global')); 
+    var patientID = (window.sessionStorage.getItem('patientid_global')) ?
+                window.sessionStorage.getItem('patientid_global') : "11034584";
 
     var selectedIndex = -1,
         PATIENT,
@@ -60,8 +61,7 @@
         var patientInfo = $("<div></div>").addClass("col-xs-4");
         patientInfo.attr("id", "patientInfo-div");
         
-        //var patientID = (window.sessionStorage.getItem('patientid_global')) ?
-        //    window.sessionStorage.getItem('patientid_global') : "11034584";
+        
 
         var patientCall = (function () {
             var patientCall = null;
@@ -96,7 +96,7 @@
         theSurvey.attr("id", "theSurvey-div");
         $(container).append(theSurvey);
         var questionsID = (window.sessionStorage.getItem('questionsID')) ?
-            window.sessionStorage.getItem('questions_id') : "18791835";
+            window.sessionStorage.getItem('questions_id') : "11034671";
         var questionnaireCall = (function () {
             var questionnaireCall = null;
             $.ajax({
@@ -189,7 +189,7 @@
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
             
-            var BMI = 0.0;
+            var BMI = 31.0;
             if(patientBMICall)
                 if(patientBMICall.entry)
                 if(patientBMICall.entry[0])
@@ -197,7 +197,7 @@
                         if(patientBMICall.entry[0].resource.valueQuantity)
                             BMI = patientBMICall.entry[0].resource.valueQuantity.value ? patientBMICall.entry[0].resource.valueQuantity.value : "";
              
-            var weight
+            var weight = 70;
             if(patientWeightCall)
                 if(patientWeightCall.entry)
                 if(patientWeightCall.entry[0])
@@ -205,7 +205,7 @@
                         if(patientWeightCall.entry[0].resource.valueQuantity)
                             var weight = patientWeightCall.entry[0].resource.valueQuantity.value ? patientWeightCall.entry[0].resource.valueQuantity.value : "";
             
-            var weightUnit = 0.0;
+            var weightUnit = "kg";
             if(patientWeightCall)
                 if(patientWeightCall.entry)
                 if(patientWeightCall.entry[0])
@@ -213,7 +213,7 @@
                         if(patientWeightCall.entry[0].resource.valueQuantity)
                             weightUnit = patientWeightCall.entry[0].resource.valueQuantity.unit ? patientWeightCall.entry[0].resource.valueQuantity.unit : "";
   
-            var height = 0.0;
+            var height = 150;
             if(patientHeightCall)
                 if(patientHeightCall.entry)
                 if(patientHeightCall.entry[0])
@@ -221,7 +221,7 @@
                         if(patientHeightCall.entry[0].resource.valueQuantity)
                             height = patientHeightCall.entry[0].resource.valueQuantity.value ? patientHeightCall.entry[0].resource.valueQuantity.value : "";
      
-            var heightUnit =  0.0;
+            var heightUnit =  "cm";
             if(patientHeightCall)
                 if(patientHeightCall.entry)
                 if(patientHeightCall.entry[0])
@@ -344,17 +344,21 @@
             if (questionnaireResponseCall.entry) {
                 var response = questionnaireResponseCall.entry[0].resource;
             }
-
-            var questionnaireId = (questionnaire.id ? questionnaire.id : "");
             
+            var questionnaireId = "";
+            if (questionnaire) {
+                questionnaireId = (questionnaire.id ? questionnaire.id : "");
+            }
+
             var questionnaireVersion = "";
             var questionnaireLastUpdated = "";
         
-            if(questionnaire.meta)
-            {
-                questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
-                questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
-                          
+            if (questionnaire) {
+                if(questionnaire.meta){
+                    questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
+                    questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
+                              
+                }
             }
             var responseLastUpdated = "";
             if(response)
