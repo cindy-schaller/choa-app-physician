@@ -21,17 +21,29 @@ GC.get_data = function() {
       responseText: "Loading error. See console for details."
     });
   };
+
+  window.sessionStorage.setItem('fhir_url_global','https://mihin.shib.al/fhir/baseDstu2' );
+  
+  //window.sessionStorage.setItem('fhir_url_global','http://52.72.172.54:8080/fhir/baseDstu2' );
+  
+
+  var fhir_url = window.sessionStorage.getItem('fhir_url_global') + '/';
+  var fhir_service_url = window.sessionStorage.getItem('fhir_url_global');
+
   window.sessionStorage.setItem('patientid_global','11034584' );
+  
   var patientID = (window.sessionStorage.getItem('patientid_global')) ?
                 window.sessionStorage.getItem('patientid_global') : "11034584";
+  
   var smart = FHIR.client({
-    serviceUrl: 'https://mihin.shib.al/fhir/baseDstu2',
+    serviceUrl: fhir_service_url,
     // We need a better default patient, one with more data to support the GCs
     patientId: param('patient') != null ? param('patient') : patientID = '11034584',
     auth: {
       type: 'none'
     }
   })
+  
   console.log('smart');
   console.log(smart);
   onReady(smart);

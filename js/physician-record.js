@@ -10,6 +10,8 @@ XDate, setTimeout, getDataSet*/
     "use strict";
     var patientID = (window.sessionStorage.getItem('patientid_global')) ?
                 window.sessionStorage.getItem('patientid_global') : "11034584";
+    var fhir_url = window.sessionStorage.getItem('fhir_url_global')  + '/';
+
     var selectedIndex = -1,
 
         /**
@@ -77,13 +79,14 @@ var json_observation_data ={
         //this function can be used to POST notes the physician makes in the Observation input box on phys-record tab
         //json_observation_data is set up currently as a BMI observation but that should be changed
         //the physician notes should be placed in one (which one??) of the fields in the json struct
+        
         var ObeseObservationsPOST = function (){
             var ObeseObservationsPOST = null;
              $.ajax({
                 type: 'POST',
                 async: false,
                 global: false,
-                url: 'https://mihin.shib.al/fhir/baseDstu2/Observation',
+                url: fhir_url+'Observation',
                 data: JSON.stringify(json_observation_data),
                 dataType: 'json',
                 contentType: 'application/json',
@@ -175,7 +178,7 @@ var json_observation_data ={
                 type: 'POST',
                 async: false,
                 global: false,
-                url: 'https://mihin.shib.al/fhir/baseDstu2/Condition',
+                url: fhir_url +'/Condition',
                 data: JSON.stringify(json_condition_data),
                 dataType: 'json',
                 contentType: 'application/json',
@@ -311,7 +314,7 @@ var json_observation_data ={
                 type: 'POST',
                 async: false,
                 global: false,
-                url: 'https://mihin.shib.al/fhir/baseDstu2/DiagnosticOrder',
+                url: fhir_url +'/DiagnosticOrder',
                 data: JSON.stringify(json_order_diagnostic_tests_data),
                 dataType: 'json',
                 contentType: 'application/json',
