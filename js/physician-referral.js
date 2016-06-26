@@ -8,7 +8,7 @@ XDate, setTimeout, getDataSet*/
 {
 
     "use strict";
-
+    var fhir_url = window.sessionStorage.getItem('fhir_url_global')  + '/';
     var refreq_ID = "19179006";
     var patientID = (window.sessionStorage.getItem('patientid_global')) ?
                 window.sessionStorage.getItem('patientid_global') : "11034584";
@@ -139,7 +139,7 @@ XDate, setTimeout, getDataSet*/
             type: 'POST',
             async: false,
             global: false,
-            url: 'https://mihin.shib.al/fhir/baseDstu2/ReferralRequest',
+            url: fhir_url +'ReferralRequest',
             data: JSON.stringify(json_ReferralRequest_to_community_coordinator_data),
             dataType: 'json',
             contentType: 'application/json',
@@ -229,7 +229,7 @@ XDate, setTimeout, getDataSet*/
               type: 'POST',
               async: false,
               global: false,
-              url: 'https://mihin.shib.al/fhir/baseDstu2/Communication',
+              url: fhir_url +'Communication',
               data: JSON.stringify(json_communication_to_community_coordinator_data),
               dataType: 'json',
               contentType: 'application/json',
