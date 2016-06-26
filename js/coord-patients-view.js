@@ -124,10 +124,8 @@ to complete an aspect of CDC's healthy weight application projects.
         var minorDateStr = minorBirthdate.format("YYYY-MM-DD");
         var todayDateStr = moment().startOf("day").format("YYYY-MM-DD");
         loadingdiv.show();
-        var fhir_url = window.sessionStorage.getItem('fhir_url_global')  + '/';
-
         $.ajax({
-            url: fhir_url+'Patient' +
+            url: 'https://mihin.shib.al/fhir/baseDstu2/Patient' +
             '?birthdate=%3E%3D' + minorDateStr + '&birthdate=%3C%3D' +
             todayDateStr + '&_count=50',
             dataType: 'json',

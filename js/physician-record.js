@@ -79,7 +79,6 @@ var json_observation_data ={
         //this function can be used to POST notes the physician makes in the Observation input box on phys-record tab
         //json_observation_data is set up currently as a BMI observation but that should be changed
         //the physician notes should be placed in one (which one??) of the fields in the json struct
-        
         var ObeseObservationsPOST = function (){
             var ObeseObservationsPOST = null;
              $.ajax({
@@ -178,7 +177,7 @@ var json_observation_data ={
                 type: 'POST',
                 async: false,
                 global: false,
-                url: fhir_url +'/Condition',
+                url: fhir_url +'Condition',
                 data: JSON.stringify(json_condition_data),
                 dataType: 'json',
                 contentType: 'application/json',
@@ -314,7 +313,7 @@ var json_observation_data ={
                 type: 'POST',
                 async: false,
                 global: false,
-                url: fhir_url +'/DiagnosticOrder',
+                url: fhir_url +'DiagnosticOrder',
                 data: JSON.stringify(json_order_diagnostic_tests_data),
                 dataType: 'json',
                 contentType: 'application/json',

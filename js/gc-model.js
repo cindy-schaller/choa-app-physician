@@ -25,6 +25,17 @@
         window.localStorage = {};
     }
     
+     window.sessionStorage.setItem('fhir_url_global','https://mihin.shib.al/fhir/baseDstu2' );
+     //window.sessionStorage.setItem('fhir_url_global','http://52.72.172.54:8080/fhir/baseDstu2' );
+
+  
+  
+
+     window.sessionStorage.setItem('infant_questions_id', '11034671'); 
+     window.sessionStorage.setItem('adolescent_questions_id', '11034668');
+
+
+
     /**
      * Collects and returns (as an array) all the methods of the given object 
      * "obj", optionally filtered by the filter function "filterFn".

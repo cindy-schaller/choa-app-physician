@@ -77,6 +77,8 @@
             });
             return patientCall;
         })();
+  
+
         var questionnaireResponseCall = (function () {
             var questionnaireResponseCall = null;
             $.ajax({
@@ -96,8 +98,14 @@
         var theSurvey = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
         theSurvey.attr("id", "theSurvey-div");
         $(container).append(theSurvey);
-        var questionsID = (window.sessionStorage.getItem('questionsID')) ?
-            window.sessionStorage.getItem('questions_id') : "11034671";
+
+        
+        var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
+        var AdolescentQuestionsID =    window.sessionStorage.getItem('adolescent_questions_id'); 
+        //  TODO check age for correct questionare selection 
+
+        var questionsID = InfantQuestionsID;
+        
         var questionnaireCall = (function () {
             var questionnaireCall = null;
             $.ajax({

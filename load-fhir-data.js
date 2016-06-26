@@ -22,12 +22,8 @@ GC.get_data = function() {
     });
   };
 
-  window.sessionStorage.setItem('fhir_url_global','https://mihin.shib.al/fhir/baseDstu2' );
-  
-  //window.sessionStorage.setItem('fhir_url_global','http://52.72.172.54:8080/fhir/baseDstu2' );
-  
+ 
 
-  var fhir_url = window.sessionStorage.getItem('fhir_url_global') + '/';
   var fhir_service_url = window.sessionStorage.getItem('fhir_url_global');
 
   window.sessionStorage.setItem('patientid_global','11034584' );
@@ -43,7 +39,6 @@ GC.get_data = function() {
       type: 'none'
     }
   })
-  
   console.log('smart');
   console.log(smart);
   onReady(smart);
