@@ -25,16 +25,14 @@
         window.localStorage = {};
     }
     
+    //these globals needed for the Healthy Eating GT app to work.
      window.sessionStorage.setItem('fhir_url_global','https://mihin.shib.al/fhir/baseDstu2' );
      //window.sessionStorage.setItem('fhir_url_global','http://52.72.172.54:8080/fhir/baseDstu2' );
-
-  
-  
 
      window.sessionStorage.setItem('infant_questions_id', '11034671'); 
      window.sessionStorage.setItem('adolescent_questions_id', '11034668');
 
-
+     window.sessionStorage.setItem('patientid_global','11034584' );
 
     /**
      * Collects and returns (as an array) all the methods of the given object 

@@ -26,7 +26,7 @@ GC.get_data = function() {
 
   var fhir_service_url = window.sessionStorage.getItem('fhir_url_global');
 
-  window.sessionStorage.setItem('patientid_global','11034584' );
+  
   
   var patientID = (window.sessionStorage.getItem('patientid_global')) ?
                 window.sessionStorage.getItem('patientid_global') : "11034584";
