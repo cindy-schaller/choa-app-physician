@@ -28,13 +28,11 @@ GC.get_data = function() {
 
   
   
-  var patientID = (window.sessionStorage.getItem('patientid_global')) ?
-                window.sessionStorage.getItem('patientid_global') : "11034584";
+  var patientID = window.sessionStorage.getItem('patientid_global');
   
   var smart = FHIR.client({
     serviceUrl: fhir_service_url,
-    // We need a better default patient, one with more data to support the GCs
-    patientId: param('patient') != null ? param('patient') : patientID = '11034584',
+    patientId:  patientID,
     auth: {
       type: 'none'
     }
