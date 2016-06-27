@@ -905,9 +905,320 @@
         }
     }]);
 
-    GC.availableSamplePatients = [Patient1, Patient2, Patient3, Patient4, Patient5];
+ var Patient6 = new GC.Patient(
 
-    GC.samplePatient = Patient1;
+    // demographics
+    {
+        name : "Clark Kent",
+        birthday : "03/30/2011",
+        EDD : "12/07/2011",
+        gender : "male"
+
+    },
+
+    // vitals
+    {
+        // Stature
+        lengthData : [{
+            agemos : 2.2,
+            value : 45.0
+        }, {
+            agemos : 2.5,
+            value : 46.2
+        }, {
+            agemos : 3.0,
+            value : 48.5
+        }, {
+            agemos : 5.8,
+            value : 58.5
+        }, {
+            agemos : 6.1,
+            value : 58.7
+        }, {
+            agemos : 6.8,
+            value : 61.7
+        }, {
+            agemos : 7.8,
+            value : 62.8
+        }, {
+            agemos : 8.0,
+            value : 64.2
+        }, {
+            agemos : 9.6,
+            value : 66.0
+        }, {
+            agemos : 11.7,
+            value : 70.4
+        }, {
+            agemos : 13.2,
+            value : 71.2
+        }, {
+            agemos : 16.4,
+            value : 73.8
+        }],
+
+        // Weight
+        weightData : [{
+            agemos : 0.0,
+            value : 0.977
+        }, {
+            agemos : 2.2,
+            value : 2.382
+        }, {
+            agemos : 2.5,
+            value : 2.636
+        }, {
+            agemos : 3.0,
+            value : 3.0
+        }, {
+            agemos : 3.8,
+            value : 4.1
+        }, {
+            agemos : 4.6,
+            value : 4.6
+        }, {
+            agemos : 4.8,
+            value : 4.7
+        }, {
+            agemos : 5.8,
+            value : 5.4
+        }, {
+            agemos : 6.1,
+            value : 5.5
+        }, {
+            agemos : 6.8,
+            value : 5.9
+        }, {
+            agemos : 7.8,
+            value : 6.4
+        }, {
+            agemos : 8.0,
+            value : 6.5
+        }, {
+            agemos : 9.6,
+            value : 7.2
+        }, {
+            agemos : 11.2,
+            value : 7.7
+        }, {
+            agemos : 11.7,
+            value : 7.7
+        }, {
+            agemos : 13.2,
+            value : 8.0
+        }, {
+            agemos : 16.4,
+            value : 8.6
+        }],
+
+        // Head C
+        headCData : [{
+            agemos : 2.2,
+            value : 32.6
+        }, {
+            agemos : 2.5,
+            value : 33.5
+        }, {
+            agemos : 3.0,
+            value : 35.4
+        }, {
+            agemos : 5.8,
+            value : 40.0
+        }, {
+            agemos : 6.8,
+            value : 42.0
+        }, {
+            agemos : 7.8,
+            value : 42.8
+        }, {
+            agemos : 8.0,
+            value : 42.5
+        }, {
+            agemos : 9.6,
+            value : 44.4
+        }, {
+            agemos : 11.7,
+            value : 45.1
+        }, {
+            agemos : 13.2,
+            value : 45.5
+        }, {
+            agemos : 16.4,
+            value : 46.3
+        }]
+    },
+
+    // allergies
+    null,
+
+    // familyHistory
+    {
+        father : {
+            height : 182
+        },
+        mother : {
+            height : 165.5
+        }
+    });
+
+ var Patient7 = new GC.Patient(
+
+    // demographics
+    {
+        name : "Kara Kent",
+        birthday : "05/01/2016",
+        EDD : "12/07/2011",
+        gender : "female"
+
+    },
+
+    // vitals
+    {
+        // Stature
+        lengthData : [{
+            agemos : 2.2,
+            value : 45.0
+        }, {
+            agemos : 2.5,
+            value : 46.2
+        }, {
+            agemos : 3.0,
+            value : 48.5
+        }, {
+            agemos : 5.8,
+            value : 58.5
+        }, {
+            agemos : 6.1,
+            value : 58.7
+        }, {
+            agemos : 6.8,
+            value : 61.7
+        }, {
+            agemos : 7.8,
+            value : 62.8
+        }, {
+            agemos : 8.0,
+            value : 64.2
+        }, {
+            agemos : 9.6,
+            value : 66.0
+        }, {
+            agemos : 11.7,
+            value : 70.4
+        }, {
+            agemos : 13.2,
+            value : 71.2
+        }, {
+            agemos : 16.4,
+            value : 73.8
+        }],
+
+        // Weight
+        weightData : [{
+            agemos : 0.0,
+            value : 0.977
+        }, {
+            agemos : 2.2,
+            value : 2.382
+        }, {
+            agemos : 2.5,
+            value : 2.636
+        }, {
+            agemos : 3.0,
+            value : 3.0
+        }, {
+            agemos : 3.8,
+            value : 4.1
+        }, {
+            agemos : 4.6,
+            value : 4.6
+        }, {
+            agemos : 4.8,
+            value : 4.7
+        }, {
+            agemos : 5.8,
+            value : 5.4
+        }, {
+            agemos : 6.1,
+            value : 5.5
+        }, {
+            agemos : 6.8,
+            value : 5.9
+        }, {
+            agemos : 7.8,
+            value : 6.4
+        }, {
+            agemos : 8.0,
+            value : 6.5
+        }, {
+            agemos : 9.6,
+            value : 7.2
+        }, {
+            agemos : 11.2,
+            value : 7.7
+        }, {
+            agemos : 11.7,
+            value : 7.7
+        }, {
+            agemos : 13.2,
+            value : 8.0
+        }, {
+            agemos : 16.4,
+            value : 8.6
+        }],
+
+        // Head C
+        headCData : [{
+            agemos : 2.2,
+            value : 32.6
+        }, {
+            agemos : 2.5,
+            value : 33.5
+        }, {
+            agemos : 3.0,
+            value : 35.4
+        }, {
+            agemos : 5.8,
+            value : 40.0
+        }, {
+            agemos : 6.8,
+            value : 42.0
+        }, {
+            agemos : 7.8,
+            value : 42.8
+        }, {
+            agemos : 8.0,
+            value : 42.5
+        }, {
+            agemos : 9.6,
+            value : 44.4
+        }, {
+            agemos : 11.7,
+            value : 45.1
+        }, {
+            agemos : 13.2,
+            value : 45.5
+        }, {
+            agemos : 16.4,
+            value : 46.3
+        }]
+    },
+
+    // allergies
+    null,
+
+    // familyHistory
+    {
+        father : {
+            height : 182
+        },
+        mother : {
+            height : 165.5
+        }
+    });
+    GC.availableSamplePatients = [Patient6, Patient7];
+
+    GC.samplePatient = Patient6;
 
     /**
      * If the array has no items this should just return undefined.
