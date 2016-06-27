@@ -43,6 +43,32 @@ window.GC = window.GC || {};
                         this.state;
             }
         },
+
+        // ref: http://arshaw.com/xdate/#Formatting
+        dateFormat : "MMM d, yyyy",
+        timeFormat : "h:mm TT",
+        timeInterval : {
+            "Years"   : "y",
+            "Year"    : "y",
+            "Months"  : "m",
+            "Month"   : "m",
+            "Weeks"   : "w",
+            "Week"    : "w",
+            "Days"    : "d",
+            "Day"     : "d",
+            "Hours"   : false,
+            "Hour"    : false,
+            "Minutes" : false,
+            "Minute"  : false,
+            "Seconds"     : false,
+            "Second"      : false,
+            "Milliseconds": false,
+            "Millisecond" : false,
+            separator : " ",
+            fractions : false,
+            zeroFill  : false,
+            limit     : 2
+        },
         
         appEnvironment : "PRODUCTION", // DEVELOPMENT | PRODUCTION
         
@@ -82,32 +108,6 @@ window.GC = window.GC || {};
         fontFamily: "'Helvetica Neue', Arial, Helvetica, sans-serif",
         
         initialView : "graphs", // graphs | table | parent
-        
-        // ref: http://arshaw.com/xdate/#Formatting
-        dateFormat : "ddMMMyyyy",
-        timeFormat : "h:mm TT",
-        timeInterval : {
-            "Years"   : "y", 
-            "Year"    : "y", 
-            "Months"  : "m", 
-            "Month"   : "m", 
-            "Weeks"   : "w", 
-            "Week"    : "w", 
-            "Days"    : "d",
-            "Day"     : "d",
-            "Hours"   : false,
-            "Hour"    : false,
-            "Minutes" : false,
-            "Minute"  : false,
-            "Seconds"     : false,
-            "Second"      : false,
-            "Milliseconds": false,
-            "Millisecond" : false,
-            separator : " ",
-            fractions : false,
-            zeroFill  : false,
-            limit     : 2
-        },
         
         // At what point chronologically does one start forecasting adult height?
         heightEstimatesMinAge : 12, // months
