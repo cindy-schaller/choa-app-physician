@@ -87,6 +87,7 @@
     +'            display: block;                           '
     +'            padding: 8px 2px;                         '
     +'            border: 1px solid transparent;            '
+    +'            text-align: center;                       '
     +'        }                                             '
     +'        #birth-selector label:hover {                 '
     +'            background: #EEE;                         '
