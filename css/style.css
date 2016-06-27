@@ -95,12 +95,12 @@ b, strong {
 .gender-button { color: #AAA}
 
 .male .gender-color  { color : #74D5F7 !important; }
-.male .gender-bg     { background-color : #74D5F7 !important; }
+.male .gender-bg     { background-color : #A4E5F7 !important; }
 .male .gender-border { color : #74D5F7 !important; }
 .male .gender-button { background-color : #3ba3bb !important; }
 
 .female .gender-color  { color : #FF73FF !important; }
-.female .gender-bg     { background-color : #FF73FF !important; }
+.female .gender-bg     { background-color : #F4D3FF !important; }
 .female .gender-border { color : #FF73FF !important; }
 .female .gender-button { background-color : #e12e79 !important; }
 
