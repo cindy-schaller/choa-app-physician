@@ -9,8 +9,7 @@
 
     "use strict";
     var fhir_url = window.sessionStorage.getItem('fhir_url_global')  + '/';
-    var patientID = (window.sessionStorage.getItem('patientid_global')) ?
-                window.sessionStorage.getItem('patientid_global') : "11034584";
+    var patientID = window.sessionStorage.getItem('patientid_global');
 
     var selectedIndex = -1,
         PATIENT,

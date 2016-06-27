@@ -793,7 +793,7 @@
             }
             $(".vitals-height .value.date").html(
                 model.height.date ?
-                "<i>as of</i> " + model.height.date.toString(GC.chartSettings.dateFormat) : 
+                "<br/><i>as of</i> " + model.height.date.toString(GC.chartSettings.dateFormat) :
                 ""
             );
             
@@ -826,7 +826,7 @@
             }
             $(".vitals-weight .value.date").html(
                 model.weight.date ?
-                "<i>as of</i> " + model.weight.date.toString(GC.chartSettings.dateFormat) : 
+                "<br/><i>as of</i> " + model.weight.date.toString(GC.chartSettings.dateFormat) :
                 "&nbsp;"
             );
             
@@ -858,7 +858,7 @@
             
             $(".vitals-headc .value.date").html(
                 model.headc.date ?
-                "<i>as of</i> " + model.headc.date.toString(GC.chartSettings.dateFormat) : 
+                "<br/><i>as of</i> " + model.headc.date.toString(GC.chartSettings.dateFormat) :
                 "&nbsp;"
             );
             
@@ -884,7 +884,7 @@
             }
             $(".vitals-bmi .value.date").html(
                 model.bmi.date ?
-                "<i>as of</i> " + model.bmi.date.toString(GC.chartSettings.dateFormat) : 
+                "<br/><i>as of</i> " + model.bmi.date.toString(GC.chartSettings.dateFormat) :
                 "&nbsp;"
             );
         },
