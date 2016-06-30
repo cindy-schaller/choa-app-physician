@@ -205,7 +205,7 @@ window.GC = (function(NS) {
             bg : "Здрави История Habit"
         },
         STR_2997 : {
-            en : "Health Habit Goal",
+            en : "Healthy Habit Goal",
             es : "Hábito saludable Meta",
             bg : "Здравословен навик Гол"
         },
