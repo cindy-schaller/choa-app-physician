@@ -200,19 +200,19 @@ window.GC = (function(NS) {
         
         // Header --------------------------------------------------------------
         STR_2996 : {
-            en : "Physician view",
-            es : "Médico:Ver",
-            bg : "лекар:изглед"
+            en : "Healthy Habit History",
+            es : "Historia Hábito Saludable",
+            bg : "Здрави История Habit"
         },
         STR_2997 : {
-            en : "Record",
-            es : "Médico:grabar",
-            bg : "лекар:рекорд"
+            en : "Health Habit Goal",
+            es : "Hábito saludable Meta",
+            bg : "Здравословен навик Гол"
         },
         STR_2998 : {
-            en : "Referral",
-            es : "Médico:remisión",
-            bg : "лекар:сезиране"
+            en : "Labs & Referral",
+            es : "Laboratorios y Referencias",
+            bg : "Labs и насочване"
         },
         STR_2999 : {
             en : "Toggle Settings",
@@ -446,14 +446,14 @@ window.GC = (function(NS) {
             bg : "РОДИТЕЛ"
         },
         STR_3043 : {
-            en : "Table",
-            es : "ТABLA",
-            bg : "ТАБЛИЦА"
+            en : "Growth Data",
+            es : "Los datos de crecimiento",
+            bg : "данните растеж"
         },
         STR_3044 : {
-            en : "Graphs",
-            es : "GRÁFICOS",
-            bg : "ГРАФИКИ"
+            en : "Growth Charts",
+            es : "Cartas de crecimiento",
+            bg : "Графики на растежа"
         },
         STR_3045 : {
             en : "App Version: ",
