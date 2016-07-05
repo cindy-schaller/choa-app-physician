@@ -73,23 +73,23 @@ window.GC = (function(NS) {
     
     // Register languages here!
     createLocale({ language : "English"  , langAbbr : "en" });
-    createLocale({ language : "Spanish"  , langAbbr : "es" });
-    createLocale({ language : "Bulgarian", langAbbr : "bg" });
+    // createLocale({ language : "Spanish"  , langAbbr : "es" });
+    // createLocale({ language : "Bulgarian", langAbbr : "bg" });
     //createLocale({ language : "Slovenian", langAbbr : "sl" });
     
     var _data = {
         
         STR_0  : { 
             en : "Language", 
-            es : "Lengua",
-            bg : "Език"
+            // es : "Lengua",
+            // bg : "Език"
         },
         
         STR_1  : { en : "Head Circumference", es : "Circunferencia de la cabeza",  bg: "Обиколка на главата" },
         STR_2  : { en : "Length"            , es : "Eslora",                       bg: "Дължина" },
         STR_3  : { en : "Stature"           , es : "Estatura",                     bg: "Ръст"},
         STR_4  : { en : "Length/Stature"    , es : "Eslora/Estatura",              bg: "Дължина/Ръст" },
-        STR_5  : { en : "Body Mass Index"   , es : "Indice de masa corporal",      bg: "Индекс на телесната маса" },    
+        STR_5  : { en : "Body Mass Index"   , es : "Indice de masa corporal",      bg: "Индекс на телесната маса" },
         STR_6  : { en : "Weight"            , es : "Peso",                         bg: "Тегло" },
         STR_7  : { en : "Z Score"           , es : "Score Z",                      bg: "Z Резултат" },
         STR_8  : { en : "Percentiles"       , es : "Percentiles",                  bg: "Перцентили" },
