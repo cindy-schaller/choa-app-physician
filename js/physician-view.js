@@ -47,7 +47,6 @@
 
     function isPhysicianViewVisible()
     {
-        console.log("start");
         return GC.App.getViewType() == "view";
     }
 
@@ -61,8 +60,6 @@
         var patientInfo = $("<div></div>").addClass("col-xs-4");
         patientInfo.attr("id", "patientInfo-div");
         
-        
-
         var patientCall = (function () {
             var patientCall = null;
             $.ajax({
@@ -91,16 +88,9 @@
             });
             return questionnaireResponseCall;
         })();
-        var theAnalysis = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
-        theAnalysis.attr("id", "theAnalysis-div");
-        $(container).append(theAnalysis);
-        var theSurvey = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
-        theSurvey.attr("id", "theSurvey-div");
-        $(container).append(theSurvey);
-
         
         var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
-        var AdolescentQuestionsID =    window.sessionStorage.getItem('adolescent_questions_id'); 
+        var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id'); 
         //  TODO check age for correct questionare selection 
 
         var questionsID = InfantQuestionsID;
@@ -197,22 +187,6 @@
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
             
-            var BMI = 31.0;
-            if(patientBMICall)
-                if(patientBMICall.entry)
-                if(patientBMICall.entry[0])
-                    if(patientBMICall.entry[0].resource)
-                        if(patientBMICall.entry[0].resource.valueQuantity)
-                            BMI = patientBMICall.entry[0].resource.valueQuantity.value ? patientBMICall.entry[0].resource.valueQuantity.value : "";
-             
-            var weight = 70;
-            if(patientWeightCall)
-                if(patientWeightCall.entry)
-                if(patientWeightCall.entry[0])
-                    if(patientWeightCall.entry[0].resource)
-                        if(patientWeightCall.entry[0].resource.valueQuantity)
-                            var weight = patientWeightCall.entry[0].resource.valueQuantity.value ? patientWeightCall.entry[0].resource.valueQuantity.value : "";
-            
             var weightUnit = "kg";
             if(patientWeightCall)
                 if(patientWeightCall.entry)
@@ -220,15 +194,7 @@
                     if(patientWeightCall.entry[0].resource)
                         if(patientWeightCall.entry[0].resource.valueQuantity)
                             weightUnit = patientWeightCall.entry[0].resource.valueQuantity.unit ? patientWeightCall.entry[0].resource.valueQuantity.unit : "";
-  
-            var height = 150;
-            if(patientHeightCall)
-                if(patientHeightCall.entry)
-                if(patientHeightCall.entry[0])
-                    if(patientHeightCall.entry[0].resource)
-                        if(patientHeightCall.entry[0].resource.valueQuantity)
-                            height = patientHeightCall.entry[0].resource.valueQuantity.value ? patientHeightCall.entry[0].resource.valueQuantity.value : "";
-     
+
             var heightUnit =  "cm";
             if(patientHeightCall)
                 if(patientHeightCall.entry)
@@ -237,50 +203,21 @@
                         if(patientHeightCall.entry[0].resource.valueQuantity)
                             heightUnit = patientHeightCall.entry[0].resource.valueQuantity.unit ? patientHeightCall.entry[0].resource.valueQuantity.unit : "";
 
-            console.log("BMI " + BMI);
-            localStorage.setItem("BMI", BMI);
-
-            var BMIClassification;
-            switch (true) {
-                case (BMI <= 18.5):
-                    BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-warning")
-                            .html("Underweight </br> BMI: " + BMI));
-                    break;
-                case (18.5 < BMI && BMI <= 25):
-                    BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-info")
-                            .html("Normal weight </br> BMI: " + BMI));
-                    break;
-                case (25 < BMI && BMI <= 30):
-                    BMIClassification = BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-warning ")
-                            .html("Overweight </br> BMI: " + BMI));
-                    break;
-                case (30 < BMI && BMI <= 35):
-                    BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-danger ")
-                            .html("Class I obesity </br> BMI: " + BMI));
-                    break;
-                case (35 < BMI && BMI <= 40):
-                    BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-danger ")
-                            .html("Class II obesity </br> BMI: " + BMI));
-                    break;
-                case (40 < BMI):
-                    BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-danger ")
-                            .html("Class III obesity </br> BMI: " + BMI));
-                default:
-                    BMIClassification = "BMI: ー"
+            function convertToPercent(decimal) {
+                return Math.round(decimal * 100) + '%';
             }
 
+            var height = window.sessionStorage.getItem('height_global');
+            var height_per = convertToPercent(window.sessionStorage.getItem("height_per_global"))
+
+            var weight = window.sessionStorage.getItem('weight_global');
+            var weight_per = convertToPercent(window.sessionStorage.getItem("weight_per_global"))
+
+            var BMI = window.sessionStorage.getItem('bmi_global');
+            var BMI_per = convertToPercent(window.sessionStorage.getItem("bmi_per_global"))
+
+            localStorage.setItem("BMI", BMI);
+            
             thePatient.append($("<blockquote></blockquote>")
                 .append($("<div></div>")
                     .addClass("patient-info")
@@ -300,9 +237,6 @@
                         .attr("id", "patient-address")
                         .append($("<address></address>")
                             .html(address)))
-                    .append($("<div></div>")
-                        .attr("id", "patient-BMI")
-                        .append(BMIClassification))
                     .append($("<small></small>")
                         .append($("<div></div>")
                             .addClass("patient-gender text-capitalize")
@@ -323,29 +257,44 @@
                         .attr("id", "patient-bday")
                         .html("<strong>Birthdate: </strong>" + patientBDay))
                     .append($("<div></div>")
+                        .addClass("patient-BMI")
                         .attr("id", "patient-BMI")
-                        .append(BMIClassification))
+                        .html("<strong>BMI: </strong>" + BMI + " (" + BMI_per + ")"))
                     .append($("<div></div>")
                         .addClass("patient-weight")
                         .attr("id", "patient-weight")
-                        .html("<strong>Weight: </strong>" + weight + " " + weightUnit))
+                        .html("<strong>Weight: </strong>" + weight + " " + weightUnit + " (" + weight_per + ")"))
                     .append($("<div></div>")
                         .addClass("patient-height")
                         .attr("id", "patient-height")
-                        .html("<strong>Height: </strong>" + height + " " + heightUnit))
+                        .html("<strong>Height: </strong>" + height + " " + heightUnit + " (" + height_per + ")"))
+            ));
+    
+        var qrHeader = "";
+        var qrBody = "";
+        var qrButtons = "";
+        
+        qrHeader += ("<div id='physician-qr-header' class='physician-qr-container'>");
+        qrHeader += ("<h1 style='font-size: 28px; font-weight:bold;'>Healthy Habits Assesment Response</h1>");
+        qrHeader += ("<h1 style='font-size: 20px; font-weight:bold;'>Date Last Updated Filler</h1>");
+        qrHeader += ("<h1 style='font-size: 14px; font-weight:bold;'>click to see results</h1>");
+        qrHeader += ("</div>");
 
-                    /*.append($("<div></div>")
-                     .append($("<footer></footer>")
-                     .append("<small></small>")
-                     .append($("<div></div>")
-                     .addClass("patient-version")
-                     .attr("id", "patient-version")
-                     .html("<strong>DB Version: </strong>" + patientVersion))
-                     .append($("<div></div>")
-                     .addClass("patient-lastUpdated")
-                     .attr("id", "patient-lastUpdated")
-                     .html("<strong>Last updated: </strong>" + patientLastUpdated.split("T")[0]))))*/));
+        qrButtons += ("<div id='physician-qr-buttons' class='physician-qr-container'>");
+        qrButtons += ("<a id='view-qr' type='button' style='margin-right: 10px;'>-></a>");
+        qrButtons += ("</div>");
 
+        $(container).append(qrHeader);
+        $(container).append(qrBody);
+        $(container).append(qrButtons);
+
+        var theSurvey = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
+        theSurvey.attr("id", "theSurvey-div");
+        $("#dialog").append(theSurvey);
+
+        $("#dialog").dialog({ autoOpen: false });
+        $("#view-qr").click(function() {
+            
             if (questionnaireCall.entry) {
                 var questionnaire = questionnaireCall.entry[0].resource;
             }
@@ -371,11 +320,9 @@
             var responseLastUpdated = "";
             if(response)
             {
-                if(response.meta)
+                if(response.meta){
                     responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
-            
-  
-
+                }
                 var qAndA = [];
                 for(var i = 0; i < questionnaire.group.question.length; i++) {
                     //search for validated by LinkId final answer
@@ -394,206 +341,61 @@
                     var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
                     qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
 
-            }
-            var ranking_results = questionnaire_ranking(qAndA);
-            var result = ranking_results['recommendation'];
-            localStorage.setItem("analysis", result);
-
-            console.log("RESULTS");
-            console.log(result);
-            console.log("FOCUS SCORE");
-            console.log(ranking_results['focus_score']);
-            window.sessionStorage.setItem("analysis", result);
-
-            var blurb_5210 = "5-2-1-0 is an evidence-based prevention message centered on recommendations for Childhood Obesity Assessment, Prevention and Treatment\
-            sponsored by the <abbr title='Centers for Disease Control and Prevention'>CDC</abbr>.\
-            5-2-1-0 recommends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, \
-            and 0 Sugary Drinks a day. Highlighted text indicates actions the patient should take";
-
-            var focus_score = ranking_results['focus_score'];
-            var analysisRow = $("<div></div>")
-                .addClass("btn-group btn-group-sm")
-                .attr("data-toggle", "buttons")
-                .attr("role", "group")
-            for(var i = 0; i < result.length; i++) {
-                if(i < focus_score) {
-                    analysisRow.append($("<div></div>")
-                        .addClass("btn-group")
-                        .attr("role", "group")
-                        .append($("<a></a>")
-                            .addClass("btn btn-primary btn-responsive disabled")
-                            .attr("type", "button")
-                            .html(result[i])));
                 }
-                else {
-                    analysisRow.append($("<div></div>")
-                        .addClass("btn-group")
-                        .attr("role", "group")
-                        .append($("<a></a>")
-                            .addClass("btn btn-default btn-responsive disabled")
-                            .attr("type", "button")
-                            .html(result[i])));
-                }
-            }
-            theAnalysis.append($("<div></div>")
-                .addClass("row well")
-                .append($("<div></div>")
-                    .addClass("text-center")
-                    .append($("<h4></h4>")
-                        .html("5-2-1-0 analysis recommendations:")))
-                .append($("<div></div>")
-                    .addClass("col-sm-11 col-sm-offset-1 bb")
-                    .append(analysisRow)));
-            theAnalysis.append($("<div></div>")
-                .addClass("col-xs-12 bb text-justify 5210-div")
-                .append($("<small></small>")
-                    .html(blurb_5210)));
 
-            theSurvey.append($("<div></div>")
-                .html("<hr>")
-                .append($("<h1></h1>")
+                theSurvey.append($("<div></div>")
+                    .html("<hr>")
+                    .append($("<h1></h1>")
                     .addClass("text-center text-muted btn-group-sm")
                     .html("Questionnaire responses")));
-            for(var i = 0; i < questionnaire.group.question.length; i++) {
-                var options = [];
-                for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
-                    options.push(questionnaire.group.question[i].option[j].display);
-                }
-                var surveyRow = $("<div></div>")
-                    .addClass("btn-group btn-group-justified")
-                    .attr("data-toggle", "buttons")
-                    .attr("role", "group")
-                for (var j = 0; j < options.length; j++) {
-                    if (qAndA[i].answerCode == j) {
-                        surveyRow.append($("<div></div>")
-                            .addClass("btn-group btn-group-sm")
+                
+                    for(var i = 0; i < questionnaire.group.question.length; i++) {
+                        var options = [];
+                        for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
+                            options.push(questionnaire.group.question[i].option[j].display);
+                        }
+                        var surveyRow = $("<div></div>")
+                            .addClass("btn-group btn-group-justified")
+                            .attr("data-toggle", "buttons")
                             .attr("role", "group")
-                            .append($("<a></a>")
-                                .addClass("btn btn-default btn-responsive active disabled")
-                                .attr("type", "button")
-                                .html(options[j])));                        }
-                    else {
-                        surveyRow.append($("<div></div>")
-                            .addClass("btn-group btn-group-sm")
-                            .attr("role", "group")
-                            .append($("<a></a>")
-                                .addClass("btn btn-default btn-responsive disabled")
-                                .attr("type", "button")
-                                .html(options[j])));
+                        for (var j = 0; j < options.length; j++) {
+                            if (qAndA[i].answerCode == j) {
+                                surveyRow.append($("<div></div>")
+                                    .addClass("btn-group btn-group-sm")
+                                    .attr("role", "group")
+                                    .append($("<a></a>")
+                                        .addClass("btn btn-default btn-responsive active disabled")
+                                        .attr("type", "button")
+                                        .html(options[j])));                        }
+                        else {
+                            surveyRow.append($("<div></div>")
+                                .addClass("btn-group btn-group-sm")
+                                .attr("role", "group")
+                                .append($("<a></a>")
+                                    .addClass("btn btn-default btn-responsive disabled")
+                                    .attr("type", "button")
+                                    .html(options[j])));
+                        }
+                    }
+                    theSurvey.append($("<div></div>")
+                        .addClass("row well")
+                        .append($("<div></div>")
+                            .addClass("text-center text-muted")
+                            .append($("<h4></h4>")
+                                .html(qAndA[i].question)))
+                        .append($("<div></div>")
+                            .append(surveyRow)));
                     }
                 }
-                theSurvey.append($("<div></div>")
-                    .addClass("row well")
-                    .append($("<div></div>")
-                        .addClass("text-center text-muted")
-                        .append($("<h4></h4>")
-                            .html(qAndA[i].question)))
-                    .append($("<div></div>")
-                        .append(surveyRow)));
-            	}
-            }
-            else
-            {
-                $(container).append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
+                else
+                {
+                    $("#dialog").append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
 
-            } 
-
+                } 
+                $("#dialog").dialog("open");
+            });
         });
     }
-
-//------------------------------5-2-1-0-Algorithm-------------------------
-
-    function questionnaire_ranking(qAndA)
-    {
-
-        console.log('QUESTION');
-        console.log(JSON.stringify(qAndA));
-
-        // Answers to behavior questions
-        var ans_q1 = qAndA[0]['answerCode'] + 1;
-        var ans_q2 = qAndA[1]['answerCode'] + 1;
-        var ans_q3 = qAndA[2]['answerCode'] + 1;
-        var ans_q4 = qAndA[3]['answerCode'] + 1;
-        var ans_q5 = qAndA[4]['answerCode'] + 1;
-        var ans_q6 = qAndA[5]['answerCode'] + 1;
-
-        // Answers to preference questions
-        var ans_q7 = qAndA[6]['answerCode'];
-        var ans_q8 = qAndA[7]['answerCode'] + 1;
-        var ans_q9 = qAndA[8]['answerCode'] + 1;
-
-        // Initialize map and set to default weights
-
-        // fd = food habits
-        // s = sedentary behavior
-        // p = physical activity
-        // dd = drink habits
-
-        var scores = [];
-        scores['fd'] = 1;
-        scores['s'] = 1;
-        scores['p'] = 1;
-        scores['dd'] = 1;
-
-        // Adjust weightings based on patient's responses
-        scores['fd'] = scores['fd'] * ((convertResponse(ans_q5) + ans_q2) - ans_q1) / 4;
-        scores['s'] = scores['s'] * (convertResponse(ans_q6) / 4);
-        scores['p'] = scores['p'] * (ans_q3 / 4);
-        scores['dd'] = scores['dd'] * (ans_q4 / 4);
-        console.log('SCORES');
-        console.log(scores);
-
-        // Adjust weight based on patient's preferences
-        var pref_key = convertAnsToKey(ans_q7);
-        var pref_score = (ans_q8 + ans_q9) / 2;
-        scores[pref_key] = scores[pref_key] / pref_score;
-        var focus_score = Math.floor(pref_score);
-
-        // Sort the map by value to get the rankings for an ideal plan
-        var result = Object.keys(scores).sort(function (a, b) {
-            return scores[a] - scores[b];
-        });
-
-        var recommendation = [];
-        for (var y = 0; y < result.length ; y++) {
-            if( result[y] == 'fd' )
-                recommendation[y]  =  " Make half your plate veggies and fruits";
-            if( result[y] == 's' )
-                recommendation[y]  =  " Limit screen time";
-            if( result[y] == 'p' )
-                recommendation[y]  =  " Be more active";
-            if( result[y] == 'dd' )
-                recommendation[y]  =  " Drink more water and limit sugary drinks";
-        }
-        return {recommendation : recommendation, focus_score : focus_score};
-    }
-
-    // Sometimes the responses are in reverse order so we need to covert them
-    function convertResponse(resp)
-    {
-        return (resp*-1) + 5;
-    }
-
-
-    // Sloppy, but I think its more clear to keep the index's strings rather then integers for now
-    function convertAnsToKey(resp)
-    {
-        // Make half your plate veggies and fruits = 0
-        // Be more active = 1
-        // Limit screen time = 2
-        // Drink more water and limit sugary drinks = 3
-
-        if(resp == 0)
-            return 'fd';
-        else if(resp == 1)
-            return 'p';
-        else if(resp == 2)
-            return 's';
-        else if (resp == 3)
-            return 'dd';
-    }
-
-//----------------------------------------------------------------
 
     NS.PhysicianView =
     {

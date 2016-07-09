@@ -754,6 +754,14 @@
             //$("#vitals-headc" ).css("display", model.headc .percentile === null ? "none" : "table-cell");
             //$("#vitals-bmi"   ).css("display", model.bmi   .percentile === null ? "none" : "table-cell");
             
+            window.sessionStorage.setItem("height_global", model.height.value)
+            window.sessionStorage.setItem("weight_global", model.weight.value)
+            window.sessionStorage.setItem("bmi_global", model.bmi.value)
+
+            window.sessionStorage.setItem("height_per_global", model.height.percentile)
+            window.sessionStorage.setItem("weight_per_global", model.weight.percentile)
+            window.sessionStorage.setItem("bmi_per_global", model.bmi.percentile)
+
             this.drawVitalLabels(model);
             this.drawVitalCharts(model);
         },
@@ -1079,6 +1087,7 @@
                 // Weight Status Category Text
                 // -------------------------------------------------------------
                 msg[i++] = meta.name;
+                console.log("META " + meta.name)
                 
                 if (meta.state === WEIGHT_STATES.UNDERWEIGHT) {
                     msg[i++] = GC.str("STR_160"); // is <b>underweight</b> at

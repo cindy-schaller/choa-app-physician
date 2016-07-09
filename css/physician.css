@@ -68,3 +68,25 @@
     padding: 9px;
     margin-top: 20px;
 }
+
+.physician-qr-container {
+    margin-left: 15px;
+}
+
+#physician-qr-header {
+    color: #4F5F6B;
+}
+
+#physician-qr-body, #physician-qr-buttons {
+    margin-left: 30px;
+}
+
+#physician-qr-buttons a {
+
+    color: white;
+    background: #4F5F6B;
+    height: 40px;
+    padding: 9px;
+    margin-top: 20px;
+}
+
