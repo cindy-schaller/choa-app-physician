@@ -288,13 +288,15 @@
         $(container).append(qrBody);
         $(container).append(qrButtons);
 
-        var theSurvey = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
-        theSurvey.attr("id", "theSurvey-div");
-        $("#dialog").append(theSurvey);
-
         $("#dialog").dialog({ autoOpen: false, height: 500, width: 1000, overflow: scroll });
         $("#view-qr").click(function() {
             
+            $("#dialog").empty();
+
+            var theSurvey = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
+            theSurvey.attr("id", "theSurvey-div");
+            $("#dialog").append(theSurvey);
+
             if (questionnaireCall.entry) {
                 var questionnaire = questionnaireCall.entry[0].resource;
             }
