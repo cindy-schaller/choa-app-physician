@@ -292,7 +292,7 @@
         theSurvey.attr("id", "theSurvey-div");
         $("#dialog").append(theSurvey);
 
-        $("#dialog").dialog({ autoOpen: false });
+        $("#dialog").dialog({ autoOpen: false, height: 500, width: 1000, overflow: scroll });
         $("#view-qr").click(function() {
             
             if (questionnaireCall.entry) {
@@ -309,17 +309,17 @@
 
             var questionnaireVersion = "";
             var questionnaireLastUpdated = "";
-        
+
             if (questionnaire) {
                 if(questionnaire.meta){
                     questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
                     questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
-                              
                 }
             }
             var responseLastUpdated = "";
             if(response)
             {
+                var responseAuthored = (response.authored ? response.authored.split("T")[0] : "");
                 if(response.meta){
                     responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
                 }
@@ -355,7 +355,7 @@
                             options.push(questionnaire.group.question[i].option[j].display);
                         }
                         var surveyRow = $("<div></div>")
-                            .addClass("btn-group btn-group-justified")
+                            .addClass("btn-group")
                             .attr("data-toggle", "buttons")
                             .attr("role", "group")
                         for (var j = 0; j < options.length; j++) {
