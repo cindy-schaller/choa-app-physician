@@ -910,7 +910,7 @@
     // demographics
     {
         name : "Clark Kent",
-        birthday : "03/30/2006",
+        birthday : "03/30/2011",
         EDD : "12/07/2011",
         gender : "male"
 
