@@ -99,7 +99,7 @@
             $.ajax({
                 async: false,
                 global: false,
-                url: fhir_url +'Patient?family=Kent&given=Clark&birthdate=2006-03-30',
+                url: fhir_url +'Patient?family=Kent&given=Clark&birthdate=2011-03-30',
                 dataType: 'json',
                 success: function (data) {
                     ClarkCall = data;
