@@ -42,29 +42,31 @@
     
     var fhir_url = window.sessionStorage.getItem('fhir_url_global')  + '/';
    
-
     var ChildHealthyEatingQuestionnaireCall = (function () 
       {
+        //GET http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?title=Healthy Habits Questionnaire
             var ChildHealthyEatingQuestionnaireCall = null;
             $.ajax({
                 async: false,
                 global: false,
-                url: fhir_url +'Questionnaire?identifier=questionnaire-healthy-habits-child',
+                url: fhir_url +'Questionnaire?title=Healthy Habits Questionnaire',
                 dataType: 'json',
                 success: function (data) {
                     ChildHealthyEatingQuestionnaireCall = data;
                 }
             });
+
             return ChildHealthyEatingQuestionnaireCall;
         })();
 
       var AdolescentHealthyEatingQuestionnaireCall = (function () 
       {
+        //  GET http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?title=Healthy Habits Tracker (adolescent)
             var AdolescentHealthyEatingQuestionnaireCall = null;
             $.ajax({
                 async: false,
                 global: false,
-                url: fhir_url +'Questionnaire?identifier=questionnaire-healthy-habits-adolescent',
+                url: fhir_url +'Questionnaire?title=Healthy Habits Tracker (adolescent)',
                 dataType: 'json',
                 success: function (data) {
                     AdolescentHealthyEatingQuestionnaireCall = data;
@@ -79,7 +81,7 @@
             $.ajax({
                 async: false,
                 global: false,
-                url: fhir_url +'Questionnaire?identifier=questionnaire-food-insecurity',
+                url: fhir_url +'Questionnaire?title=Food Insecurity Questionnaire',
                 dataType: 'json',
                 success: function (data) {
                     InsecurityQuestionnaireCall = data;
@@ -87,6 +89,8 @@
             });
             return InsecurityQuestionnaireCall;
         })();
+ 
+    
  
 //http://52.72.172.54:8080/fhir/baseDstu2/Patient?family=Kent&given=Clark&birthdate=2006-03-30
     var ClarkCall = (function () 
@@ -159,7 +163,7 @@
             var ChildHealthyEatingQuestionnaire = ChildHealthyEatingQuestionnaireCall.entry[0].resource;
             if (!window.sessionStorage.getItem('infant_questions_id')) 
             {
-                    window.sessionStorage.setItem('infant_questions_id',AdolescentHealthyEatingQuestionnaire.id );
+                    window.sessionStorage.setItem('infant_questions_id',ChildHealthyEatingQuestionnaireCall.id );
             } 
 
         }
@@ -168,6 +172,9 @@
 
        if (AdolescentHealthyEatingQuestionnaireCall.entry) 
         {
+
+           
+       
             var AdolescentHealthyEatingQuestionnaire = AdolescentHealthyEatingQuestionnaireCall.entry[0].resource;
             if (!window.sessionStorage.getItem('adolescent_questions_id')) 
             {
