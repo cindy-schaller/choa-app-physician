@@ -49,27 +49,14 @@
      function renderPatientsView( container ) {
         
         var current_patientID = window.sessionStorage.getItem('patientid_global');
+
+        var Clark_id = window.sessionStorage.getItem('Clark_ID_global'); 
+
+        var Kara_id = window.sessionStorage.getItem('Kara_ID_global'); 
     
         $(container).empty();
 
-       /* var PatientIDradio_buttons = "";
-        
-        PatientIDradio_buttons +=("<form id='patientIDform'>");
-
-        if(current_patientID == '11034584')
-        {
-            PatientIDradio_buttons +=("<input type='radio' name='myRadio' value='11034584' checked/> Clark Kent <br />");
-            PatientIDradio_buttons +=("<input type='radio' name='myRadio' value='11037781' /> Kara Kent <br />");
-        }
-        else
-        {
-            PatientIDradio_buttons +=("<input type='radio' name='myRadio' value='11034584' /> Clark Kent <br />");
-            PatientIDradio_buttons +=("<input type='radio' name='myRadio' value='11037781' checked/> Kara Kent <br />");
-        }
-
-        PatientIDradio_buttons +=("</form><p>&nbsp;</p><p></p>");
-        $(container).append(PatientIDradio_buttons);
-*/      
+       
   
       var str = '<style>'
     +'        #birth-selector {                             '
@@ -171,25 +158,25 @@
         $.each(GC.availableSamplePatients, function(i, patient) {
             var html = [], j = 0;
             html[j++] = '<label class="' + patient.gender + '">';
-            if(i == 0  && current_patientID == '11034584')
+            if(i == 0  && current_patientID == Clark_id)
             {
 
                  html[j++] = '<input type="radio" name="patient-index" value="' + i + '" checked/>';
             }
             else
-            if(i == 0  && current_patientID != '11034584')
+            if(i == 0  && current_patientID != Clark_id)
             {
 
                  html[j++] = '<input type="radio" name="patient-index" value="' + i + '" />';
             }
             else
 
-            if(i == 1  && current_patientID == '11037781')
+            if(i == 1  && current_patientID == Kara_id)
             {    
                 html[j++] = '<input type="radio" name="patient-index" value="' + i + '" checked/>';
             }
             else
-            if(i == 1  && current_patientID != '11037781')
+            if(i == 1  && current_patientID != Kara_id)
             {
 
                  html[j++] = '<input type="radio" name="patient-index" value="' + i + '" />';
@@ -231,17 +218,17 @@
     
 
   
-                if(idx == 0  && current_patientID != '11034584')
+                if(idx == 0  && current_patientID != Clark_id)
                 {
-                      window.sessionStorage.setItem('patientid_global','11034584' );
-                     alert(' A new patient, Clark Kent, FHIR ID =  11034584, has been selected. Please wait a moment while new data is retrieved from the server'  ); 
+                     window.sessionStorage.setItem('patientid_global',Clark_id );
+                     alert(' A new patient, Clark Kent, FHIR ID = ' + Clark_id + ' , has been selected. Please wait a moment while new data is retrieved from the server'  ); 
                      window.location.reload(true);
                 }
                 else
-                 if(idx == 1  && current_patientID != '11037781')
+                 if(idx == 1  && current_patientID != Kara_id)
                 {
-                      window.sessionStorage.setItem('patientid_global','11037781' );
-                     alert(' A new patient, Kara Kent, FHIR ID = 11037781  has been selected. Please wait a moment while new data is retrieved from the server'  ); 
+                      window.sessionStorage.setItem('patientid_global',Kara_id );
+                     alert(' A new patient, Kara Kent, FHIR ID =  ' + Kara_id + ' ,  has been selected. Please wait a moment while new data is retrieved from the server'  ); 
                      window.location.reload(true);
                 }
                  else
