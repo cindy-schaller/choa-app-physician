@@ -109,6 +109,24 @@
             return questionnaireCall;
         })();
 
+        var wicQuestionnaireCall = (function () {
+           var wicQuestionnaireCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'/Questionnaire/11036859',
+                dataType: 'json',
+                success: function (data) {
+                    wicQuestionnaireCall = data;
+                }
+            });
+            return wicQuestionnaireCall;
+        })();
+
+        var theQuestionnaires = $("<div></div>").addClass("row");
+        theQuestionnaires.attr("id", "theQuestionnaires-div");
+        $(container).append(theQuestionnaires);
+
         var patientBMICall = (function () {
             var patientBMICall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
@@ -208,13 +226,13 @@
             }
 
             var height = window.sessionStorage.getItem('height_global');
-            var height_per = convertToPercent(window.sessionStorage.getItem("height_per_global"))
+            var height_per = convertToPercent(window.sessionStorage.getItem("height_per_global"));
 
             var weight = window.sessionStorage.getItem('weight_global');
-            var weight_per = convertToPercent(window.sessionStorage.getItem("weight_per_global"))
+            var weight_per = convertToPercent(window.sessionStorage.getItem("weight_per_global"));
 
             var BMI = window.sessionStorage.getItem('bmi_global');
-            var BMI_per = convertToPercent(window.sessionStorage.getItem("bmi_per_global"))
+            var BMI_per = convertToPercent(window.sessionStorage.getItem("bmi_per_global"));
 
             localStorage.setItem("BMI", BMI);
             
@@ -225,7 +243,9 @@
                         .addClass("patient-fullname")
                         .attr("id", "patient-fullname")
                         .append($("<strong></strong>")
-                            .html(patientName)))
+                            .html(patientName)
+                        )
+                    )
                     .append($("<div></div>")
                         .addClass("patient-contact")
                         .attr("id", "patient-contact")
@@ -236,12 +256,18 @@
                         .addClass("patient-address")
                         .attr("id", "patient-address")
                         .append($("<address></address>")
-                            .html(address)))
+                            .html(address)
+                        )
+                    )
                     .append($("<small></small>")
                         .append($("<div></div>")
                             .addClass("patient-gender text-capitalize")
                             .attr("id", "patient-gender")
-                            .html("<strong>Patient ID: </strong>" + patientId)))));
+                            .html("<strong>Patient ID: </strong>" + patientId)
+                        )
+                    )
+                )
+            );
 
             topContainer.append(patientInfo);
             patientInfo.append($("<div></div>")
@@ -251,149 +277,265 @@
                     .append($("<div></div>")
                         .addClass("patient-gender text-capitalize")
                         .attr("id", "patient-gender")
-                        .html("<strong>Gender: </strong>" + patientGender))
+                        .html("<strong>Gender: </strong>" + patientGender)
+                    )
                     .append($("<div></div>")
                         .addClass("patient-bday dt")
                         .attr("id", "patient-bday")
-                        .html("<strong>Birthdate: </strong>" + patientBDay))
+                        .html("<strong>Birthdate: </strong>" + patientBDay)
+                    )
                     .append($("<div></div>")
                         .addClass("patient-BMI")
                         .attr("id", "patient-BMI")
-                        .html("<strong>BMI: </strong>" + BMI + " (" + BMI_per + ")"))
+                        .html("<strong>BMI: </strong>" + BMI + " (" + BMI_per + ")")
+                    )
                     .append($("<div></div>")
                         .addClass("patient-weight")
                         .attr("id", "patient-weight")
-                        .html("<strong>Weight: </strong>" + weight + " " + weightUnit + " (" + weight_per + ")"))
+                        .html("<strong>Weight: </strong>" + weight + " " + weightUnit + " (" + weight_per + ")")
+                    )
                     .append($("<div></div>")
                         .addClass("patient-height")
                         .attr("id", "patient-height")
-                        .html("<strong>Height: </strong>" + height + " " + heightUnit + " (" + height_per + ")"))
-            ));
-    
-        var qrHeader = "";
-        var qrBody = "";
-        var qrButtons = "";
-        
-        qrHeader += ("<div id='physician-qr-header' class='physician-qr-container'>");
-        qrHeader += ("<h1 style='font-size: 28px; font-weight:bold;'>Healthy Habits Assesment Response</h1>");
-        qrHeader += ("<h1 style='font-size: 20px; font-weight:bold;'>Date Last Updated Filler</h1>");
-        qrHeader += ("<h1 style='font-size: 14px; font-weight:bold;'>click to see results</h1>");
-        qrHeader += ("</div>");
+                        .html("<strong>Height: </strong>" + height + " " + heightUnit + " (" + height_per + ")")
+                    )
+                )
+            );
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+            var hhLastUpdated = new Date(questionnaireResponseCall.entry[0].resource.authored ? questionnaireResponseCall.entry[0].resource.authored : "-");
 
-        qrButtons += ("<div id='physician-qr-buttons' class='physician-qr-container'>");
-        qrButtons += ("<a id='view-qr' type='button' style='margin-right: 10px;'>-></a>");
-        qrButtons += ("</div>");
-
-        $(container).append(qrHeader);
-        $(container).append(qrBody);
-        $(container).append(qrButtons);
-
-        $("#dialog").dialog({ autoOpen: false, height: 500, width: 1000, overflow: scroll });
-        $("#view-qr").click(function() {
-            
-            $("#dialog").empty();
-
-            var theSurvey = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
-            theSurvey.attr("id", "theSurvey-div");
-            $("#dialog").append(theSurvey);
-
-            if (questionnaireCall.entry) {
-                var questionnaire = questionnaireCall.entry[0].resource;
-            }
-            if (questionnaireResponseCall.entry) {
-                var response = questionnaireResponseCall.entry[0].resource;
-            }
-            
-            var questionnaireId = "";
-            if (questionnaire) {
-                questionnaireId = (questionnaire.id ? questionnaire.id : "");
+            if (!isNaN(hhLastUpdated)) {
+                theQuestionnaires.append($("<div></div>")
+                    .attr("id", "healthyHabits-div")
+                    .addClass("col-xs-5 col-xs-offset-1 text-center")
+                    .append($("<a></a>")
+                        .attr("id", "view-HHQuestionnaireAndResponse")
+                        .append($("<h3></h3>")
+                            .html("Healthy Habits Assessment Response <br>")
+                        )
+                        .append($("<p></p>")
+                            .html("Updated " + months[hhLastUpdated.getMonth()] + " " + hhLastUpdated.getDate() + ", " + hhLastUpdated.getFullYear())
+                        )
+                        .append($("<p></p>")
+                            .html("click to see results ->")
+                        )
+                    )
+                );
+            } else {
+                theQuestionnaires.append($("<div></div>")
+                    .attr("id", "healthyHabits-div")
+                    .addClass("col-xs-5 col-xs-offset-1 text-center")
+                    .append($("<h3></h3>")
+                            .html("Healthy Habits Assessment Response <br>")
+                    )
+                    .append($("<p></p>")
+                            .html("The patient has not completed the Healthy Eating Survey")
+                    )
+                );
             }
 
-            var questionnaireVersion = "";
-            var questionnaireLastUpdated = "";
+            theQuestionnaires.append($("<div></div>")
+                .attr("id", "wic-div")
+                .addClass("col-xs-offset-6 text-center")
+                .append($("<a></a>")
+                    .attr("id", "view-WICQuestionnaireAndResponse")
+                    .append($("<h3></h3>")
+                        .html("WIC Questionnaire Response <br>")
+                    )
+                    .append($("<p></p>")
+                        .html(" Updated <b>*** WILL FIX LATER ***</b>")
+                    )
+                    .append($("<p></p>")
+                        .html("click to see results ->")
+                    )
+                )
+            );
 
-            if (questionnaire) {
-                if(questionnaire.meta){
-                    questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
-                    questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
+            $("#dialog").dialog({ autoOpen: false, height: 500, width: 1000, overflow: scroll });
+            $("#view-HHQuestionnaireAndResponse").click(function() {
+
+                $("#dialog").empty();
+
+                var theSurvey = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
+                theSurvey.attr("id", "theSurvey-div");
+                $("#dialog").append(theSurvey);
+                if (questionnaireCall.entry) {
+                    var questionnaire = questionnaireCall.entry[0].resource;
                 }
-            }
-            var responseLastUpdated = "";
-            if(response)
-            {
-                var responseAuthored = (response.authored ? response.authored.split("T")[0] : "");
-                if(response.meta){
-                    responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
+                if (questionnaireResponseCall.entry) {
+                    var response = questionnaireResponseCall.entry[0].resource;
                 }
-                var qAndA = [];
-                for(var i = 0; i < questionnaire.group.question.length; i++) {
-                    //search for validated by LinkId final answer
-                    var question_link_ID = questionnaire.group.question[i].linkId;
-                    var qr_index = -1;
-                    for (var x = 0; x < response.group.question.length ; x++) {
-                        if(question_link_ID == response.group.question[x].linkId){
-                            qr_index = x;
-                            break;
-                        }
+
+                var questionnaireId = "";
+                if (questionnaire) {
+                    questionnaireId = (questionnaire.id ? questionnaire.id : "");
+                }
+
+                var questionnaireVersion = "";
+                var questionnaireLastUpdated = "";
+
+                if (questionnaire) {
+                    if(questionnaire.meta){
+                        questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
+                        questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
                     }
-                    if(qr_index == -1){
-                        console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
-                        return;
-                    }
-                    var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
-                    qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
-
                 }
-
-                theSurvey.append($("<div></div>")
-                    .html("<hr>")
-                    .append($("<h1></h1>")
-                    .addClass("text-center text-muted btn-group-sm")
-                    .html("Questionnaire responses")));
-                
+                var responseLastUpdated = "";
+                if(response)
+                {
+                    var responseAuthored = (response.authored ? response.authored.split("T")[0] : "");
+                    if(response.meta){
+                        responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
+                    }
+                    var qAndA = [];
                     for(var i = 0; i < questionnaire.group.question.length; i++) {
-                        var options = [];
-                        for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
-                            options.push(questionnaire.group.question[i].option[j].display);
+                        //search for validated by LinkId final answer
+                        var question_link_ID = questionnaire.group.question[i].linkId;
+                        var qr_index = -1;
+                        for (var x = 0; x < response.group.question.length ; x++) {
+                            if(question_link_ID == response.group.question[x].linkId){
+                                qr_index = x;
+                                break;
+                            }
                         }
-                        var surveyRow = $("<div></div>")
-                            .addClass("btn-group")
-                            .attr("data-toggle", "buttons")
-                            .attr("role", "group")
-                        for (var j = 0; j < options.length; j++) {
-                            if (qAndA[i].answerCode == j) {
+                        if(qr_index == -1){
+                            console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
+                            return;
+                        }
+                        var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
+                        qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
+
+                    }
+
+                    theSurvey.append($("<div></div>")
+                        .html("<hr>")
+                        .append($("<h1></h1>")
+                            .addClass("text-center text-muted btn-group-sm")
+                            .html("Healthy habits questionnaire responses")
+                        )
+                    );
+
+                        for(var i = 0; i < questionnaire.group.question.length; i++) {
+                            var options = [];
+                            for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
+                                options.push(questionnaire.group.question[i].option[j].display);
+                            }
+                            var surveyRow = $("<div></div>")
+                                .addClass("btn-group")
+                                .attr("data-toggle", "buttons")
+                                .attr("role", "group");
+                            for (var j = 0; j < options.length; j++) {
+                                if (qAndA[i].answerCode == j) {
+                                    surveyRow.append($("<div></div>")
+                                        .addClass("btn-group btn-group-sm")
+                                        .attr("role", "group")
+                                        .append($("<a></a>")
+                                            .addClass("btn btn-default btn-responsive active disabled")
+                                            .attr("type", "button")
+                                            .html(options[j])
+                                        )
+                                    );
+                                }
+                            else {
                                 surveyRow.append($("<div></div>")
                                     .addClass("btn-group btn-group-sm")
                                     .attr("role", "group")
                                     .append($("<a></a>")
-                                        .addClass("btn btn-default btn-responsive active disabled")
+                                        .addClass("btn btn-default btn-responsive disabled")
                                         .attr("type", "button")
-                                        .html(options[j])));                        }
-                        else {
-                            surveyRow.append($("<div></div>")
-                                .addClass("btn-group btn-group-sm")
-                                .attr("role", "group")
-                                .append($("<a></a>")
-                                    .addClass("btn btn-default btn-responsive disabled")
-                                    .attr("type", "button")
-                                    .html(options[j])));
+                                        .html(options[j])
+                                    )
+                                );
+                            }
+                        }
+                        theSurvey.append($("<div></div>")
+                            .addClass("row well")
+                            .append($("<div></div>")
+                                .addClass("text-center text-muted")
+                                .append($("<h4></h4>")
+                                    .html(qAndA[i].question)
+                                )
+                            )
+                            .append($("<div></div>")
+                                .append(surveyRow)
+                            )
+                        );
+                        }
+                }
+                else {
+                    $("#dialog").append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
+                }
+
+                $("#dialog").dialog("open");
+            });
+
+            $("#dialog").dialog({ autoOpen: false, height: 500, width: 1000, overflow: scroll });
+            $("#view-WICQuestionnaireAndResponse").click(function() {
+
+                $("#dialog").empty();
+
+                var wicSurvey = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
+                wicSurvey.attr("id", "wicSurvey-div");
+                $("#dialog").append(wicSurvey);
+
+                wicSurvey.append($("<div></div>")
+                    .html("<hr>")
+                    .append($("<h1></h1>")
+                        .addClass("text-center text-muted btn-group-sm")
+                        .html("WIC Questionnaire Response")
+                    )
+                );
+                if (wicQuestionnaireCall.group) {
+
+                    var wicQuestionnaire = wicQuestionnaireCall.group.group;
+                    var wicQuestions = {};
+                    var linkId;
+                    var text;
+                    var hasSubQuestions;
+                    var wicSubQuestions = {};
+                    var subQuestionLinkId;
+                    var subQuestionType;
+                    var subQuestionText;
+                    var currentQuestion;
+                    var currentQuestionType;
+
+                    for (var i = 1; i < wicQuestionnaire.length; i++) {
+                        for (var j = 0; j < wicQuestionnaire[i].question.length; j++) {
+                            wicQuestionnaire[i].question.length > 1 ? hasSubQuestions = true : hasSubQuestions = false;
+                            linkId = wicQuestionnaire[i].linkId;
+                            text = wicQuestionnaire[i].text;
+                            subQuestionLinkId = wicQuestionnaire[i].question[j].linkId;
+                            subQuestionType = wicQuestionnaire[i].question[j].type;
+                            subQuestionText = wicQuestionnaire[i].question[j].text;
+
+
+                            if (linkId === Math.floor(subQuestionLinkId)) {
+                                switch (true) {
+                                    case (subQuestionType === "boolean"):
+                                        // show question text
+                                        // show sub question text
+                                        // show sub question t/f
+                                        break;
+                                    case (subQuestionType === "text"):
+                                        // show question text
+                                        // show subquestion text
+                                        // show answer text
+                                        break;
+                                    case (subQuestionType === "integer"):
+                                        // show question text
+                                        //show subquestion text
+                                        //show answer value
+                                        break;
+                                    default:
+
+                                }
+                            }
                         }
                     }
-                    theSurvey.append($("<div></div>")
-                        .addClass("row well")
-                        .append($("<div></div>")
-                            .addClass("text-center text-muted")
-                            .append($("<h4></h4>")
-                                .html(qAndA[i].question)))
-                        .append($("<div></div>")
-                            .append(surveyRow)));
-                    }
                 }
-                else
-                {
-                    $("#dialog").append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
-
-                } 
+                else {
+                    $("#dialog").append("<div id='physician-questionnaire-blank'>The patient has not completed the WIC questionnaire.</div>");
+                }
                 $("#dialog").dialog("open");
             });
         });
