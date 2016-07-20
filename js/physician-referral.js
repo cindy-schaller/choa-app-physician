@@ -4,14 +4,171 @@ jQuery, debugLog,
 XDate, setTimeout, getDataSet*/
 
 /*jslint undef: true, eqeq: true, nomen: true, plusplus: true, forin: true*/
+
+
+ 
+
 (function(NS, $) 
 {
 
     "use strict";
+
+    
+
+    /*
+    From Functional requiements:
+
+    Underweight: ICD-10 code: Z68.51
+    Normal Weight: ICD-10 code:  Z68.52
+    Overweight: ICD-10 code: Z68.53
+    Obese: ICD-10 code: Z68.54
+    Counseling for Nutrition (ICD-10 code: Z71.3)  (if healthy habits assessment reviewed, Rx printed or Goal set)
+    Counseling, other, including physical activity (ICD-10 code: Z71.89)  (same as above)
+    */
+
+    var coding_data = {
+        'Z68.51': 'ICD-10 Underweight',
+        'Z68.52': 'ICD-10 Normal Weight',
+        'Z68.53': 'ICD-10 Overweight',
+        'Z68.54': 'ICD-10 Obese',
+        'Z71.3':  'ICD-10 Counseling  for nutrition',
+        'Z71.89': 'ICD-10 Counseling  for physical activity'
+        }
+
+    var refer_data = {
+        'WIC': 'WIC',
+        'Endocrinologist': 'Endocrinologist',
+        'Community Nutrition Resources': 'Community Nutrition Resources',
+        'Community Physical Activity Resources': 'Community Physical Activity Resources'
+
+        }
+
+   // window.sessionStorage.setItem('fhir_url_global','http://52.72.172.54:8080/fhir/baseDstu2' );
     var fhir_url = window.sessionStorage.getItem('fhir_url_global')  + '/';
-    var refreq_ID = "19179006";
-    var patientID = (window.sessionStorage.getItem('patientid_global')) ?
-                window.sessionStorage.getItem('patientid_global') : "11034584";
+   
+    var patientID = window.sessionStorage.getItem('patientid_global');
+
+    var PatientCareCoordinatorID = window.sessionStorage.getItem('PatientCareCoordinatorID_global');
+    
+    var MD_ID = window.sessionStorage.getItem('MD_ID_global');
+
+    var food_insecurity_questions_id = window.sessionStorage.getItem('food_insecurity_questions_id_global');
+
+    var refreq_ID = 0;
+
+    var whatAbout = "";
+
+    var ICD_codes = "";
+    
+    var selected_Codes = new Array();
+    
+    var selected_referals = new Array();
+
+    var InsecurityQuestionnaire = "";
+
+    var InsecurityQuestionnaireResponce = "";
+
+    var InsecurityQAndA = [];
+
+    
+
+    var InsecurityQuestionnaireCall = (function () 
+    {
+            var InsecurityQuestionnaireCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Questionnaire?_id=' + food_insecurity_questions_id,
+                dataType: 'json',
+                success: function (data) {
+                    InsecurityQuestionnaireCall = data;
+                }
+            });
+           
+            return InsecurityQuestionnaireCall;
+    })();
+
+
+    $.when(InsecurityQuestionnaireCall  ).then(function() 
+    {  
+            if (InsecurityQuestionnaireCall.entry) 
+            {
+                InsecurityQuestionnaire = InsecurityQuestionnaireCall.entry[0].resource;
+                
+                console.log("InsecurityQuestionnaire id " + InsecurityQuestionnaire.id +  " patientid = " + patientID);
+                console.log(InsecurityQuestionnaire);
+            }
+
+            //http://52.72.172.54:8080/fhir/baseDstu2/QuestionnaireResponse?patient=1081176&questionnaire=1081183
+            var QuestionnaireResponseCall = (function () 
+            {
+                    var QuestionnaireResponseCall = null;
+                    $.ajax({
+                        async: false,
+                        global: false,
+                        url: fhir_url +'QuestionnaireResponse?patient=' + patientID +"&questionnaire=" + InsecurityQuestionnaire.id,
+                        dataType: 'json',
+                        success: function (data) {
+                            QuestionnaireResponseCall = data;
+                        }
+                    });
+
+                    return QuestionnaireResponseCall;
+            })();
+
+
+            $.when(QuestionnaireResponseCall  ).then(function() 
+            {
+                  if (QuestionnaireResponseCall.entry) 
+                  {
+                    //still just a list  of all QRs ever at this point, must drill down into it,  search the list for Insecurity responces and find the latest one
+                      InsecurityQuestionnaireResponce = QuestionnaireResponseCall.entry[0].resource;
+                      console.log(InsecurityQuestionnaireResponce);
+                      
+                      if(InsecurityQuestionnaireResponce)
+                      {
+                          if(InsecurityQuestionnaireResponce.meta)
+                          {
+                              var InsecurityQuestionnaireResponceLastUpdated = (InsecurityQuestionnaireResponce.meta.lastUpdated ? InsecurityQuestionnaireResponce.meta.lastUpdated.split("T") : "");
+                              console.log("InsecurityQuestionnaireResponceLastUpdated = " + InsecurityQuestionnaireResponceLastUpdated);
+                          }
+
+                              
+                              
+                          for(var i = 0; i < InsecurityQuestionnaire.group.question.length; i++) 
+                          {
+                                //search for validated by LinkId final answer
+                                var question_link_ID = InsecurityQuestionnaire.group.question[i].linkId;
+                                var qr_index = -1;
+                                for (var x = 0; x < InsecurityQuestionnaireResponce.group.question.length ; x++) 
+                                {
+                                    if(question_link_ID == InsecurityQuestionnaireResponce.group.question[x].linkId)
+                                    {
+                                        qr_index = x;
+                                        break;
+                                    }
+                                }
+
+                                if(qr_index == -1)
+                                {
+                                    console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
+                                    return;
+                                }
+                                
+                                var final_answer = InsecurityQuestionnaireResponce.group.question[qr_index].answer[0].valueBoolean;
+                                InsecurityQAndA.push({question:(InsecurityQuestionnaire.group.question[qr_index].text), answer:final_answer});
+                          }
+                          console.log(InsecurityQAndA);
+
+                      }
+                  }
+             });
+    });
+
+  
+
+   
+
     var selectedIndex = -1,
 
         /**
@@ -55,177 +212,170 @@ XDate, setTimeout, getDataSet*/
 
     
     
+    
+      var ReferralPOST = function (forWhat)
+      { 
+            var currentTime = new Date();
+            var json_ReferralRequest_data =   
+           {
 
+               "resourceType": "ReferralRequest",
+               "text": {
+                  "status": "generated",
+                  "div": "<div>referralRequest to Care Coordinator Team for Patient/" + patientID + " for " + forWhat + "</div>"
+               },
+               "status": "pending",
+                 "type": {
+                  "coding": [
+                     {
+                        "system": "http://snomed.info/sct",
+                        "code": "700274009",
+                        "display": "Referral for procedure"
+                     }
+                  ]
+               },
+               "specialty": {
+                  "coding": [
+                     {
+                        "system": "http://snomed.info/sct",
+                        "code": "710915002",
+                        "display": "Referral to community service"
+                     }
+                  ]
+               },
+               "priority": {
+                  "coding": [
+                     {
+                        "system": "http://snomed.info/sct",
+                        "code": "394848005",
+                        "display": "Normal priority"
+                     }
+                  ]
+               },
+               "patient": {
+                  "reference": "Patient/" + patientID,
+                  "display": "Clark Kent"
+               },
+               "requester": {
+                  "display": "Serena Shrink",
+                  "reference": "Organization/" +MD_ID,
+               },
+               "recipient": [
+                  {
+                     "reference": "Organization/" +PatientCareCoordinatorID,
+                     "display": "Care Coordinator Team "
+                  }
+               ],
+               "dateSent": currentTime,
+               "reason": {
+                  "coding": [
+                     {
+                        
+                        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                        "code": ICD_codes,
+                        "display": "Childhood obesity"
+                     }
+                  ]
+               },
+               "description":  " for childhood obesity for community cooordination. " + whatAbout,
+               "serviceRequested": [
+                  {
+                     "coding": [
+                        {
+                           "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                           "code":  ICD_codes,
+                           "display": "community care   for childhood obesity"
+                        }
+                     ]
+                  }
+               ]
+            }
 
-    var json_ReferralRequest_to_community_coordinator_data ={
-
-       "resourceType": "ReferralRequest",
-       "text": {
-          "status": "generated",
-          "div": "<div>referralRequest to Care Coordinator Team for Patient/" + patientID + " for childhood obesity support</div>"
-       },
-       "status": "pending",
-         "type": {
-          "coding": [
-             {
-                "system": "http://snomed.info/sct",
-                "code": "700274009",
-                "display": "Referral for procedure"
-             }
-          ]
-       },
-       "specialty": {
-          "coding": [
-             {
-                "system": "http://snomed.info/sct",
-                "code": "710915002",
-                "display": "Referral to community service"
-             }
-          ]
-       },
-       "priority": {
-          "coding": [
-             {
-                "system": "http://snomed.info/sct",
-                "code": "394848005",
-                "display": "Normal priority"
-             }
-          ]
-       },
-       "patient": {
-          "reference": "Patient/" + patientID,
-          "display": "Clark Kent"
-       },
-       "requester": {
-          "display": "Serena Shrink"
-       },
-       "recipient": [
-          {
-             "reference": "Organization/19178873",
-             "display": "Care Coordinator Team "
-          }
-       ],
-       "dateSent": "2014-02-14",
-       "reason": {
-          "coding": [
-             {
-                "fhir_comments": [
-                   "   The problem is Childhood obesity "
-                ],
-                "system": "http://snomed.info/sct",
-                "code": "10001005",
-                "display": "Childhood obesity"
-             }
-          ]
-       },
-       "description": "Clark is suffering childhood obesity with a BMI > 31.0. Clark is being refered to the Care Coordinator Team for help accessing community based resources that will help him in reaching a healthy BMI. 5-2-1-0 is an evidence-based prevention message centered on recommendations for Childhood Obesity Assessment, Prevention and Treatment sponsored by the Centers for Disease Control and Prevention (CDC). 5-2-1-0 recommends 5 or More Fruits & Vegetables a day, 2 Hours or Less of Screen Time a day, 1 Hour or More of Active Play a day, and 0 Sugary Drinks a day. The patient was administered the Healthy Eating Questionnaire and an analysis of the results indicates the 5-2-1-0 order of priority for this patient is as follows: 1) underconsumption of fruits and vegitables, 2) too much screen time 3) lack of active play time 4) overconsumption of sugary drinks",     
-       "serviceRequested": [
-          {
-             "coding": [
-                {
-                   "system": "http://snomed.info/sct",
-                   "code": "347421000000106",
-                   "display": "community care   for childhood obesity"
-                }
-             ]
-          }
-       ]
-    }
-
-   //used to POST a referralRequest to the community coordinator
-   var CoordinatorReferralPOST = function (){
-        var CoordinatorReferralPOST = null;
-         $.ajax({
-            type: 'POST',
-            async: false,
-            global: false,
-            url: fhir_url +'ReferralRequest',
-            data: JSON.stringify(json_ReferralRequest_to_community_coordinator_data),
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function (data) {
-                CoordinatorReferralPOST = data;
-                console.log( CoordinatorReferralPOST.valueOf());
-                alert(CoordinatorReferralPOST.issue[0].diagnostics);
-                var value = CoordinatorReferralPOST.issue[0].diagnostics;
-                var num =  value.match(/\d+/g);
-                refreq_ID = num[0];
-        
-                POSTcomm();
-            },
-            
-        });
-        return CoordinatorReferralPOST;
-    }; 
-
-    function POSTcomm() 
-    {
        
-      //this must be only after the referralrequest 
-      //the "reference": "ReferralRequest/19179006" field **must** be updated 
-      //to the real ID of the ReferralRequest
-
-      //CoordinatorReferralPOST can be parsed to get the correct ID number
-
-      //post request to community-facing app
-          CoordinatorCommunicationPOST();
-          
-         
-     };
+            var ReferralPOST = null;
+             $.ajax({
+                type: 'POST',
+                async: false,
+                global: false,
+                url: fhir_url +'ReferralRequest',
+                data: JSON.stringify(json_ReferralRequest_data),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data) {
+                    ReferralPOST = data;
+                    alert(ReferralPOST.issue[0].diagnostics  +   " for childhood obesity for community cooordination. " + whatAbout );
+                    var value = ReferralPOST.issue[0].diagnostics;
+                    var num =  value.match(/\d+/g);
+                    refreq_ID = num[0];
+                  
+                    CoordinatorCommunicationPOST();
+                },
+                
+            });
+            
+            return ReferralPOST;
+        }; 
 
       
 
 
+  
      //used to POST a communication  to the community coordinator
-     var CoordinatorCommunicationPOST = function (){
+     var CoordinatorCommunicationPOST = function ()
+     {
+        var currentTime = new Date();
+         var json_communication_to_community_coordinator_data =
+         {
+              "resourceType": "Communication",
+                "text": {
+                   "status": "generated",
+                   "div": "<div>a referralRequest has been sent to the childhood obesity patient coordinator </div>"
+                },
+                
+                
+                "category": {
+                   "coding": [
+                      {
+                         "system": "http://acme.org/messagetypes",
+                         "code": "notification"
+                      }
+                   ],
+                   "text": "notification"
+                },
+                "sender": {
+                   "display": "Serena Shrink",
+                  "reference": "Organization/" +MD_ID,
 
-    var json_communication_to_community_coordinator_data ={
-          "resourceType": "Communication",
-            "text": {
-               "status": "generated",
-               "div": "<div>a referralRequest has been sent to the childhood obesity patient coordinator </div>"
-            },
-            
-            
-            "category": {
-               "coding": [
-                  {
-                     "system": "http://acme.org/messagetypes",
-                     "code": "notification"
-                  }
-               ],
-               "text": "notification"
-            },
-            "sender": {
-               "display": "A. Langeveld"
-            },
-            "recipient": [
-               {
-                  "reference": "Organization/19178873"
-               }
-            ],
-            "payload": [
-               {
-                  "contentString": "referralRequest for Patient/" + patientID + " for childhood obesity for community cooordination."
-               },
-             {
-                  "contentReference": {
-                     "fhir_comments": [
-                        " Reference to the referralRequest "
-                     ],
-                     "reference": "ReferralRequest/" + refreq_ID
-                  }
-               }
-             ],
-            "status": "pending",
-            "sent": "2014-12-12T18:01:10-08:00",
-            "subject": {
-               "reference": "Patient/" + patientID
-            }
+                },
+                "recipient": [
+                   {
+                     "reference": "Organization/" +PatientCareCoordinatorID,
+                      "display": "Care Coordinator Team "
+                   }
+                ],
+                "payload": [
+                   {
+                      "contentString": " referralRequest for Patient/" + patientID
+                   },
+                 {
+                      "contentReference": {
+                         "fhir_comments": [
+                            " Reference to the referralRequest "
+                         ],
+                         "reference": "ReferralRequest/" + refreq_ID
+                      }
+                   }
+                 ],
+                "status": "in-progress",
+                "sent": currentTime,
+                "subject": {
+                   "reference": "Patient/" + patientID
+                }
           }
       
           var CoordinatorCommunicationPOST = null;
            $.ajax({
+
               type: 'POST',
               async: false,
               global: false,
@@ -235,116 +385,198 @@ XDate, setTimeout, getDataSet*/
               contentType: 'application/json',
               success: function (data) {
                   CoordinatorCommunicationPOST = data;
-                  console.log( json_ReferralRequest_to_community_coordinator_data);
+                  
                   console.log(json_communication_to_community_coordinator_data);
                   console.log( CoordinatorCommunicationPOST);
                   alert(CoordinatorCommunicationPOST.issue[0].diagnostics);
          
               }
           });
-          //return CoordinatorCommunicationPOST;
+          return CoordinatorCommunicationPOST;
       }; 
-  
-
-
-
 
     function renderPhysicianReferral( container ) 
     {
        
-        
-
         $(container).empty();
 
-        
+        var str ='                                                                                                           '
+        +'        <style>                                                                                                    '
+        +'          #labAndRefferal {  font-family: Tahoma, sans-serif; font-size: 12px; }                                   '
+        +'          ol { border:1px solid black; }                                                                           '
+        +'          ol .ui-selecting { background: #99ffff; }                                                                '
+        +'          ol .ui-selected { background: #00ffff; }                                                                 '
+        +'          ol { list-style-type: none;  }                                                                           '
+        +'          ol li { padding: 0.4em; font-size: 1.4em; height: 30px; padding-bottom:10px}                             '
+        +'          h1    { font-weight: bold; text-align: center;}                                                          '
+        +'          #btn-send {  font-weight: bold;top:90%;margin-top: 40px;}                                                                         '
+        +'          .row {margin-bottom: 20px; max-width: 1170px}                                                            '
+        +'          .row .row { margin-top: 10px; margin-bottom: 0;}                                                         '
+        +'           [class*="col-"] {padding-top: 15px;padding-bottom: 15px;}                                               '
+        +'        </style>                                                                                                   '
 
-        //
-        var patientId =  patientID;
-    
-        if(!patientId)
+
+        +'        <div class="container" id="labAndRefferal">                                                                '
+        +'            <div class="row">                                                                                      '
+        +'                 <div class="col-sm-4" id="refer-to" ></div>                                                       '
+        +'                 <div class="col-sm-offset-3 col-sm-4 " id="sugested-coding" ></div>                               '
+        +'            </div>                                                                                                 '
+        +'            <div class="row">                                                                                      '
+        +'                 <div class="col-sm-4" id="food-insecurity" >                                                      '
+        +'                   <div class="row">                                                                               '
+        +'                       <div class="col-sm-12 fi_form" id="food-insecurity-form">                                   '
+        +'                       </div>                                                                                      '           
+        +'                   </div>                                                                                          '
+        +'                 </div>                                                                                            '    
+        +'                  <div class="col-sm-offset-3 col-sm-4" id="btn-send" >                                            '
+        +'                    <button type="button" class="btn btn-primary" id="RefBtn">Send Referal &gt </button>           '     
+        +'                 </div>                                                                                            '
+        +'            </div>                                                                                                 '
+        +'        </div>                                                                                                     ';         
+  
+       
+        $(container).append(str);
+        var root     = $("#labAndRefferal");
+
+
+      $( '#food-insecurity-form').html( '<h1> Food Insecurity: </h1>');
+
+      
+      for(var i = 0; i < InsecurityQAndA.length; i++) 
+      {
+          var answer = InsecurityQAndA[i].answer; 
+          var question = InsecurityQAndA[i].question; 
+
+          var div_id = '"food-insecurity-Q' + i + '"';
+
+          var ronn = '"toggle-on-n-' + i + '"';
+
+          var roffn = '"toggle-off-n-' + i + '"';
+
+          var ronid ='"toggle-on-id-' + i + '"';
+
+          var roffid = '"toggle-off-id-' + i + '"';
+
+          var radio = '    '
+          +'                          <div class="form-group" id='+ div_id + '  >                                             '
+          +'                                    <p>'+question+'</p>                                                           '
+          +'                                    <input type="radio" id='+ronid+'  name='+ronn+' onclick="return false;" >     '
+          +'                                    <label for='+ronn+'>True </label>                                             '
+          +'                                    <input type="radio" id='+roffid+' name='+roffn+' onclick="return false;" >    '
+          +'                                    <label for='+roffn+'>False</label>                                            '
+          +'                          </div>                                                                                  ';
+
+          $( radio ).appendTo( '#food-insecurity-form');
+
+          var name = "";
+          if(answer == true)
+            name = ronn;
+          else
+            name = roffn;
+
+          $('input[name='+name+']').prop('checked', true);
+       }
+       
+
+        function create_list( heading , ol_id_val, table, div_id ) 
         {
-            throw "Patient ID is a required parameter";
+              
+              $( div_id).html( '<h1>' + "    " + heading + '</h1>');
+
+              var s =  $('<ol />', {id : ol_id_val } );
+              data = table;
+              for(var val in data) 
+              {
+                  $('<li  />', { class:'ui-widget-content', id: val, text: data[val]}).appendTo(s);
+              }
+              s.appendTo(div_id);
+            
         }
-        var referralHeader = "";
-        var referralBody = "";
-        var referralButtons = "";
-        var emailBody = "";
-
-        referralHeader += ("<div id='physician-referral-header' class='physician-referral-container'>");
-        referralHeader += ("<h1 style='font-size: 28px; font-weight:bold;'>Physician's Referral</h1>");
-        referralHeader += ("<h1 style='font-size: 16px;'>Patient: " + patientId + "</h1>");
-        referralHeader += ("</div>");
-
-        referralBody += ("<div id='physician-referral-body' class='physician-referral-container'>");
-        referralBody += ("<h1 style='font-size: 20px; font-weight:bold;'>Recommendations based on questionnaire: </h1>");
-
-        referralBody += ("<textarea id='ref-recs' rows='5' cols='50'>" + window.sessionStorage.getItem("analysis") + "</textarea>");
-
-        referralBody += ("<h1 style='font-size: 20px; font-weight:bold;'>ICD-10 code (Physician use only): </h1>");
-
-        referralBody += ("<select id='icd-selection'>");
-        referralBody += ("<option value='E66.01'>Morbid Obesity (E66.01)</option>");
-        referralBody += ("<option value='E66.09'>Other obesity due to excess calories(E66.09)</option>");
-        referralBody += ("<option value='E66.1'>Drug-induced obesity (E66.1)</option>");
-        referralBody += ("<option value='E66.2'>Morbid (severe) obesity with alveolar hypoventilation (E66.2)</option>");
-        referralBody += ("<option value='E66.3'>Overweight (E66.3)</option>");
-        referralBody += ("<option value='E66.8'>Other Obesity (E66.8)</option>");
-        referralBody += ("<option selected='selected' value='E66.9'>Obesity, unspecified(E66.9)</option>");
-        referralBody += ("<option value='E63.6'>Underweight(R63.6)</option>");
-        referralBody += ("</select>");
-        referralBody += ("<br></br>");
-
-        referralBody += ("<h1 style='font-size:20px'>Lab Results:</h1>");
-        referralBody += ("<p style='font-style:italic;'>Lab in progress</p>");
-        referralBody += ("<br></br>");
-        referralBody += ("</div>");
-
-        emailBody += "Diagnosis: ";
-        emailBody += localStorage.getItem("icd");
-        console.log("EMAIL ICD SELECTION");
-        console.log(localStorage.getItem("icd"));
-
-        emailBody += " Recommendations:";
-        emailBody += window.sessionStorage.getItem("analysis");
-        console.log("EMAIL BODY");
-        console.log(emailBody);
-
-        referralButtons += ("<div id='physician-referral-buttons' class='physician-referral-container'>");
-        referralButtons += ("<a id='ref-export' type='button' href='mailto:someone@CDC.gov?subject=Physician%20Referral&body="+emailBody+"' style='margin-right: 10px;'>Export Data</button>");
-        referralButtons += ("<a id='ref-submit' type='button' style='margin-right: 10px;'>Submit Referrals</a>");
-        referralButtons += ("</div>");
-
-        $(container).append(referralHeader);
-        $(container).append(referralBody);
-        $(container).append(referralButtons);
+ 
+        
+        create_list('Suggested Coding:', 'selectableCoding',coding_data, '#sugested-coding');
+        create_list('Refer To:' ,'selectableRefer',refer_data, '#refer-to');
 
 
-        $('#ref-submit').click(function() {
-          //pass in q-based recommendation & icd-10 code
-          json_ReferralRequest_to_community_coordinator_data.description = $('#ref-recs').val();
-          json_ReferralRequest_to_community_coordinator_data.icd = $('#icd-selection option:selected').text();
-          
-          //post request to community-facing app
-          CoordinatorReferralPOST();
-          
-          alert('[SUCCESS] Referral Submitted');
-          console.log("json_ReferralRequest_to_community_coordinator_data");
-          console.log(json_ReferralRequest_to_community_coordinator_data);
-        });
-         $('select').change(function () {
-             var optionSelected = $(this).find("option:selected");
-             localStorage.setItem("icd",optionSelected);
-             localStorage.setItem("icd",optionSelected);
-         });
-        $('select').on('change', function () {
-             var selectedValue = this.selectedOptions[0].value;
-             localStorage.setItem("icd",selectedValue);
-             localStorage.setItem("icd",selectedValue);
+        function add_to_array( selected_id , array ) 
+        {
+               var index = array.indexOf(selected_id); 
+                if(index ==-1)
+                {    
+                  array.push(selected_id);
+                }
+               
+        }
+
+        function remove_from_array( unselected_id , array ) 
+        {
+               var index = array.indexOf(unselected_id); 
+               if(index!=-1)
+                {
+                   array.splice(index, 1);
+                } 
+                
+        }
+ 
+
+        $("#selectableCoding").selectable(
+        {
+            selected: function(event, ui)
+            {   
+                add_to_array( ui.selected.id , selected_Codes ) ;
+            },
+            unselected: function(event, ui)
+            {
+                remove_from_array( ui.unselected.id , selected_Codes ) ; 
+            }
         });
 
-    }
 
-    
+
+        $("#selectableRefer").selectable(
+        {
+            selected: function(event, ui)
+            {   
+                add_to_array( ui.selected.id , selected_referals ); 
+            },
+            unselected: function(event, ui)
+            {
+                remove_from_array( ui.unselected.id , selected_referals ) ; 
+            }
+        });
+
+        
+        $('#RefBtn').on('click', function(event) 
+        {
+          
+              whatAbout = "ICD-10 codes are as follows: ";
+
+              var arrayLength = selected_Codes.length;
+              for (var i = 0; i < arrayLength; i++) 
+              {
+                   whatAbout += " , " + selected_Codes[i];
+                   ICD_codes  = " , " + selected_Codes[i];
+              } 
+
+              whatAbout += ".  Patient is reffered to the following: "; 
+              var arrayLength = selected_referals.length;
+              for (var i = 0; i < arrayLength; i++) 
+              {
+                   whatAbout += " , " + selected_referals[i];
+              } 
+
+              ReferralPOST("community care");
+              
+  
+        });
+
+      $(".btn").mouseup(function()
+      {
+            $(this).blur();
+          })
+      }
+
+     
 
     NS.PhysicianReferral = 
     {
