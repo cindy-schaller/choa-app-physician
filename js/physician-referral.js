@@ -456,8 +456,8 @@ XDate, setTimeout, getDataSet*/
           var roffid = '"toggle-off-id-' + i + '"';
 
           var radio = '    '
-          +'                          <div class="form-group" id='+ div_id + '  >                                             '
-          +'                                    <p>'+question+'</p>                                                           '
+          +'                          <div style="font-size: 16px;" class="form-group" id='+ div_id + '  >                                             '
+          +'                                    <p >'+question+'</p>                                   '
           +'                                    <input type="radio" id='+ronid+'  name='+ronn+' onclick="return false;" disabled>     '
           +'                                    <label for='+ronn+'>True </label>                                             '
           +'                                    <input type="radio" id='+roffid+' name='+roffn+' onclick="return false;" disabled>    '
