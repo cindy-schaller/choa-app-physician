@@ -418,13 +418,13 @@ XDate, setTimeout, getDataSet*/
 
         +'        <div class="container" id="labAndRefferal">                                                                '
         +'            <div class="row">                                                                                      '
-		+'                <div class="col-sm-4">                                                           '		
-        +'                   <div class="col-sm-4" id="refer-to" ></div>                                                     '
+		+'                <div class="col-sm-4">                                                           '
+        +'                   <div class="col-sm-10" id="refer-to" ></div>                                                     '
         +'                   <div class="col-sm-12 fi_form" id="food-insecurity-form" >                                                    '
         +'                   </div>                                                                                          '    
 		+'                </div>                                                                                             '    
-		+'                <div class="col-sm-4">                                                                    '
-        +'                    <div class="col-sm-offset-3 col-sm-4" id="sugested-coding" ></div>                            '
+		+'                <div class="col-sm-6">                                                                    '
+        +'                    <div class="col-sm-offset-3 col-sm-7" id="sugested-coding" ></div>                            '
 		+'                    <div class="col-sm-offset-3 col-sm-4" id="btn-send" >                                          '
         +'                        <button type="button" class="btn btn-primary" id="RefBtn">Send Referal &gt </button>       '     
         +'                    </div>                                                                                         '
@@ -437,7 +437,7 @@ XDate, setTimeout, getDataSet*/
         var root     = $("#labAndRefferal");
 
 
-      $( '#food-insecurity-form').html( '<h1> Food Insecurity: </h1>');
+      $( '#food-insecurity-form').html( '<p style="font-size: 24px; font-weight: bold; color: #4F5F6B;"> Food Insecurity: </p>');
 
       
       for(var i = 0; i < InsecurityQAndA.length; i++) 
@@ -479,7 +479,7 @@ XDate, setTimeout, getDataSet*/
         function create_list( heading , ol_id_val, table, div_id ) 
         {
               
-              $( div_id).html( '<h1>' + "    " + heading + '</h1>');
+              $( div_id).html( '<p style="font-size: 24px; font-weight: bold; color: #4F5F6B;">' + "    " + heading + '</p>');
 
               var s =  $('<ol />', {id : ol_id_val } );
               data = table;
