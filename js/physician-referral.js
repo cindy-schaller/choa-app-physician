@@ -460,9 +460,9 @@ XDate, setTimeout, getDataSet*/
           var radio = '    '
           +'                          <div class="form-group" id='+ div_id + '  >                                             '
           +'                                    <p>'+question+'</p>                                                           '
-          +'                                    <input type="radio" id='+ronid+'  name='+ronn+' onclick="return false;" >     '
+          +'                                    <input type="radio" id='+ronid+'  name='+ronn+' onclick="return false;" disabled>     '
           +'                                    <label for='+ronn+'>True </label>                                             '
-          +'                                    <input type="radio" id='+roffid+' name='+roffn+' onclick="return false;" >    '
+          +'                                    <input type="radio" id='+roffid+' name='+roffn+' onclick="return false;" disabled>    '
           +'                                    <label for='+roffn+'>False</label>                                            '
           +'                          </div>                                                                                  ';
 
