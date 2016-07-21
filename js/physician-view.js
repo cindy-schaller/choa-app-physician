@@ -93,7 +93,7 @@
         var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id'); 
         //  TODO check age for correct questionare selection 
 
-        var questionsID = InfantQuestionsID;
+        var questionsID = AdolescentQuestionsID;
         
         var questionnaireCall = (function () {
             var questionnaireCall = null;
@@ -388,24 +388,23 @@
                         responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
                     }
                     var qAndA = [];
-                    for(var i = 0; i < questionnaire.group.question.length; i++) {
-                        //search for validated by LinkId final answer
-                        var question_link_ID = questionnaire.group.question[i].linkId;
-                        var qr_index = -1;
-                        for (var x = 0; x < response.group.question.length ; x++) {
-                            if(question_link_ID == response.group.question[x].linkId){
-                                qr_index = x;
-                                break;
-                            }
+                console.log(questionnaire);
+                for(var i = 0; i < questionnaire.group.question.length; i++) {
+                    //search for validated by LinkId final answer
+                    var question_link_ID = questionnaire.group.question[i].linkId;
+                    var qr_index = -1;
+                    for (var x = 0; x < response.group.question.length ; x++) {
+                        if(question_link_ID == response.group.question[x].linkId){
+                            qr_index = x;
+                            break;
                         }
-                        if(qr_index == -1){
-                            console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
-                            return;
-                        }
-                        var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
-                        qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
-
                     }
+                    if(qr_index == -1){
+                        console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
+                        return;
+                    }
+                    var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
+                    qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});                    }
 
                     theSurvey.append($("<div></div>")
                         .html("<hr>")
