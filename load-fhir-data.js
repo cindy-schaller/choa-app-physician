@@ -22,14 +22,8 @@ GC.get_data = function() {
     });
   };
 
- 
-
   var fhir_service_url = window.sessionStorage.getItem('fhir_url_global');
-
-  
-  
   var patientID = window.sessionStorage.getItem('patientid_global');
-  
   var smart = FHIR.client({
     serviceUrl: fhir_service_url,
     patientId:  patientID,
@@ -109,11 +103,11 @@ GC.get_data = function() {
         gestAge = vitalsByCode['11884-4'];
       }
       if (gestAge && gestAge.length > 0) {
-        var weeks = 0, qty = gestAge[0].valueString ? 
-          gestAge[0].valueString.value || '40W 0D' :
-          gestAge[0].valueQuantity ? 
+        var weeks = 0, qty = gestAge[0].valueString ?
+        gestAge[0].valueString.value || '40W 0D' :
+            gestAge[0].valueQuantity ?
             gestAge[0].valueQuantity.value || 40 :
-            40;
+                40;
 
         if (typeof qty == 'string') {
           qty.replace(/(\d+)([WD])\s*/gi, function(token, num, code) {
@@ -165,22 +159,22 @@ GC.get_data = function() {
 
       $.each(familyHistories, function(index, fh){
         if (fh.resourceType === "FamilyMemberHistory") {
-              var code = fh.relationship.coding[0].code;
-              $.each(fh.extension || [], function(index, ext){
-                if (ext.url === "http://fhir-registry.smarthealthit.org/StructureDefinition/family-history#height") {
-                  var ht = units.cm(ext.valueQuantity);
-                  var r = null;
-                  if (code === 'FTH') {
-                    r = p.familyHistory.father;
-                  } else if (code === 'MTH') {
-                    r = p.familyHistory.mother;
-                  }
-                  if (r) {
-                    r.height = ht;
-                    r.isBio = true;
-                  }
-                }
-              });
+          var code = fh.relationship.coding[0].code;
+          $.each(fh.extension || [], function(index, ext){
+            if (ext.url === "http://fhir-registry.smarthealthit.org/StructureDefinition/family-history#height") {
+              var ht = units.cm(ext.valueQuantity);
+              var r = null;
+              if (code === 'FTH') {
+                r = p.familyHistory.father;
+              } else if (code === 'MTH') {
+                r = p.familyHistory.mother;
+              }
+              if (r) {
+                r.height = ht;
+                r.isBio = true;
+              }
+            }
+          });
         }
       });
 

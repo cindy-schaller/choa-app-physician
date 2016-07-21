@@ -91,7 +91,7 @@
         
         var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
         var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id'); 
-        //  TODO check age for correct questionare selection 
+        //  TODO check age for correct questionnaire selection
 
         var questionsID = AdolescentQuestionsID;
         
@@ -114,7 +114,7 @@
             $.ajax({
                 async: false,
                 global: false,
-                url: fhir_url +'/Questionnaire/11036859',
+                url: fhir_url+'/Questionnaire/1081184',
                 dataType: 'json',
                 success: function (data) {
                     wicQuestionnaireCall = data;
