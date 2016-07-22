@@ -210,9 +210,9 @@ window.GC = (function(NS) {
             bg : "Здравословен навик Гол"
         },
         STR_2998 : {
-            en : "Labs & Referral",
-            es : "Laboratorios y Referencias",
-            bg : "Labs и насочване"
+            en : "Referral",
+            es : "Referencias",
+            bg : "насочване"
         },
         STR_2999 : {
             en : "Toggle Settings",
