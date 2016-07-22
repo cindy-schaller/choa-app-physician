@@ -45,9 +45,9 @@ XDate, setTimeout, getDataSet*/
             separator : " "
         };
 
-    function isPhysicianRecordVisible() 
+    function isPhysicianGoalVisible()
     {
-        return GC.App.getViewType() == "record";
+        return GC.App.getViewType() == "goal";
     }
 
     
@@ -325,101 +325,483 @@ var json_observation_data ={
             });
         };
 
+    function renderPhysicianGoalForPrint(container) {
+        var patientName = "Clark Kent";
+        var goalImgs = {'Make half your plate fruits and veggies': 'img/scrip/Veggies and Fruits.png',
+            'Be active': 'img/scrip/Be Active.png',
+            'Drink more water & limit sugary drinks': 'img/scrip/Limit Sugary Drinks.png',
+            'Limit screen time': 'img/scrip/Limit Screen Time.png',
+            'Other': 'img/scrip/Other.png'};
 
-    function renderPhysicianRecord( container ) 
-    {
-       
-        
-
+        // TODO: get FHIR saved response instead
+        var qr = JSON.parse(window.sessionStorage.getItem('hhgoal_info'));
+        var goalText = qr["1"]; // "Be active";
+        var howText = qr["2"]; // "riding bikes together";
+        var whenText = qr["3"]; // "every day after school";
+        var whoText = qr["5"]; // "my mom";
+        var supportWhenText = qr["6"]; // "today, 7/21/16";
+        var supportHowText = qr["7"]; // "be ready to ride at 4:30";
         $(container).empty();
-
-        
-
-        
-        var patientId = patientID;
-    
-        if(!patientId)
-        {
-            throw "Patient ID is a required parameter";
+        $(container).css({"padding": "20pt"});
+        var headingContainer = $("<h3></h3>").html(patientName+"'s Healthy Habit Goal <img src='img/scrip/CHOA.png' style='float:right'/>")
+            .css({"line-height":"74pt", "vertical-align":"center", "color": "#ff7010"});
+        $(container).append(headingContainer);
+        var goalContainer = $("<div></div>").css({"background-color": "#DDDDDD", "padding": "15pt", "text-align": "center"});
+        for (var goal in goalImgs) {
+            if (goalImgs.hasOwnProperty(goal)) {
+                goalContainer.append("<img src='"+goalImgs[goal]+"' width='"+(goal == goalText ? 128 : 96)+"' style='padding:10pt' />");
+            }
         }
-       
-        var recordHeader = "";
-        var recordBody = "";
-        var recordTests = "";
-        var recordButtons = "";
+        $(container).append(goalContainer);
+        var scripText = "<br/><br/>I/we will <b>"+goalText+"</b> by <b>"+howText+"</b> <b>"+whenText+"</b> with the help of <b>"+whoText+"</b>.";
+        var scripTextContainer = $("<div></div>").html(scripText);
+        $(container).append(scripTextContainer);
+        var parentHeadingContainer = $("<h3></h3>").html("Parent/Family Goal")
+            .css({"line-height":"74pt", "vertical-align":"center", "color": "#ff7010"});
+        $(container).append(parentHeadingContainer);
+        var parentText = "As of <b>"+supportWhenText+"</b>, I/we will <b>"+supportHowText+"</b>.";
+        var parentTextContainer = $("<div></div>").html(parentText);
+        $(container).append(parentTextContainer);
 
-        recordHeader += ("<div id='physician-record-header' class='physician-record-container'>");
-        recordHeader += ("<p style='font-size: 28px; font-weight:bold;'>Physician's Record</p>");
-        recordHeader += ("<p style='font-size: 16px;'>Patient: " + patientId + "</p>");
-        recordHeader += ("<br></br>");
-        recordHeader += ("</div>");
-
-        recordBody += ("<div id='physician-record-body' class='physician-record-container'>");
-        recordBody += ("<p style='font-size: 20px; font-weight:bold;'>Diagnosis: </p>");
-        recordBody += ("<textarea id='diagnosis-text' rows='6' cols='50'>"+localStorage.getItem("BMI") + " - Obese I</textarea>");
-        recordBody += ("<br></br>");
-        
-        recordBody += ("<p style='font-size: 20px; font-weight:bold;'>Observations: </p>");
-        recordBody += ("<textarea id='diagnosis-obs' rows='6' cols='50'>observations</textarea>");
-        recordBody += ("<br></br>");
-        recordBody += ("</div>");
-
-        recordTests += ("<div id='physician-record-tests' class='physician-record-container'>");
-        recordTests += ("<p style='font-size: 20px; font-weight:bold;'>Lab Tests: </p>");
-        recordTests +=("<div id='record-tests'>");
-        recordTests +=("<input class='record-test' type='checkbox' name='LabTest' value='Alanine aminotransferase'>Alanine aminotransferase [Enzymatic activity/volume] in Serum or Plasma</option>");
-        recordTests +=("<br></br><input class='record-test' type='checkbox' name='LabTest' value='Aspartate aminotransferase'>Aspartate aminotransferase [Enzymatic activity/volume] in Serum or Plasma</option>");
-        recordTests +=("<br></br><input class='record-test' type='checkbox' name='LabTest' checked value='Fasting glucose'>Fasting glucose [Mass/volume] in Capillary blood</option>");
-        recordTests +=("<br></br><input class='record-test' type='checkbox' name='LabTest' value='Lipid Panel'>Lipid panel with direct LDL - Serum or Plasma</option>");
-        recordTests +=("</div'>");
-        recordTests += ("<br></br>");
-        recordTests += ("</div>");
-
-
-        recordButtons += ("<div id='physician-record-buttons' class='physician-record-container'>");
-        recordButtons += ("<button id='diagnosis-btn' class='physician-btn'>Push Diagnosis & Observations</button>");
-        recordButtons += ("</div>");
-
-        $(container).append(recordHeader);
-        $(container).append(recordBody);
-        $(container).append(recordTests);
-        $(container).append(recordButtons);
-
-
-        //DIANOSIS BUTTON
-        console.log("DIANOSIS BUTTON");
-        console.log($("#diagnosis-text").val());
-        $('#diagnosis-btn').click(function() {
-
-
-
-
-          json_condition_data.category.coding[0].diagnosis = $("#diagnosis-text").val();
-          json_condition_data.category.coding[0].fhir_comments = $('#diagnosis-obs').val();
-          json_observation_data.observations =  $('#diagnosis-obs').val();
-          alert('[SUCCESS] Diagnosis & Observations & Diagnostic Order submitted');
-
-          console.log("json_condition_data");
-          console.log(json_condition_data);
-          console.log("json_observation_data");
-          console.log(json_observation_data);
-
-          ObesityConditionPOST();     
-          ObeseObservationsPOST();  
-          DiagnosticOrderPOST();
-        })
-        
     }
 
-    
 
-    NS.PhysicianRecord = 
+    function renderPhysicianGoal( container )
+    {
+        $(container).empty();
+        var topContainer = $("<div></div>").addClass("row");
+        topContainer.attr("id", "thePatient-div");
+        $(container).append(topContainer);
+
+
+
+        var patientCall = (function () {
+            var patientCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Patient?_id=' + patientID,
+                dataType: 'json',
+                success: function (data) {
+                    patientCall = data;
+                }
+            });
+            return patientCall;
+        })();
+
+
+        var questionnaireResponseCall = (function () {
+            var questionnaireResponseCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'QuestionnaireResponse?patient=' + patientID,
+                dataType: 'json',
+                success: function (data) {
+                    questionnaireResponseCall = data;
+                }
+            });
+            return questionnaireResponseCall;
+        })();
+        var theSurvey = $("<div></div>").addClass("col-xs-8 col-xs-offset-1 content");
+        theSurvey.attr("id", "theSurvey-div");
+        $(container).append(theSurvey);
+        var infoCallout = $("<div></div>").addClass("col-xs-2 sidebar-outer");
+        infoCallout.attr("id", "familyInfo-div");
+        $(container).append(infoCallout);
+
+        var GoalQuestionsID = window.sessionStorage.getItem('healthy_habits_goal_questions_id');
+
+        var questionnaireCall = (function () {
+            var questionnaireCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Questionnaire?_id=' + GoalQuestionsID,
+                dataType: 'json',
+                success: function (data) {
+                    questionnaireCall = data;
+                }
+            });
+            return questionnaireCall;
+        })();
+
+        var patientBMICall = (function () {
+            var patientBMICall = null;
+            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
+
+            //Note LOINC Codes: 39156-5 for BMI Observations
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Observation?subject:Patient=' + patientID + '&code=39156-5&_count=50',
+                dataType: 'json',
+                success: function (data) {
+                    patientBMICall = data;
+                }
+            });
+            return patientBMICall;
+        })();
+
+        var patientWeightCall = (function () {
+            var patientWeightCall = null;
+            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
+
+            //Note LOINC Codes: 3141-9 for Weight Observations
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Observation?subject:Patient=' + patientID + '&code=3141-9&_count=50',
+                dataType: 'json',
+                success: function (data) {
+                    patientWeightCall = data;
+                }
+            });
+            return patientWeightCall;
+        })();
+
+        var patientHeightCall = (function () {
+            var patientHeightCall = null;
+            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
+
+            //Note LOINC Codes: 8302-2 for Height BMI Observations
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url + 'Observation?subject:Patient=' + patientID + '&code=8302-2&_count=50',
+                dataType: 'json',
+                success: function (data) {
+                    patientHeightCall = data;
+                }
+            });
+            return patientHeightCall;
+        })();
+
+        $.when(patientCall, questionnaireResponseCall, questionnaireCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
+
+            if (patientCall.entry) {
+                var patient = patientCall.entry[0].resource;
+            }
+
+            var patientId = (patient.id ? patient.id : "");
+            var patientVersion = (patient.meta.versionId) ? patient.meta.versionId : "";
+            var patientLastUpdated = patient.meta.lastUpdated ? patient.meta.lastUpdated : "";
+            var patientName = patient.name[0] ? patient.name[0].given[0] + " " + patient.name[0].family[0] : "";
+            var patientGender = patient.gender ? patient.gender : "";
+            var patientBDay = patient.birthDate ? patient.birthDate : "";
+            var address = (patient.address ?
+            (patient.address[0].line ?
+            patient.address[0].line + "</br>" : "") +
+            (patient.address[0].city ?
+            patient.address[0].city + ", " : "") +
+            (patient.address[0].state ?
+            patient.address[0].state + " " : "") +
+            (patient.address[0].postalCode ?
+            patient.address[0].postalCode + "" : "") : "");
+            var contact = (patient.telecom ?
+            (patient.telecom[0].system ?
+            patient.telecom[0].system + " " : "") +
+            (patient.telecom[0].value ?
+                patient.telecom[0].value : "") : "");
+
+            var BMI = 31.0;
+            if(patientBMICall)
+                if(patientBMICall.entry)
+                if(patientBMICall.entry[0])
+                    if(patientBMICall.entry[0].resource)
+                        if(patientBMICall.entry[0].resource.valueQuantity)
+                            BMI = patientBMICall.entry[0].resource.valueQuantity.value ? patientBMICall.entry[0].resource.valueQuantity.value : "";
+
+            var weight = 70;
+            if(patientWeightCall)
+                if(patientWeightCall.entry)
+                if(patientWeightCall.entry[0])
+                    if(patientWeightCall.entry[0].resource)
+                        if(patientWeightCall.entry[0].resource.valueQuantity)
+                            var weight = patientWeightCall.entry[0].resource.valueQuantity.value ? patientWeightCall.entry[0].resource.valueQuantity.value : "";
+
+            var weightUnit = "kg";
+            if(patientWeightCall)
+                if(patientWeightCall.entry)
+                if(patientWeightCall.entry[0])
+                    if(patientWeightCall.entry[0].resource)
+                        if(patientWeightCall.entry[0].resource.valueQuantity)
+                            weightUnit = patientWeightCall.entry[0].resource.valueQuantity.unit ? patientWeightCall.entry[0].resource.valueQuantity.unit : "";
+
+            var height = 150;
+            if(patientHeightCall)
+                if(patientHeightCall.entry)
+                if(patientHeightCall.entry[0])
+                    if(patientHeightCall.entry[0].resource)
+                        if(patientHeightCall.entry[0].resource.valueQuantity)
+                            height = patientHeightCall.entry[0].resource.valueQuantity.value ? patientHeightCall.entry[0].resource.valueQuantity.value : "";
+
+            var heightUnit =  "cm";
+            if(patientHeightCall)
+                if(patientHeightCall.entry)
+                if(patientHeightCall.entry[0])
+                    if(patientHeightCall.entry[0].resource)
+                        if(patientHeightCall.entry[0].resource.valueQuantity)
+                            heightUnit = patientHeightCall.entry[0].resource.valueQuantity.unit ? patientHeightCall.entry[0].resource.valueQuantity.unit : "";
+
+            console.log("BMI " + BMI);
+            localStorage.setItem("BMI", BMI);
+
+            var BMIClassification;
+            switch (true) {
+                case (BMI <= 18.5):
+                    BMIClassification = $("<div></div>")
+                        .append($("<strong></strong>")
+                            .addClass("text-warning")
+                            .html("Underweight </br> BMI: " + BMI));
+                    break;
+                case (18.5 < BMI && BMI <= 25):
+                    BMIClassification = $("<div></div>")
+                        .append($("<strong></strong>")
+                            .addClass("text-info")
+                            .html("Normal weight </br> BMI: " + BMI));
+                    break;
+                case (25 < BMI && BMI <= 30):
+                    BMIClassification = BMIClassification = $("<div></div>")
+                        .append($("<strong></strong>")
+                            .addClass("text-warning ")
+                            .html("Overweight </br> BMI: " + BMI));
+                    break;
+                case (30 < BMI && BMI <= 35):
+                    BMIClassification = $("<div></div>")
+                        .append($("<strong></strong>")
+                            .addClass("text-danger ")
+                            .html("Class I obesity </br> BMI: " + BMI));
+                    break;
+                case (35 < BMI && BMI <= 40):
+                    BMIClassification = $("<div></div>")
+                        .append($("<strong></strong>")
+                            .addClass("text-danger ")
+                            .html("Class II obesity </br> BMI: " + BMI));
+                    break;
+                case (40 < BMI):
+                    BMIClassification = $("<div></div>")
+                        .append($("<strong></strong>")
+                            .addClass("text-danger ")
+                            .html("Class III obesity </br> BMI: " + BMI));
+                default:
+                    BMIClassification = "BMI: ー"
+            }
+            var familyMembers = {"Martha Kent": "Mother",
+                "Kara Kent": "Sister"}; // TODO: fetch this from another FHIR call
+
+            var infoBox = $("<div></div>")
+                    .attr("style", "margin: 10pt; padding: 5pt; background-color: #F8F8F8; border: 1pt solid #DFDFDF")
+                    .append($("<h4></h4>")
+                        .addClass("text-center text-muted")
+                        .html("Child's Name:"))
+                    .append($("<strong></strong>")
+                        .html(patientName))
+                    .append($("<h4></h4>")
+                        .addClass("text-center text-muted")
+                        .html("Household Member Names:"));
+            for (var key in familyMembers) {
+                if (familyMembers.hasOwnProperty(key)) {
+                    infoBox.append($("<strong></strong>")
+                        .html(key));
+                    infoBox.append($("<span></span>")
+                        .html(" - " + familyMembers[key]));
+                    infoBox.append($("<br/>"));
+                }
+            }
+            infoCallout.append($("<div></div>")
+                .addClass("col-xs-2")
+                .attr("style", "position:fixed")
+                .append(infoBox));
+
+            if (questionnaireCall.entry) {
+                var questionnaire = questionnaireCall.entry[0].resource;
+            }
+            if (questionnaireResponseCall.entry) {
+                var response = questionnaireResponseCall.entry[0].resource;
+            }
+
+            var questionnaireId = "";
+            if (questionnaire) {
+                questionnaireId = (questionnaire.id ? questionnaire.id : "");
+            }
+
+            var questionnaireVersion = "";
+            var questionnaireLastUpdated = "";
+
+            if (questionnaire) {
+                if(questionnaire.meta){
+                    questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
+                    questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
+
+                }
+            }
+            var responseLastUpdated = "";
+            if(response)
+            {
+                if(response.meta)
+                    responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
+
+
+
+                var qAndA = [];
+                for(var i = 0; i < questionnaire.group.question.length; i++) {
+                    //search for validated by LinkId final answer
+                    var question_link_ID = questionnaire.group.question[i].linkId;
+                    var qr_index = -1;
+                    for (var x = 0; x < response.group.question.length ; x++) {
+                        if(question_link_ID == response.group.question[x].linkId){
+                            qr_index = x;
+                            break;
+                        }
+                    }
+                    if(qr_index == -1){
+                        console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
+                        return;
+                    }
+                    var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
+                    qAndA.push({linkId:(questionnaire.group.question[qr_index].linkId), question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
+
+            }
+            theSurvey.append($("<div id='hhg-question-wrapper'></div>")
+                .html("<hr>")
+                .append($("<h1></h1>")
+                    .addClass("text-center text-muted btn-group-sm")
+                    .html("Your child's goal")));
+            for(var i = 0; i < questionnaire.group.question.length; i++) {
+                var surveyRow;
+                if (typeof questionnaire.group.question[i].option != "undefined") {
+                    var options = [];
+                    for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
+                        options.push(questionnaire.group.question[i].option[j].display);
+                    }
+                    surveyRow = $("<div></div>")
+                        .addClass("btn-group btn-group-justified question multi")
+                        .attr("data-toggle", "buttons")
+                        .attr("role", "group")
+                        .attr("link-id", qAndA[i].linkId);
+                    for (var j = 0; j < options.length; j++) {
+                        if (qAndA[i].answerCode == j) {
+                            surveyRow.append($("<div></div>")
+                                .addClass("btn-group btn-group-sm")
+                                .attr("role", "group")
+                                .append($("<a></a>")
+                                    .addClass("btn btn-default btn-responsive active disabled")
+                                    .attr("type", "button")
+                                    .html(options[j])));
+                        } else {
+                            surveyRow.append($("<div></div>")
+                                .addClass("btn-group btn-group-sm")
+                                .attr("role", "group")
+                                .append($("<a></a>")
+                                    .addClass("btn btn-default btn-responsive disabled")
+                                    .attr("type", "button")
+                                    .html(options[j])));
+                        }
+                    }
+                } else {
+                    surveyRow = $("<div></div>")
+                        .addClass("question freeform")
+                        .attr("data-toggle", "textarea")
+                        .attr("role", "group")
+                        .attr("link-id", qAndA[i].linkId);
+                    surveyRow.append($("<textarea style='width:100%'></textarea>"));
+                }
+                theSurvey.append($("<div></div>")
+                    .addClass("row well")
+                    .append($("<div></div>")
+                        .addClass("text-center text-muted")
+                        .append($("<h4></h4>")
+                            .html(qAndA[i].question)))
+                    .append($("<div></div>")
+                        .append(surveyRow)));
+            	}
+                theSurvey.append($("<a></a>")
+                    .addClass("btn btn-default btn-responsive")
+                    .attr("type", "button")
+                    .attr("onclick", "javascript:GC.saveAndPrintPhysicianGoal()")
+                    .html("Save and Print"));
+            }
+            else
+            {
+                $(container).append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
+
+            }
+
+        });
+    }
+
+    NS.savePhysicianGoal = function() {
+        var qr = {};
+        var questions = $('#theSurvey-div').find('.question').each(function(i) {
+            var answer = false;
+            if ($(this).hasClass('multi')) {
+                $(this).find('a').each(function(j) {
+                    if ($(this).hasClass('active')) {
+                        answer = $(this).html();
+                    }
+                });
+            } else if ($(this).hasClass('freeform')) {
+                answer = $(this).children('textarea').val();
+            }
+            qr[$(this).attr('link-id')] = answer;
+        });
+
+        window.sessionStorage.setItem('hhgoal_info', JSON.stringify(qr));
+        return qr;
+        /*
+        // TODO: post response
+        // TODO: find out why other POSTs in the app aren't using the FHIR client for this...
+        // because they aren't I'm also avoiding it here (for now), but not 100% sure whether
+        // I should *really* be doing that.
+        var response = {
+            "resourceType": "QuestionnaireResponse",
+           "text": {
+              "status": "generated",
+              "div": "<div>Patient response to Healthy Habits Goal questionnaire</div>"
+           },
+           "status": "final"
+
+        };
+
+        var QuestionnaireResponsePOST = null;
+         $.ajax({
+            type: 'POST',
+            async: false,
+            global: false,
+            url: fhir_url +'QuestionnaireResponse',
+            data: JSON.stringify(response),
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (data) {
+                QuestionnaireResponsePOST = data;
+                console.log( QuestionnaireResponsePOST.valueOf());
+            }
+        });
+        return QuestionnaireResponsePOST;
+        */
+    };
+
+    NS.saveAndPrintPhysicianGoal = function() {
+        GC.savePhysicianGoal();
+        GC.App.print();
+    };
+
+    NS.PhysicianGoal =
     {
         render : function() 
         {
 
-                renderPhysicianRecord("#view-record");
+                renderPhysicianGoal("#view-goal");
 
+        }
+    };
+
+    NS.HHGPrintView =
+    {
+        render : function()
+        {
+            renderPhysicianGoalForPrint("#view-goal");
         }
     };
 
@@ -430,17 +812,17 @@ var json_observation_data ={
 
             $("html").bind("set:viewType set:language", function(e) 
             {
-                if (isPhysicianRecordVisible()) 
+                if (isPhysicianGoalVisible())
                 {
-                    renderPhysicianRecord("#view-record");
+                    renderPhysicianGoal("#view-goal");
                 }
             });
 
             GC.Preferences.bind("set:metrics set:nicu set:currentColorPreset", function(e) 
             {
-                if (isPhysicianRecordVisible()) 
+                if (isPhysicianGoalVisible())
                 {
-                    renderPhysicianRecord("#view-record");
+                    renderPhysicianGoal("#view-goal");
                 }
             });
 
@@ -449,9 +831,9 @@ var json_observation_data ={
                 if (e.data.path == "roundPrecision.velocity.nicu" ||
                     e.data.path == "roundPrecision.velocity.std") 
                 {
-                    if (isPhysicianRecordVisible()) 
+                    if (isPhysicianGoalVisible())
                     {
-                        renderPhysicianRecord("#view-record");
+                        renderPhysicianGoal("#view-goal");
                     }
                 }
             });
@@ -459,7 +841,7 @@ var json_observation_data ={
 
             GC.Preferences.bind("set:timeFormat", function(e) 
             {
-                renderPhysicianRecord("#view-record");
+                renderPhysicianGoal("#view-goal");
             });
 
        }

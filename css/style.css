@@ -520,11 +520,11 @@ select.styled {
 	background-position: -50px -50px;
 }
 
-#view-mode span[data-value="record"]:before {
+#view-mode span[data-value="goal"]:before {
 	background-position: -50px -78px;
 }
-#view-mode span:hover[data-value="record"]:before,
-#view-mode span.active[data-value="record"]:before {
+#view-mode span:hover[data-value="goal"]:before,
+#view-mode span.active[data-value="goal"]:before {
 	background-position: -50px -50px;
 }
 

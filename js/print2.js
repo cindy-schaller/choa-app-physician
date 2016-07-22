@@ -143,7 +143,8 @@
         document.title = PATIENT.name + (
             type == "graphs" ? " - Charts" : 
                 type == "table" ? " - Data" : 
-                    type == "parent" ? " - Parental View" : 
+                    type == "parent" ? " - Parental View" :
+                        type == "goal" ? " - Prescription" :
                         ""
         ) + " " + (new XDate().toString("ddMMMyyyy HH-MMTT"));
         
@@ -176,6 +177,10 @@
             
             case "table":
                 GC.TableView.render();
+                break;
+
+            case "goal":
+                GC.HHGPrintView.render();
                 break;
         }
 

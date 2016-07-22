@@ -25,24 +25,17 @@
         window.localStorage = {};
     }
     
-
-
-
-
-
-
-
     //these globals needed for the Healthy Eating GT app to work.
     if (!window.sessionStorage.getItem('fhir_url_global')) 
     {
         //window.sessionStorage.setItem('fhir_url_global','https://mihin.shib.al/fhir/baseDstu2' );
         window.sessionStorage.setItem('fhir_url_global','http://52.72.172.54:8080/fhir/baseDstu2' );
-    } 
+    }
     
-    
+
     var fhir_url = window.sessionStorage.getItem('fhir_url_global')  + '/';
-   
-    var ChildHealthyEatingQuestionnaireCall = (function () 
+
+    var ChildHealthyEatingQuestionnaireCall = (function ()
       {
         //GET http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?title=Healthy Habits Questionnaire
             var ChildHealthyEatingQuestionnaireCall = null;
@@ -59,7 +52,7 @@
             return ChildHealthyEatingQuestionnaireCall;
         })();
 
-      var AdolescentHealthyEatingQuestionnaireCall = (function () 
+      var AdolescentHealthyEatingQuestionnaireCall = (function ()
       {
         //  GET http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?title=Healthy Habits Tracker (adolescent)
             var AdolescentHealthyEatingQuestionnaireCall = null;
@@ -73,9 +66,9 @@
                 }
             });
             return AdolescentHealthyEatingQuestionnaireCall;
-        })();   
+        })();
 
-    var InsecurityQuestionnaireCall = (function () 
+    var InsecurityQuestionnaireCall = (function ()
       {
             var InsecurityQuestionnaireCall = null;
             $.ajax({
@@ -89,11 +82,41 @@
             });
             return InsecurityQuestionnaireCall;
         })();
- 
-    
- 
+
+    var WicQuestionnaireCall = (function ()
+        {
+            var WicQuestionnaireCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url + "Questionnaire?identifier=questionnaire-wic-child-nutrition",
+                dataType: 'json',
+                success: function (data) {
+                    WicQuestionnaireCall = data;
+                }
+            });
+            return WicQuestionnaireCall;
+        })();
+
+    var GoalQuestionnaireCall = (function ()
+        {
+            var GoalQuestionnaireCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url + "Questionnaire?identifier=questionnaire-healthy-habit-goals",
+                dataType: 'json',
+                success: function (data) {
+                    GoalQuestionnaireCall = data;
+                }
+            });
+            return GoalQuestionnaireCall;
+        })();
+
+
+
 //http://52.72.172.54:8080/fhir/baseDstu2/Patient?family=Kent&given=Clark&birthdate=2006-03-30
-    var ClarkCall = (function () 
+    var ClarkCall = (function ()
       {
             var ClarkCall = null;
             $.ajax({
@@ -108,7 +131,7 @@
             return ClarkCall;
         })();
 
-  var KaraCall = (function () 
+  var KaraCall = (function ()
       {
             var KaraCall = null;
             $.ajax({
@@ -123,7 +146,7 @@
             return KaraCall;
         })();
 
-    var MDCall = (function () 
+    var MDCall = (function ()
       {
             var MDCall = null;
             $.ajax({
@@ -138,7 +161,7 @@
             return MDCall;
         })();
 
-    var CoordCall = (function () 
+    var CoordCall = (function ()
       {
             var CoordCall = null;
             $.ajax({
@@ -154,95 +177,109 @@
         })();
 
 
-   $.when(CoordCall, MDCall, KaraCall, ClarkCall, InsecurityQuestionnaireCall, AdolescentHealthyEatingQuestionnaireCall, ChildHealthyEatingQuestionnaireCall).then(function() 
+   $.when(CoordCall, MDCall, KaraCall, ClarkCall, InsecurityQuestionnaireCall, AdolescentHealthyEatingQuestionnaireCall,
+       ChildHealthyEatingQuestionnaireCall, WicQuestionnaireCall, GoalQuestionnaireCall).then(function()
     {
 
 
-       if (ChildHealthyEatingQuestionnaireCall.entry) 
+       if (ChildHealthyEatingQuestionnaireCall.entry)
         {
             var ChildHealthyEatingQuestionnaire = ChildHealthyEatingQuestionnaireCall.entry[0].resource;
-            if (!window.sessionStorage.getItem('infant_questions_id')) 
+            if (!window.sessionStorage.getItem('infant_questions_id'))
             {
                     window.sessionStorage.setItem('infant_questions_id',ChildHealthyEatingQuestionnaireCall.id );
-            } 
+            }
 
         }
 
-
-
-       if (AdolescentHealthyEatingQuestionnaireCall.entry) 
+       if (AdolescentHealthyEatingQuestionnaireCall.entry)
         {
-
-           
-       
             var AdolescentHealthyEatingQuestionnaire = AdolescentHealthyEatingQuestionnaireCall.entry[0].resource;
-            if (!window.sessionStorage.getItem('adolescent_questions_id')) 
+            if (!window.sessionStorage.getItem('adolescent_questions_id'))
             {
                     window.sessionStorage.setItem('adolescent_questions_id',AdolescentHealthyEatingQuestionnaire.id );
-            } 
+            }
 
         }
 
+       if (WicQuestionnaireCall.entry)
+       {
+           var WicQuestionnaire = WicQuestionnaireCall.entry[0].resource;
+           if (!window.sessionStorage.getItem('wic_questions_id'))
+           {
+               window.sessionStorage.setItem('wic_questions_id', WicQuestionnaire.id);
+           }
+       }
 
-       if (InsecurityQuestionnaireCall.entry) 
+       if (GoalQuestionnaireCall.entry)
+       {
+           var GoalQuestionnaire = GoalQuestionnaireCall.entry[0].resource;
+           //if (!window.sessionStorage.getItem('healthy_habits_goal_questions_id'))
+           {
+               window.sessionStorage.setItem('healthy_habits_goal_questions_id', GoalQuestionnaire.id);
+           }
+       }
+
+
+       if (InsecurityQuestionnaireCall.entry)
         {
             var InsecurityQuestionnaire = InsecurityQuestionnaireCall.entry[0].resource;
-            if (!window.sessionStorage.getItem('food_insecurity_questions_id_global')) 
+            if (!window.sessionStorage.getItem('food_insecurity_questions_id_global'))
             {
                     window.sessionStorage.setItem('food_insecurity_questions_id_global',InsecurityQuestionnaire.id );
-            } 
+            }
 
         }
 
 
 
-       if (ClarkCall.entry) 
+       if (ClarkCall.entry)
         {
             var Clark = ClarkCall.entry[0].resource;
-            if (!window.sessionStorage.getItem('Clark_ID_global')) 
+            if (!window.sessionStorage.getItem('Clark_ID_global'))
             {
                     window.sessionStorage.setItem('Clark_ID_global',Clark.id );
-            } 
-            
-            //Clark Kent 
-            if (!window.sessionStorage.getItem('patientid_global')) 
+            }
+
+            //Clark Kent
+            if (!window.sessionStorage.getItem('patientid_global'))
             {
                     window.sessionStorage.setItem('patientid_global',Clark.id  );
-            } 
+            }
 
         }
 
-       if (KaraCall.entry) 
+       if (KaraCall.entry)
         {
             var Kara = KaraCall.entry[0].resource;
-            if (!window.sessionStorage.getItem('Kara_ID_global')) 
+            if (!window.sessionStorage.getItem('Kara_ID_global'))
             {
                     window.sessionStorage.setItem('Kara_ID_global',Kara.id );
-            } 
+            }
 
         }
 
-       if (MDCall.entry) 
+       if (MDCall.entry)
         {
             var MD = MDCall.entry[0].resource;
-            if (!window.sessionStorage.getItem('MD_ID_global')) 
+            if (!window.sessionStorage.getItem('MD_ID_global'))
             {
                     window.sessionStorage.setItem('MD_ID_global',MD.id );
-            } 
+            }
 
         }
 
-        if (CoordCall.entry) 
+        if (CoordCall.entry)
         {
             var Coor = CoordCall.entry[0].resource;
-            if (!window.sessionStorage.getItem('PatientCareCoordinatorID_global')) 
+            if (!window.sessionStorage.getItem('PatientCareCoordinatorID_global'))
             {
                 window.sessionStorage.setItem('PatientCareCoordinatorID_global',Coor.id  );
-            } 
+            }
 
         }
 
-          
+
      });
 
     /**
