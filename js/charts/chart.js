@@ -1893,14 +1893,16 @@ Chart.prototype = {
                 curValue    : point.value,
                 isLastPoint : point === lastPoint
             });
-            
+
             // Draw the dot
             entry = patient.getModelEntryAtAgemos(point.agemos);
             elem = inst.drawDot(x, y, {
                 firstMonth : point.agemos <= 1,
                 annotation : entry.annotation,
                 point      : point,
-                record     : entry
+                record     : entry,
+                // TODO: remove this hackery
+                provider   : (i == 1 || i == 4) ? 'wic' : 'md'
             }).toFront();
             inst._nodes.push(elem);
             dots.push(elem);
@@ -2125,7 +2127,8 @@ Chart.prototype = {
     {
         var cfg = $.extend({
                 firstMonth : false, 
-                annotation : ""
+                annotation : "",
+                provider : "md"
             }, settings),
             title = "",
             set = this.pane.paper.set(),
@@ -2146,12 +2149,14 @@ Chart.prototype = {
                 }).addClass("point")
             );
         }
+
+        var highlightColor = (cfg.provider == "wic") ? "#FB0" : "#FFF";
         
         set.push(
             
             // The point white outline
             this.pane.paper.circle(cx, cy, cfg.firstMonth ? 5 : 4).attr({
-                stroke : "#FFF",
+                stroke : highlightColor,
                 "stroke-opacity": cfg.firstMonth ? 0.75 : 1,
                 "stroke-width" : cfg.firstMonth ? 4 : 2
             }).addClass("point"), 
