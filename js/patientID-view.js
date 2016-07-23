@@ -126,7 +126,8 @@
     +'            <div id="patients-list"></div>                                                                                  '
     +'            <div class="separator"></div>                                                                                   '
     +'            <p style="text-align: center">                                                                                  '
-    +'                <input type="button" data-translateattr="value=STR_6042" value="  Continue  " id="continue-button" class="ui-state-disabled" />'
+    +'                <input type="button" data-translateattr="value=STR_6042" value="  Continue as Provider  " class="ui-state-disabled continue-button" user-role="provider" />'
+    +'                <input type="button" data-translateattr="value=STR_6042" value="  Continue as WIC  " class="ui-state-disabled continue-button" user-role="nutritionist" />'
     +'            </p>                                                                                                            '
     +'        </div>';         
         
@@ -196,7 +197,7 @@
        
         list.find("input").click(function(e) {
 
-            root.find("#continue-button").removeClass("ui-state-disabled");
+            root.find(".continue-button").removeClass("ui-state-disabled");
             this.checked = true;
             e.stopPropagation();
             return true;
@@ -206,7 +207,7 @@
             $(this).find("input").triggerHandler("click");
         });
         
-        root.find("#continue-button").click(function() 
+        root.find(".continue-button").click(function()
         {
             if ( !$(this).is(".ui-state-disabled") ) {
                 
@@ -221,20 +222,20 @@
                 if(idx == 0  && current_patientID != Clark_id)
                 {
                      window.sessionStorage.setItem('patientid_global',Clark_id );
-                     alert(' A new patient, Clark Kent, FHIR ID = ' + Clark_id + ' , has been selected. Please wait a moment while new data is retrieved from the server'  ); 
-                     window.location.reload(true);
+                     alert(' A new patient, Clark Kent, FHIR ID = ' + Clark_id + ' , has been selected. Please wait a moment while new data is retrieved from the server'  );
+                     document.location = '?' + $(this).attr('user-role');
                 }
                 else
                  if(idx == 1  && current_patientID != Kara_id)
                 {
                       window.sessionStorage.setItem('patientid_global',Kara_id );
-                     alert(' A new patient, Kara Kent, FHIR ID =  ' + Kara_id + ' ,  has been selected. Please wait a moment while new data is retrieved from the server'  ); 
-                     window.location.reload(true);
+                     alert(' A new patient, Kara Kent, FHIR ID =  ' + Kara_id + ' ,  has been selected. Please wait a moment while new data is retrieved from the server'  );
+                     document.location = '?' + $(this).attr('user-role');
                 }
                  else
                  {
 
-                     root.find("#continue-button").addClass("ui-state-disabled");
+                     root.find(".continue-button").addClass("ui-state-disabled");
                      hasSelection = false;
                  }   
 
