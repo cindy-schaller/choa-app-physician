@@ -73,7 +73,6 @@
             });
             return patientCall;
         })();
-  
 
         var questionnaireResponseCall = (function () {
             var questionnaireResponseCall = null;
@@ -88,7 +87,21 @@
             });
             return questionnaireResponseCall;
         })();
-        
+
+        var wicQuestionnaireResponseCall = (function () {
+            var wicQuestionnaireResponseCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'/QuestionnaireResponse/1081290',
+                dataType: 'json',
+                success: function (data) {
+                    wicQuestionnaireResponseCall = data;
+                }
+            });
+            return wicQuestionnaireResponseCall;
+        })();
+
         var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
         var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id'); 
         //  TODO check age for correct questionnaire selection
@@ -178,7 +191,7 @@
             return patientHeightCall;
         })();
 
-        $.when(patientCall, questionnaireResponseCall, questionnaireCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
+        $.when(patientCall, questionnaireResponseCall, wicQuestionnaireResponseCall, questionnaireCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
 
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
@@ -383,36 +396,36 @@
                 var responseLastUpdated = "";
                 if(response)
                 {
-                    var responseAuthored = (response.authored ? response.authored.split("T")[0] : "");
+                    var responseAuthored = new Date(response.authored ? response.authored : "-");
                     if(response.meta){
                         responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
                     }
                     var qAndA = [];
-                console.log(questionnaire);
-                for(var i = 0; i < questionnaire.group.question.length; i++) {
-                    //search for validated by LinkId final answer
-                    var question_link_ID = questionnaire.group.question[i].linkId;
-                    var qr_index = -1;
-                    for (var x = 0; x < response.group.question.length ; x++) {
-                        if(question_link_ID == response.group.question[x].linkId){
-                            qr_index = x;
-                            break;
+                    for(var i = 0; i < questionnaire.group.question.length; i++) {
+                        //search for validated by LinkId final answer
+                        var question_link_ID = questionnaire.group.question[i].linkId;
+                        var qr_index = -1;
+                        for (var x = 0; x < response.group.question.length ; x++) {
+                            if(question_link_ID == response.group.question[x].linkId){
+                                qr_index = x;
+                                break;
+                            }
                         }
+                        if(qr_index == -1){
+                            console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
+                            return;
+                        }
+                        var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
+                        qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
                     }
-                    if(qr_index == -1){
-                        console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
-                        return;
-                    }
-                    var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
-                    qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});                    }
 
-                    theSurvey.append($("<div></div>")
-                        .html("<hr>")
-                        .append($("<h1></h1>")
-                            .addClass("text-center text-muted btn-group-sm")
-                            .html("Healthy habits questionnaire responses")
-                        )
-                    );
+                        theSurvey.append($("<div></div>")
+                            .html("<hr>")
+                            .append($("<h1></h1>")
+                                .addClass("text-center text-muted btn-group-sm")
+                                .html("Healthy habits questionnaire responses")
+                            )
+                        );
 
                         for(var i = 0; i < questionnaire.group.question.length; i++) {
                             var options = [];
@@ -435,30 +448,30 @@
                                         )
                                     );
                                 }
-                            else {
-                                surveyRow.append($("<div></div>")
-                                    .addClass("btn-group btn-group-sm")
-                                    .attr("role", "group")
-                                    .append($("<a></a>")
-                                        .addClass("btn btn-default btn-responsive disabled")
-                                        .attr("type", "button")
-                                        .html(options[j])
-                                    )
-                                );
+                                else {
+                                    surveyRow.append($("<div></div>")
+                                        .addClass("btn-group btn-group-sm")
+                                        .attr("role", "group")
+                                        .append($("<a></a>")
+                                            .addClass("btn btn-default btn-responsive disabled")
+                                            .attr("type", "button")
+                                            .html(options[j])
+                                        )
+                                    );
+                                }
                             }
-                        }
-                        theSurvey.append($("<div></div>")
-                            .addClass("row well")
-                            .append($("<div></div>")
-                                .addClass("text-center text-muted")
-                                .append($("<h4></h4>")
-                                    .html(qAndA[i].question)
+                            theSurvey.append($("<div></div>")
+                                .addClass("row well")
+                                .append($("<div></div>")
+                                    .addClass("text-center text-muted")
+                                    .append($("<h4></h4>")
+                                        .html(qAndA[i].question)
+                                    )
                                 )
-                            )
-                            .append($("<div></div>")
-                                .append(surveyRow)
-                            )
-                        );
+                                .append($("<div></div>")
+                                    .append(surveyRow)
+                                )
+                            );
                         }
                 }
                 else {
@@ -473,6 +486,10 @@
 
                 $("#dialog").empty();
 
+                if (questionnaireResponseCall.entry) {
+                    var response = questionnaireResponseCall.entry[0].resource;
+                }
+
                 var wicSurvey = $("<div></div>").addClass("col-xs-10 col-xs-offset-1");
                 wicSurvey.attr("id", "wicSurvey-div");
                 $("#dialog").append(wicSurvey);
@@ -484,19 +501,84 @@
                         .html("WIC Questionnaire Response")
                     )
                 );
-                if (wicQuestionnaireCall.group) {
+                if (wicQuestionnaireCall.group && wicQuestionnaireResponseCall.group) {
 
                     var wicQuestionnaire = wicQuestionnaireCall.group.group;
-                    var wicQuestions = {};
                     var linkId;
                     var text;
                     var hasSubQuestions;
-                    var wicSubQuestions = {};
                     var subQuestionLinkId;
                     var subQuestionType;
-                    var subQuestionText;
-                    var currentQuestion;
-                    var currentQuestionType;
+                    var subQuestionAsked;
+                    var subQuestionAnswer;
+                    var subQuestionAnswerType;
+                    var wicQRLinkID;
+                    var wicSubQRLinkID;
+                    var wicQAndA = [];
+
+                    var wicQuestionnaireResponse = wicQuestionnaireResponseCall.group.group;
+
+                    var wicQRIndex = -1;
+                    for (var i = 0; i < wicQuestionnaire.length; i++) {
+                        linkId = wicQuestionnaire[i].linkId
+                        for (var j = 0; j < wicQuestionnaireResponse.length; j++) {
+                            wicQRLinkID = wicQuestionnaireResponse[j].linkId;
+                            if (linkId == wicQRLinkID) {
+                                wicQRIndex = j;
+                                break;
+                            }
+                        }
+                        if (wicQRIndex == -1) {
+                            console.log("ERROR: could not validate linkId of question to any existing LinkID in the wic-questionnaire-response");
+                            return;
+                        }
+
+                        text = wicQuestionnaire[wicQRIndex].text;
+
+                        var wicSubQRIndex = -1;
+                        for (var j = 0; j < wicQuestionnaire[wicQRIndex].question.length; j++) {
+                            subQuestionLinkId = wicQuestionnaire[wicQRIndex].question[j].linkId;
+                            for (var k = 0; k < wicQuestionnaireResponse[wicQRIndex].question.length; k++) {
+                                wicSubQRLinkID = wicQuestionnaire[wicQRIndex].question[k].linkId;
+                                if (subQuestionLinkId === wicSubQRLinkID) {
+                                    wicSubQRIndex = k;
+                                    break;
+                                }
+                            }
+                            if (wicSubQRIndex == -1) {
+                                console.log("ERROR: could not validate linkId of sub-question to any existing LinkID in the wic-questionnaire-response");
+                                return;
+                            }
+
+                            subQuestionAsked = wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].text;
+                            subQuestionAnswerType = wicQuestionnaireResponse[wicQRIndex].question[wicSubQRIndex].answer[0];
+                            switch (true) {
+                                case (subQuestionAnswerType.valueBoolean):
+                                    subQuestionAnswer = subQuestionAnswerType.valueBoolean;
+                                    break;
+                                case (subQuestionAnswerType.valueString):
+                                    subQuestionAnswer = subQuestionAnswerType.valueString;
+                                    break;
+                                case (subQuestionAnswerType.valueInteger):
+                                    subQuestionAnswer = subQuestionAnswerType.valueInteger;
+                                    break;
+                                default:
+                                    subQuestionAnswer = subQuestionAnswerType;
+                            }
+
+                            wicQAndA.push({question:(subQuestionAsked?subQuestionAsked:""), answer:(subQuestionAnswer?subQuestionAnswer:"")});
+                        }
+
+                        var wicSurveyRow = $("<div></div>")
+                            .addClass("btn-group")
+                            .attr("data-toggle", "buttons")
+                            .attr("role", "group");
+                        for (var j = 0; j < wicQAndA.length; j++){
+
+                        }
+                    }
+
+
 
                     for (var i = 1; i < wicQuestionnaire.length; i++) {
                         for (var j = 0; j < wicQuestionnaire[i].question.length; j++) {
@@ -505,23 +587,32 @@
                             text = wicQuestionnaire[i].text;
                             subQuestionLinkId = wicQuestionnaire[i].question[j].linkId;
                             subQuestionType = wicQuestionnaire[i].question[j].type;
-                            subQuestionText = wicQuestionnaire[i].question[j].text;
-
+                            subQuestionAsked = wicQuestionnaire[i].question[j].text;
 
                             if (linkId === Math.floor(subQuestionLinkId)) {
+                                wicSurveyRow.append($("<div></div>")
+                                    .attrs("id", "wic-question-group")
+                                    .html(br)
+                                );
                                 switch (true) {
                                     case (subQuestionType === "boolean"):
                                         // show question text
+                                        wicSurveyRow.append($("<h3></h3>")
+                                            .html(text))
                                         // show sub question text
                                         // show sub question t/f
                                         break;
                                     case (subQuestionType === "text"):
                                         // show question text
+                                        wicSurveyRow.append($("<h3></h3>")
+                                            .html(text))
                                         // show subquestion text
                                         // show answer text
                                         break;
                                     case (subQuestionType === "integer"):
                                         // show question text
+                                        wicSurveyRow.append($("<h3></h3>")
+                                            .html(text))
                                         //show subquestion text
                                         //show answer value
                                         break;
@@ -531,6 +622,7 @@
                             }
                         }
                     }
+                    wicSurvey.append(wicSurveyRow);
                 }
                 else {
                     $("#dialog").append("<div id='physician-questionnaire-blank'>The patient has not completed the WIC questionnaire.</div>");
