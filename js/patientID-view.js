@@ -52,81 +52,100 @@
 
         $(container).empty();
 
-
-
-        var str = '<style>'
-            +'        #birth-selector {                             '
-            +'            font-family: Tahoma, sans-serif;          '
-            +'            font-size: 12px;                          '
-            +'        }                                             '
-            +'        #birth-selector input {                       '
-            +'            width: auto;                              '
-            +'            height: auto;                             '
-            +'            background: transparent;                  '
-            +'            line-height: normal;                      '
-            +'        }                                             '
-            +'        #birth-selector label {                       '
-            +'            white-space: nowrap;                      '
-            +'            display: block;                           '
-            +'            padding: 8px 2px;                         '
-            +'            border: 1px solid transparent;            '
-            +'            text-align: center;                       '
-            +'        }                                             '
-            +'        #birth-selector label:hover {                 '
-            +'            background: #EEE;                         '
-            +'            border-color: #DDD;                       '
-            +'        }                                             '
-            +'        #birth-selector #patients-list {              '
-            +'            max-height: 250px;                        '
-            +'            overflow: auto;                           '
-            +'        }                                             '
-            +'        #birth-selector input[type="button"] {        '
-            +'            padding: 4px;                             '
-            +'            border: 1px solid;                        '
-            +'            line-height: 20px !important;             '
-            +'            height: auto;                             '
-            +'            font-size: 12px;                          '
-            +'            font-family: Tahoma, sans-serif;          '
-            +'            min-width: 80px;                          '
-            +'            width: auto;                              '
-            +'            border-radius: 3px !important;            '
-            +'            border-color: #AAB !important;            '
-            +'            color: #000;                              '
-            +'            text-shadow: 0 1px 0 #FFF;                '
-            +'            box-shadow: 1px 1px 0px 0px rgba(255, 255, 255, 0.5) inset, -1px -1px 3px 0px rgba(0, 0, 0, 0.05) inset;        '
-            +'        }                                                                                                                   '
-            +'        #birth-selector input[type="button"]:hover {                                                                        '
-            +'            background: #E6EBEF;                                                                                            '
-            +'            border-color: #728391 !important;                                                                               '
-            +'            box-shadow: 1px 1px 0px 0px rgba(255, 255, 255, 0.95) inset, -1px -1px 3px 0px rgba(0, 0, 0, 0.2) inset;        '
-            +'        }                                                                                                                   '
-            +'        #birth-selector input[type="button"]:active {                                                                       '
-            +'            background: #D3DBDF;                                                                                            '
-            +'            border-color: #728391 !important;                                                                               '
-            +'            box-shadow: -1px -1px 3px 0px rgba(255, 255, 255, 0.5) inset, 1px 1px 3px 0px rgba(0, 0, 0, 0.2) inset;         '
-            +'        }                                                                                                                   '
-            +'        #birth-selector input[type="button"].ui-state-disabled {                                                            '
-            +'            background: #EEE;                                                                                               '
-            +'            border-color: #DDD !important;                                                                                  '
-            +'            box-shadow: none !important;                                                                                    '
-            +'            color: #999;                                                                                                    '
-            +'            opacity: 1;                                                                                                     '
-            +'        }                                                                                                                   '
-            +'        </style>                                                                                                            '
-            +'        <div id="birth-selector">                                                                                           '
-            +'            <p data-translatecontent="STR_6030"></p>                                                                        '
-            +'            <br />                                                                                                          '
-            +'            <p data-translatecontent="STR_6031"></p>                                                                        '
-            +'            <br />                                                                                                          '
-            +'            <div class="separator"></div>                                                                                   '
-            +'            <div id="patients-list"></div>                                                                                  '
-            +'            <div class="separator"></div>                                                                                   '
-            +'            <p style="text-align: center">                                                                                  '
-            +'                <input type="button" data-translateattr="value=STR_6042" value="  Continue  " id="continue-button" class="ui-state-disabled" />'
-            +'            </p>                                                                                                            '
-            +'        </div>';
-
+       
+  
+      var str = '<style>'
+    +'        #birth-selector {                             '
+    +'            font-family: Tahoma, sans-serif;          '
+    +'            font-size: 12px;                          '
+    +'        }                                             '
+    +'        #birth-selector input {                       '
+    +'            width: auto;                              '
+    +'            height: auto;                             '
+    +'            background: transparent;                  '
+    +'            line-height: normal;                      '
+    +'        }                                             '
+    +'        #birth-selector label {                       '
+    +'            white-space: nowrap;                      '
+    +'            display: block;                           '
+    +'            padding: 8px 2px;                         '
+    +'            border: 1px solid transparent;            '
+    +'            text-align: center;                       '
+    +'        }                                             '
+    +'        #birth-selector label:hover {                 '
+    +'            background: #EEE;                         '
+    +'            border-color: #DDD;                       '
+    +'        }                                             '
+    +'        #birth-selector #patients-list {              '
+    +'            max-height: 250px;                        '
+    +'            overflow: auto;                           '
+    +'        }                                             '
+    +'        #birth-selector input[type="button"] {        '
+    +'            padding: 4px;                             '
+    +'            border: 1px solid;                        '
+    +'            line-height: 20px !important;             '
+    +'            height: auto;                             '
+    +'            font-size: 12px;                          '
+    +'            font-family: Tahoma, sans-serif;          '
+    +'            min-width: 80px;                          '
+    +'            width: auto;                              '
+    +'            border-radius: 3px !important;            '
+    +'            border-color: #AAB !important;            '
+    +'            color: #000;                              '
+    +'            text-shadow: 0 1px 0 #FFF;                '
+    +'            box-shadow: 1px 1px 0px 0px rgba(255, 255, 255, 0.5) inset, -1px -1px 3px 0px rgba(0, 0, 0, 0.05) inset;        '
+    +'        }                                                                                                                   '
+    +'        #birth-selector input[type="button"]:hover {                                                                        '
+    +'            background: #E6EBEF;                                                                                            '
+    +'            border-color: #728391 !important;                                                                               '
+    +'            box-shadow: 1px 1px 0px 0px rgba(255, 255, 255, 0.95) inset, -1px -1px 3px 0px rgba(0, 0, 0, 0.2) inset;        '
+    +'        }                                                                                                                   '
+    +'        #birth-selector input[type="button"]:active {                                                                       '
+    +'            background: #D3DBDF;                                                                                            '
+    +'            border-color: #728391 !important;                                                                               '
+    +'            box-shadow: -1px -1px 3px 0px rgba(255, 255, 255, 0.5) inset, 1px 1px 3px 0px rgba(0, 0, 0, 0.2) inset;         '
+    +'        }                                                                                                                   '
+    +'        #birth-selector input[type="button"].ui-state-disabled {                                                            '
+    +'            background: #EEE;                                                                                               '
+    +'            border-color: #DDD !important;                                                                                  '
+    +'            box-shadow: none !important;                                                                                    '
+    +'            color: #999;                                                                                                    '
+    +'            opacity: 1;                                                                                                     '
+    +'        }                                                                                                                   '
+    +'        </style>                                                                                                            '
+    +'        <div id="birth-selector">                                                                                           '
+    +'            <p data-translatecontent="STR_6030"></p>                                                                        '
+    +'            <br />                                                                                                          '
+    +'            <p data-translatecontent="STR_6031"></p>                                                                        '
+    +'            <br />                                                                                                          '
+    +'            <div class="separator"></div>                                                                                   '
+    +'            <div id="patients-list"></div>                                                                                  '
+    +'            <div class="separator"></div>                                                                                   '
+    +'            <p style="text-align: center">                                                                                  '
+    +'                <input type="button" data-translateattr="value=STR_6042" value="  Continue as Provider  " class="ui-state-disabled continue-button" user-role="provider" />'
+    +'                <input type="button" data-translateattr="value=STR_6042" value="  Continue as WIC  " class="ui-state-disabled continue-button" user-role="nutritionist" />'
+    +'            </p>                                                                                                            '
+    +'        </div>';         
+        
         $(container).append(str);
+
+        /*
+
+        $('#patientIDform input').on('change', function() {
+
+            var checkedValue = $('input[name="myRadio"]:checked', '#patientIDform').val();
+            
+            if(checkedValue !=  current_patientID)
+            {
+                window.sessionStorage.setItem('patientid_global',checkedValue );
+                alert('A new patient, ID =' + $('input[name="myRadio"]:checked', '#patientIDform').val() + ' has been selected. Please wait a moment while new data is retrieved from the server'  ); 
+                window.location.reload(true); 
+                //gc_app_js(GC, jQuery);
+                //GC.get_data();
+                //GC.App.getPatient().refresh();
+            }
+        });*/
+       
 
         var root     = $("#birth-selector");
         var list     = root.find("#patients-list");
@@ -170,7 +189,7 @@
 
         list.find("input").click(function(e) {
 
-            root.find("#continue-button").removeClass("ui-state-disabled");
+            root.find(".continue-button").removeClass("ui-state-disabled");
             this.checked = true;
             e.stopPropagation();
             return true;
@@ -179,8 +198,8 @@
         list.find("label").click(function() {
             $(this).find("input").triggerHandler("click");
         });
-
-        root.find("#continue-button").click(function()
+        
+        root.find(".continue-button").click(function()
         {
             if ( !$(this).is(".ui-state-disabled") ) {
                 var idx = parseFloat(list.find("input:checked").val());
@@ -189,23 +208,23 @@
 
                 if(idx == 0  && current_patientID != Clark_id)
                 {
-                    window.sessionStorage.setItem('patientid_global',Clark_id );
-                    alert(' A new patient, Clark Kent, FHIR ID = ' + Clark_id + ' , has been selected. Please wait a moment while new data is retrieved from the server'  );
-                    window.location.reload(true);
+                     window.sessionStorage.setItem('patientid_global',Clark_id );
+                     alert(' A new patient, Clark Kent, FHIR ID = ' + Clark_id + ' , has been selected. Please wait a moment while new data is retrieved from the server'  );
+                     document.location = '?mode=' + $(this).attr('user-role');
                 }
                 else
                 if(idx == 1  && current_patientID != Kara_id)
                 {
-                    window.sessionStorage.setItem('patientid_global',Kara_id );
-                    alert(' A new patient, Kara Kent, FHIR ID =  ' + Kara_id + ' ,  has been selected. Please wait a moment while new data is retrieved from the server'  );
-                    window.location.reload(true);
+                      window.sessionStorage.setItem('patientid_global',Kara_id );
+                     alert(' A new patient, Kara Kent, FHIR ID =  ' + Kara_id + ' ,  has been selected. Please wait a moment while new data is retrieved from the server'  );
+                     document.location = '?mode=' + $(this).attr('user-role');
                 }
                 else
                 {
 
-                    root.find("#continue-button").addClass("ui-state-disabled");
-                    hasSelection = false;
-                }
+                     root.find(".continue-button").addClass("ui-state-disabled");
+                     hasSelection = false;
+                 }   
 
                 //for offline mode enable
                 //GC.samplePatient = GC.availableSamplePatients[idx];

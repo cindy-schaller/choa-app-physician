@@ -920,6 +920,8 @@
                 $("#time-ranges") [(type == "patients" || type == "view" || type == "record" || type == "referral") ? "hide" : "show"]();
                 $("#info-bar")    [(type == "patients" || type == "view" || type == "record" || type == "referral") ? "hide" : "show"]();
 
+                $(".timeline")    [(type != "graphs") ? "hide" : "show"]();
+
                 setStageHeight();
 
                 draw(type);
