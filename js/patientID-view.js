@@ -223,14 +223,14 @@
                 {
                      window.sessionStorage.setItem('patientid_global',Clark_id );
                      alert(' A new patient, Clark Kent, FHIR ID = ' + Clark_id + ' , has been selected. Please wait a moment while new data is retrieved from the server'  );
-                     document.location = '?' + $(this).attr('user-role');
+                     document.location = '?mode=' + $(this).attr('user-role');
                 }
                 else
                  if(idx == 1  && current_patientID != Kara_id)
                 {
                       window.sessionStorage.setItem('patientid_global',Kara_id );
                      alert(' A new patient, Kara Kent, FHIR ID =  ' + Kara_id + ' ,  has been selected. Please wait a moment while new data is retrieved from the server'  );
-                     document.location = '?' + $(this).attr('user-role');
+                     document.location = '?mode=' + $(this).attr('user-role');
                 }
                  else
                  {
