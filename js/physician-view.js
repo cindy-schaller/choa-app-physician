@@ -60,8 +60,8 @@
         topContainer.append(thePatient);
         var patientInfo = $("<div></div>").addClass("col-xs-4");
         patientInfo.attr("id", "patientInfo-div");
-        
-        
+
+
 
         var patientCall = (function () {
             var patientCall = null;
@@ -76,7 +76,7 @@
             });
             return patientCall;
         })();
-  
+
 
         var questionnaireResponseCall = (function () {
             var questionnaireResponseCall = null;
@@ -98,16 +98,16 @@
         theSurvey.attr("id", "theSurvey-div");
         $(container).append(theSurvey);
 
-        
+
         var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
-        var AdolescentQuestionsID =    window.sessionStorage.getItem('adolescent_questions_id'); 
+        var AdolescentQuestionsID =    window.sessionStorage.getItem('adolescent_questions_id');
 
         console.log( "inafantid " +InfantQuestionsID);
         console.log("adolecant id " +AdolescentQuestionsID);
-        //  TODO check age for correct questionare selection 
+        //  TODO check age for correct questionare selection
 
         var questionsID = AdolescentQuestionsID;
-        
+
         var questionnaireCall = (function () {
             var questionnaireCall = null;
             $.ajax({
@@ -199,90 +199,78 @@
             patient.telecom[0].system + " " : "") +
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
-            
-            var BMI = 31.0;
-            if(patientBMICall)
-                if(patientBMICall.entry)
-                if(patientBMICall.entry[0])
-                    if(patientBMICall.entry[0].resource)
-                        if(patientBMICall.entry[0].resource.valueQuantity)
-                            BMI = patientBMICall.entry[0].resource.valueQuantity.value ? patientBMICall.entry[0].resource.valueQuantity.value : "";
-             
-            var weight = 70;
-            if(patientWeightCall)
-                if(patientWeightCall.entry)
-                if(patientWeightCall.entry[0])
-                    if(patientWeightCall.entry[0].resource)
-                        if(patientWeightCall.entry[0].resource.valueQuantity)
-                            var weight = patientWeightCall.entry[0].resource.valueQuantity.value ? patientWeightCall.entry[0].resource.valueQuantity.value : "";
-            
-            var weightUnit = "kg";
-            if(patientWeightCall)
-                if(patientWeightCall.entry)
-                if(patientWeightCall.entry[0])
-                    if(patientWeightCall.entry[0].resource)
-                        if(patientWeightCall.entry[0].resource.valueQuantity)
-                            weightUnit = patientWeightCall.entry[0].resource.valueQuantity.unit ? patientWeightCall.entry[0].resource.valueQuantity.unit : "";
-  
-            var height = 150;
-            if(patientHeightCall)
-                if(patientHeightCall.entry)
-                if(patientHeightCall.entry[0])
-                    if(patientHeightCall.entry[0].resource)
-                        if(patientHeightCall.entry[0].resource.valueQuantity)
-                            height = patientHeightCall.entry[0].resource.valueQuantity.value ? patientHeightCall.entry[0].resource.valueQuantity.value : "";
-     
-            var heightUnit =  "cm";
-            if(patientHeightCall)
-                if(patientHeightCall.entry)
-                if(patientHeightCall.entry[0])
-                    if(patientHeightCall.entry[0].resource)
-                        if(patientHeightCall.entry[0].resource.valueQuantity)
-                            heightUnit = patientHeightCall.entry[0].resource.valueQuantity.unit ? patientHeightCall.entry[0].resource.valueQuantity.unit : "";
 
-            console.log("BMI " + BMI);
-            localStorage.setItem("BMI", BMI);
+            // stamp = 0 = Unix Epoch. Fingers crossed that we don't deal with
+            // "children" that are older than the age of 46 in this app.
+            var latestRecording = { 'stamp': 0, 'text': '',
+                                    'weight': -1, 'weightUnit': 'kg', 'weightStamp': 0,
+                                    'height': -1, 'heightUnit': 'cm', 'heightStamp': 0,
+                                    'bmi': -1, 'bmiUnit': 'kg/m2', 'bmiStamp': 0,
+                                    'hemo': -1,  'hemoUnit': 'mg/dL', 'hemoStamp': 0 };
+            // If not, hell breaks loose
 
-            var BMIClassification;
-            switch (true) {
-                case (BMI <= 18.5):
-                    BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-warning")
-                            .html("Underweight </br> BMI: " + BMI));
-                    break;
-                case (18.5 < BMI && BMI <= 25):
-                    BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-info")
-                            .html("Normal weight </br> BMI: " + BMI));
-                    break;
-                case (25 < BMI && BMI <= 30):
-                    BMIClassification = BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-warning ")
-                            .html("Overweight </br> BMI: " + BMI));
-                    break;
-                case (30 < BMI && BMI <= 35):
-                    BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-danger ")
-                            .html("Class I obesity </br> BMI: " + BMI));
-                    break;
-                case (35 < BMI && BMI <= 40):
-                    BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-danger ")
-                            .html("Class II obesity </br> BMI: " + BMI));
-                    break;
-                case (40 < BMI):
-                    BMIClassification = $("<div></div>")
-                        .append($("<strong></strong>")
-                            .addClass("text-danger ")
-                            .html("Class III obesity </br> BMI: " + BMI));
-                default:
-                    BMIClassification = "BMI: ー"
+            var process = function(d, l) {
+                for (var i = d.length - 1; i >= 0; i--) {
+                    if (d[i] != undefined &&
+                        d[i].resource.effectiveDateTime != undefined) {
+                        var t = Date.parse(d[i].resource.effectiveDateTime);
+
+                        if (t > latestRecording[l + 'Stamp']) {
+                            latestRecording[l + 'Stamp'] = t
+                            latestRecording[l] = d[i].resource.valueQuantity.value;
+                            latestRecording[l + 'Unit'] = d[i].resource.valueQuantity.unit;
+                        }
+                    }
+                }
             }
+
+            // FIXME: Optimize this into one FHIR query instead of 3 (or.actually,
+            // when the app loads there are *6* observation requests...)
+            process(patientWeightCall.entry, 'weight');
+            process(patientHeightCall.entry, 'height');
+            process(patientBMICall.entry, 'bmi');
+            // FIXME: Implement hemoglobin A fetching
+            // process(patientHeightCall.entry, 'hemo');
+
+            localStorage.setItem("BMI", latestRecording.bmi);
+
+            var bmiText, bmiClass;
+
+            // FIXME: The comparisons can be optimized by inversing the evaluation order
+            switch (true) {
+                case (latestRecording.bmi <= 18.5):
+                    bmiText = 'Underweight </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-warning'
+                    break;
+                case (18.5 < latestRecording.bmi && latestRecording.bmi <= 25):
+                    bmiText = 'Normal weight </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-info'
+                    break;
+                case (25 < latestRecording.bmi && latestRecording.bmi <= 30):
+                    bmiText = 'Overweight </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-warning'
+                    break;
+                case (30 < latestRecording.bmi && latestRecording.bmi <= 35):
+                    bmiText = 'Class II obesity </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-warning'
+                    break;
+                case (35 < latestRecording.bmi && latestRecording.bmi <= 40):
+                    bmiText = 'Class II obesity </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-danger'
+                    break;
+                case (40 < latestRecording.bmi):
+                    bmiText = 'Class III obesity </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-danger'
+                    break;
+                default:
+                    // This should never happen
+                    // BMIClassification = "BMI: ー"
+            }
+
+            var BMIClassification = $("<div></div>")
+                .append($("<strong></strong>")
+                    .addClass(bmiClass)
+                    .html(bmiText));
 
             thePatient.append($("<blockquote></blockquote>")
                 .append($("<div></div>")
@@ -331,11 +319,11 @@
                     .append($("<div></div>")
                         .addClass("patient-weight")
                         .attr("id", "patient-weight")
-                        .html("<strong>Weight: </strong>" + weight + " " + weightUnit))
+                        .html("<strong>Weight: </strong>" + latestRecording.weight + " " + latestRecording.weightUnit))
                     .append($("<div></div>")
                         .addClass("patient-height")
                         .attr("id", "patient-height")
-                        .html("<strong>Height: </strong>" + height + " " + heightUnit))
+                        .html("<strong>Height: </strong>" + latestRecording.height + " " + latestRecording.heightUnit))
 
                     /*.append($("<div></div>")
                      .append($("<footer></footer>")
@@ -355,7 +343,7 @@
             if (questionnaireResponseCall.entry) {
                 var response = questionnaireResponseCall.entry[0].resource;
             }
-            
+
             var questionnaireId = "";
             if (questionnaire) {
                 questionnaireId = (questionnaire.id ? questionnaire.id : "");
@@ -363,12 +351,12 @@
 
             var questionnaireVersion = "";
             var questionnaireLastUpdated = "";
-        
+
             if (questionnaire) {
                 if(questionnaire.meta){
                     questionnaireVersion = (questionnaire.meta.versionId ? questionnaire.meta.versionId : "");
                     questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
-                              
+
                 }
             }
             var responseLastUpdated = "";
@@ -376,8 +364,8 @@
             {
                 if(response.meta)
                     responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
-            
-  
+
+
 
                 var qAndA = [];
                 console.log(questionnaire);
@@ -500,7 +488,7 @@
             {
                 $(container).append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
 
-            } 
+            }
 
         });
     }
