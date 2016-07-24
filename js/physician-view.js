@@ -108,7 +108,7 @@
                 async: false,
                 global: false,
                 //url: fhir_url +'QuestionnaireResponse?patient=' + patientID,
-                url: fhir_url + 'QuestionnaireResponse?patient=' + patientID + "&questionnaire=" + questionsID + "&_sort=_lastUpdated",
+                url: fhir_url + 'QuestionnaireResponse?patient=' + patientID + "&questionnaire=" + questionsID + "&_sort:desc=authored",
                 dataType: 'json',
                 success: function (data) {
                     questionnaireResponseCall = data;
@@ -342,7 +342,7 @@
                     questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
                 }
             }
-            
+
             if(response)
             {
                 var qAndA = [];
