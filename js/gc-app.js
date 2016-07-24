@@ -654,7 +654,7 @@
             .map(function(n) {
                 return n = n.split("="), this[n[0]] = n[1], this;
             }
-            .bind({}))[0];
+                .bind({}))[0];
 
         if (globalParams != undefined && globalParams.mode != undefined &&
             globalParams.mode.toLowerCase().indexOf('nutritionist') != -1) {

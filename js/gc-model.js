@@ -32,6 +32,7 @@
         window.sessionStorage.setItem('fhir_url_global','http://52.72.172.54:8080/fhir/baseDstu2' );
     }
 
+
     var fhir_url = window.sessionStorage.getItem('fhir_url_global')  + '/';
 
     var ChildHealthyEatingQuestionnaireCall = (function ()
@@ -81,6 +82,8 @@
         });
         return InsecurityQuestionnaireCall;
     })();
+
+
 
 //http://52.72.172.54:8080/fhir/baseDstu2/Patient?family=Kent&given=Clark&birthdate=2006-03-30
     var ClarkCall = (function ()
@@ -143,23 +146,28 @@
         return CoordCall;
     })();
 
+
     $.when(CoordCall, MDCall, KaraCall, ClarkCall, InsecurityQuestionnaireCall, AdolescentHealthyEatingQuestionnaireCall, ChildHealthyEatingQuestionnaireCall).then(function()
     {
+
 
         if (ChildHealthyEatingQuestionnaireCall.entry)
         {
             var ChildHealthyEatingQuestionnaire = ChildHealthyEatingQuestionnaireCall.entry[0].resource;
-            console.log(ChildHealthyEatingQuestionnaireCall);
-
-            if (!window.sessionStorage.getItem('infant_questions_id')) 
+            if (!window.sessionStorage.getItem('infant_questions_id'))
             {
-                    window.sessionStorage.setItem('infant_questions_id',ChildHealthyEatingQuestionnaire.id );
-            } 
+                window.sessionStorage.setItem('infant_questions_id',ChildHealthyEatingQuestionnaireCall.id );
+            }
 
         }
 
+
+
         if (AdolescentHealthyEatingQuestionnaireCall.entry)
         {
+
+
+
             var AdolescentHealthyEatingQuestionnaire = AdolescentHealthyEatingQuestionnaireCall.entry[0].resource;
             if (!window.sessionStorage.getItem('adolescent_questions_id'))
             {
@@ -167,6 +175,7 @@
             }
 
         }
+
 
         if (InsecurityQuestionnaireCall.entry)
         {
@@ -178,6 +187,8 @@
 
         }
 
+
+
         if (ClarkCall.entry)
         {
             var Clark = ClarkCall.entry[0].resource;
@@ -186,11 +197,12 @@
                 window.sessionStorage.setItem('Clark_ID_global',Clark.id );
             }
 
-            //Clark Kent 
+            //Clark Kent
             if (!window.sessionStorage.getItem('patientid_global'))
             {
                 window.sessionStorage.setItem('patientid_global',Clark.id  );
             }
+
         }
 
         if (KaraCall.entry)
@@ -200,6 +212,7 @@
             {
                 window.sessionStorage.setItem('Kara_ID_global',Kara.id );
             }
+
         }
 
         if (MDCall.entry)
@@ -209,6 +222,7 @@
             {
                 window.sessionStorage.setItem('MD_ID_global',MD.id );
             }
+
         }
 
         if (CoordCall.entry)
@@ -218,6 +232,7 @@
             {
                 window.sessionStorage.setItem('PatientCareCoordinatorID_global',Coor.id  );
             }
+
         }
 
 

@@ -55,15 +55,15 @@
         var hhh_tbl = "";
 
         hhh_tbl += ("<div id='physician-hhh-tbl'>");
-        hhh_tbl += ("<table> <tr> <th>Healthy Habit Goal</th> <th>Start Date</th> <th>End Date</th> <th>Barriers Discussed</th> </tr>"); 
+        hhh_tbl += ("<table> <tr> <th>Healthy Habit Goal</th> <th>Start Date</th> <th>End Date</th> <th>Barriers Discussed</th> </tr>");
 
         hhh_tbl += ("<tr> <td>Reduce Sugary Drinks</td> <td>Jan 2016</td> <td>Current</td> <td>Clark does not like the taste of water </td> </tr>");
         hhh_tbl += ("<tr> <td>Increase Fruits and Veggies</td> <td>Jun 2015</td> <td>Jan 2016</td> <td>Don't know how to cook the veggies to taste decent</td> </tr>");
         hhh_tbl += ("<tr> <td>Increased Activity</td> <td>Jun 2014</td> <td>Jun 2015</td> <td>Can't find a place to play outside</td> </tr>");
-        
+
         hhh_tbl += ("</table>");
         hhh_tbl += ("</div>")
-        
+
         $(container).append(hhh_tbl);
     }
 
@@ -76,7 +76,7 @@
         topContainer.append(thePatient);
         var patientInfo = $("<div></div>").addClass("col-xs-4");
         patientInfo.attr("id", "patientInfo-div");
-        
+
         var patientCall = (function () {
             var patientCall = null;
             $.ajax({
@@ -90,32 +90,18 @@
             });
             return patientCall;
         })();
-  
-        var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
-        var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id'); 
-
-        var questionsID = InfantQuestionsID;
-
-        //console.log("QUESTIONS")
-        //console.log(questionsID)
-
-        //console.log("PATIENT ID")
-        //console.log(patientID)
 
         var questionnaireResponseCall = (function () {
             var questionnaireResponseCall = null;
             $.ajax({
                 async: false,
                 global: false,
-                //url: fhir_url +'QuestionnaireResponse?patient=' + patientID,
-                url: fhir_url + 'QuestionnaireResponse?patient=' + patientID + "&questionnaire=" + questionsID + "&_sort=_lastUpdated",
+                url: fhir_url +'QuestionnaireResponse?patient=' + patientID,
                 dataType: 'json',
                 success: function (data) {
                     questionnaireResponseCall = data;
                 }
             });
-            //console.log("PATIENT ID " + patientID + " QUESTIONNIARE " + questionsID);
-            //console.log(questionnaireResponseCall);
             return questionnaireResponseCall;
         })();
 
@@ -134,11 +120,11 @@
         })();
 
         var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
-        var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id'); 
+        var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id');
         //  TODO check age for correct questionnaire selection
 
         var questionsID = AdolescentQuestionsID;
-        
+
         var questionnaireCall = (function () {
             var questionnaireCall = null;
             $.ajax({
@@ -154,7 +140,7 @@
         })();
 
         var wicQuestionnaireCall = (function () {
-           var wicQuestionnaireCall = null;
+            var wicQuestionnaireCall = null;
             $.ajax({
                 async: false,
                 global: false,
@@ -345,6 +331,9 @@
                     )
                 )
             );
+
+            create_hhh_tbl(container);
+
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
             var hhLastUpdated = new Date(questionnaireResponseCall.entry[0].resource.authored ? questionnaireResponseCall.entry[0].resource.authored : "-");
 
@@ -636,74 +625,17 @@
                                     subQuestionAnswer = subQuestionAnsweredType;
                             }
 
-                            wicQAndA.push({ID:wicSubQRIndex, question:(subQuestionAsked?subQuestionAsked:""), answer:(subQuestionAnswer?subQuestionAnswer:""), type:subQuestionAnsweredType});
+                            wicQAndA.push({
+                                ID: wicSubQRIndex,
+                                question: (subQuestionAsked ? subQuestionAsked : ""),
+                                answer: (subQuestionAnswer ? subQuestionAnswer : ""),
+                                type: subQuestionAnsweredType
+                            });
                         }
-                    }
-
-                    for(var i = 0; i < wicQAndA.length; i++) {
-                        var wicSurveyRow = $("<div></div>")
-                            .addClass("btn-group")
-                            .attr("data-toggle", "buttons")
-                            .attr("role", "group");
-                        for (var j = 0; j < subQuestionAnswerChoices.length; j++) {
-                            switch (true) {
-                                case (wicQAndA[i].type === "boolean"):
-                                    if (wicQAndA[i].ID == subQuestionAnswerChoices[j].ID) {
-                                        wicSurveyRow.append($("<div></div>")
-                                            .addClass("btn-group btn-group-sm")
-                                            .attr("role", "group")
-                                            append($("<a></a>")
-                                                .addClass("btn btn-default btn-responsive active disabled")
-                                                .attr("type", "button")
-                                                .html(wicQAndA[i].answer)
-                                            )
-                                        )
-                                    }
-                                    break;
-                                case (wicQAndA[i].type === "text"):
-
-                                    break;
-                                case (wicQAndA[i].type === "integer"):
-                                    break;
-                                default:
-                            }
-                            /*
-                                surveyRow.append($("<div></div>")
-                                    .addClass("btn-group btn-group-sm")
-                                    .attr("role", "group")
-                                    .append($("<a></a>")
-                                        .addClass("btn btn-default btn-responsive active disabled")
-                                        .attr("type", "button")
-                                        .html(options[j])
-                                    )
-                                );
-                            }
-                            else {
-                                surveyRow.append($("<div></div>")
-                                    .addClass("btn-group btn-group-sm")
-                                    .attr("role", "group")
-                                    .append($("<a></a>")
-                                        .addClass("btn btn-default btn-responsive disabled")
-                                        .attr("type", "button")
-                                        .html(options[j])
-                                    )
-                                );
-                            }*/
-                        }
-                        theSurvey.append($("<div></div>")
-                            .addClass("row well")
-                            .append($("<div></div>")
-                                .addClass("text-center text-muted")
-                                .append($("<h4></h4>")
-                                    .html(qAndA[i].question)
-                                )
-                            )
-                            .append($("<div></div>")
-                                .append(surveyRow)
-                            )
-                        );
                     }
                 }
+
+
                 else {
                     $("#dialog").append("<div id='physician-questionnaire-blank'>The patient has not completed the WIC questionnaire.</div>");
                 }
