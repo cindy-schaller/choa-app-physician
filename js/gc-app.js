@@ -214,7 +214,7 @@
                 start  = GC.Util.floatVal(values[0]),
                 end    = GC.Util.floatVal(values[1]);
 
-            // If the given age is within this time range 
+            // If the given age is within this time range
             if (start <= weeks && end >= weeks) {
                 setStartWeek(start, true);
                 setEndWeek(end);
@@ -646,6 +646,21 @@
 
     $(function initUI() {
 
+        // Taken from: (Maybe we should do a prototype modification. Not sure.)
+        // https://css-tricks.com/snippets/jquery/get-query-params-object/
+
+        var globalParams = document.location.search.replace(/(^\?)/,'')
+            .split("&")
+            .map(function(n) {
+                return n = n.split("="), this[n[0]] = n[1], this;
+            }
+            .bind({}))[0];
+
+        if (globalParams != undefined && globalParams.mode != undefined &&
+            globalParams.mode.toLowerCase().indexOf('nutritionist') != -1) {
+            $("#referral").css("display", "none");
+        }
+
         var stage = $("#stage"),
             QUEUE = new GC.Util.TaskQueue({
                 onChange : function(task) {
@@ -842,9 +857,9 @@
                     GC.currentPatient = PATIENT = new GC.Patient(
                         data.demographics,
                         data.vitals,
-                        null, //allergies, 
+                        null, //allergies,
                         data.familyHistory,
-                        null,//	annotations, 
+                        null,//	annotations,
                         data.boneAge
                     );
                     GC.translatePreemieDatasets(PATIENT);
@@ -904,6 +919,8 @@
                 //hide gc header
                 $("#time-ranges") [(type == "patients" || type == "view" || type == "record" || type == "referral") ? "hide" : "show"]();
                 $("#info-bar")    [(type == "patients" || type == "view" || type == "record" || type == "referral") ? "hide" : "show"]();
+
+                $(".timeline")    [(type != "graphs") ? "hide" : "show"]();
 
                 setStageHeight();
 
@@ -1528,4 +1545,4 @@
 
     return NS;
 
-}(GC, jQuery)); 
+}(GC, jQuery));

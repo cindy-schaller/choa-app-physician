@@ -49,27 +49,14 @@
      function renderPatientsView( container ) {
         
         var current_patientID = window.sessionStorage.getItem('patientid_global');
+
+        var Clark_id = window.sessionStorage.getItem('Clark_ID_global'); 
+
+        var Kara_id = window.sessionStorage.getItem('Kara_ID_global'); 
     
         $(container).empty();
 
-       /* var PatientIDradio_buttons = "";
-        
-        PatientIDradio_buttons +=("<form id='patientIDform'>");
-
-        if(current_patientID == '11034584')
-        {
-            PatientIDradio_buttons +=("<input type='radio' name='myRadio' value='11034584' checked/> Clark Kent <br />");
-            PatientIDradio_buttons +=("<input type='radio' name='myRadio' value='11037781' /> Kara Kent <br />");
-        }
-        else
-        {
-            PatientIDradio_buttons +=("<input type='radio' name='myRadio' value='11034584' /> Clark Kent <br />");
-            PatientIDradio_buttons +=("<input type='radio' name='myRadio' value='11037781' checked/> Kara Kent <br />");
-        }
-
-        PatientIDradio_buttons +=("</form><p>&nbsp;</p><p></p>");
-        $(container).append(PatientIDradio_buttons);
-*/      
+       
   
       var str = '<style>'
     +'        #birth-selector {                             '
@@ -139,7 +126,8 @@
     +'            <div id="patients-list"></div>                                                                                  '
     +'            <div class="separator"></div>                                                                                   '
     +'            <p style="text-align: center">                                                                                  '
-    +'                <input type="button" data-translateattr="value=STR_6042" value="  Continue  " id="continue-button" class="ui-state-disabled" />'
+    +'                <input type="button" data-translateattr="value=STR_6042" value="  Continue as Provider  " class="ui-state-disabled continue-button" user-role="provider" />'
+    +'                <input type="button" data-translateattr="value=STR_6042" value="  Continue as WIC  " class="ui-state-disabled continue-button" user-role="nutritionist" />'
     +'            </p>                                                                                                            '
     +'        </div>';         
         
@@ -171,25 +159,25 @@
         $.each(GC.availableSamplePatients, function(i, patient) {
             var html = [], j = 0;
             html[j++] = '<label class="' + patient.gender + '">';
-            if(i == 0  && current_patientID == '11034584')
+            if(i == 0  && current_patientID == Clark_id)
             {
 
                  html[j++] = '<input type="radio" name="patient-index" value="' + i + '" checked/>';
             }
             else
-            if(i == 0  && current_patientID != '11034584')
+            if(i == 0  && current_patientID != Clark_id)
             {
 
                  html[j++] = '<input type="radio" name="patient-index" value="' + i + '" />';
             }
             else
 
-            if(i == 1  && current_patientID == '11037781')
+            if(i == 1  && current_patientID == Kara_id)
             {    
                 html[j++] = '<input type="radio" name="patient-index" value="' + i + '" checked/>';
             }
             else
-            if(i == 1  && current_patientID != '11037781')
+            if(i == 1  && current_patientID != Kara_id)
             {
 
                  html[j++] = '<input type="radio" name="patient-index" value="' + i + '" />';
@@ -209,7 +197,7 @@
        
         list.find("input").click(function(e) {
 
-            root.find("#continue-button").removeClass("ui-state-disabled");
+            root.find(".continue-button").removeClass("ui-state-disabled");
             this.checked = true;
             e.stopPropagation();
             return true;
@@ -219,7 +207,7 @@
             $(this).find("input").triggerHandler("click");
         });
         
-        root.find("#continue-button").click(function() 
+        root.find(".continue-button").click(function()
         {
             if ( !$(this).is(".ui-state-disabled") ) {
                 
@@ -231,23 +219,23 @@
     
 
   
-                if(idx == 0  && current_patientID != '11034584')
+                if(idx == 0  && current_patientID != Clark_id)
                 {
-                      window.sessionStorage.setItem('patientid_global','11034584' );
-                     alert(' A new patient, Clark Kent, FHIR ID =  11034584, has been selected. Please wait a moment while new data is retrieved from the server'  ); 
-                     window.location.reload(true);
+                     window.sessionStorage.setItem('patientid_global',Clark_id );
+                     alert(' A new patient, Clark Kent, FHIR ID = ' + Clark_id + ' , has been selected. Please wait a moment while new data is retrieved from the server'  );
+                     document.location = '?mode=' + $(this).attr('user-role');
                 }
                 else
-                 if(idx == 1  && current_patientID != '11037781')
+                 if(idx == 1  && current_patientID != Kara_id)
                 {
-                      window.sessionStorage.setItem('patientid_global','11037781' );
-                     alert(' A new patient, Kara Kent, FHIR ID = 11037781  has been selected. Please wait a moment while new data is retrieved from the server'  ); 
-                     window.location.reload(true);
+                      window.sessionStorage.setItem('patientid_global',Kara_id );
+                     alert(' A new patient, Kara Kent, FHIR ID =  ' + Kara_id + ' ,  has been selected. Please wait a moment while new data is retrieved from the server'  );
+                     document.location = '?mode=' + $(this).attr('user-role');
                 }
                  else
                  {
 
-                     root.find("#continue-button").addClass("ui-state-disabled");
+                     root.find(".continue-button").addClass("ui-state-disabled");
                      hasSelection = false;
                  }   
 

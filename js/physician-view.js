@@ -90,10 +90,13 @@
         })();
         
         var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
-        var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id'); 
+        var AdolescentQuestionsID =    window.sessionStorage.getItem('adolescent_questions_id'); 
+
+        console.log( "inafantid " +InfantQuestionsID);
+        console.log("adolecant id " +AdolescentQuestionsID);
         //  TODO check age for correct questionare selection 
 
-        var questionsID = InfantQuestionsID;
+        var questionsID = AdolescentQuestionsID;
         
         var questionnaireCall = (function () {
             var questionnaireCall = null;
@@ -326,6 +329,7 @@
                     responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
                 }
                 var qAndA = [];
+                console.log(questionnaire);
                 for(var i = 0; i < questionnaire.group.question.length; i++) {
                     //search for validated by LinkId final answer
                     var question_link_ID = questionnaire.group.question[i].linkId;
