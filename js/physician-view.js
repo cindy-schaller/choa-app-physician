@@ -50,6 +50,23 @@
         return GC.App.getViewType() == "view";
     }
 
+    function create_hhh_tbl(container) {
+
+        var hhh_tbl = "";
+
+        hhh_tbl += ("<div id='physician-hhh-tbl'>");
+        hhh_tbl += ("<table> <tr> <th>Healthy Habit Goal</th> <th>Start Date</th> <th>End Date</th> <th>Barriers Discussed</th> </tr>"); 
+
+        hhh_tbl += ("<tr> <td>Reduce Sugary Drinks</td> <td>Jan 2016</td> <td>Current</td> <td>Clark does not like the taste of water </td> </tr>");
+        hhh_tbl += ("<tr> <td>Increase Fruits and Veggies</td> <td>Jun 2015</td> <td>Jan 2016</td> <td>Don't know how to cook the veggies to taste decent</td> </tr>");
+        hhh_tbl += ("<tr> <td>Increased Activity</td> <td>Jun 2014</td> <td>Jun 2015</td> <td>Can't find a place to play outside</td> </tr>");
+        
+        hhh_tbl += ("</table>");
+        hhh_tbl += ("</div>")
+        
+        $(container).append(hhh_tbl);
+    }
+
     function renderPhysicianView(container) {
         $(container).empty();
         var topContainer = $("<div></div>").addClass("row");
@@ -73,18 +90,32 @@
             });
             return patientCall;
         })();
+  
+        var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
+        var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id'); 
+
+        var questionsID = InfantQuestionsID;
+
+        //console.log("QUESTIONS")
+        //console.log(questionsID)
+
+        //console.log("PATIENT ID")
+        //console.log(patientID)
 
         var questionnaireResponseCall = (function () {
             var questionnaireResponseCall = null;
             $.ajax({
                 async: false,
                 global: false,
-                url: fhir_url +'QuestionnaireResponse?patient=' + patientID,
+                //url: fhir_url +'QuestionnaireResponse?patient=' + patientID,
+                url: fhir_url + 'QuestionnaireResponse?patient=' + patientID + "&questionnaire=" + questionsID + "&_sort=_lastUpdated",
                 dataType: 'json',
                 success: function (data) {
                     questionnaireResponseCall = data;
                 }
             });
+            //console.log("PATIENT ID " + patientID + " QUESTIONNIARE " + questionsID);
+            //console.log(questionnaireResponseCall);
             return questionnaireResponseCall;
         })();
 
