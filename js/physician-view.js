@@ -108,7 +108,7 @@
                 async: false,
                 global: false,
                 //url: fhir_url +'QuestionnaireResponse?patient=' + patientID,
-                url: fhir_url + 'QuestionnaireResponse?patient=' + patientID + "&questionnaire=" + questionsID,
+                url: fhir_url + 'QuestionnaireResponse?patient=' + patientID + "&questionnaire=" + questionsID + "&_sort=_lastUpdated",
                 dataType: 'json',
                 success: function (data) {
                     questionnaireResponseCall = data;
@@ -283,13 +283,20 @@
 
         create_hhh_tbl(container)
 
+        var responseAuthored = ""
+        if (questionnaireResponseCall.entry) {
+            console.log(questionnaireResponseCall.entry[0]);
+            var response = questionnaireResponseCall.entry[0].resource;
+            responseAuthored = (response.authored ? response.authored.split("T")[0] : "");
+        }
+
         var qrHeader = "";
         var qrBody = "";
         var qrButtons = "";
         
         qrHeader += ("<div id='physician-qr-header' class='physician-qr-container'>");
         qrHeader += ("<h1 style='font-size: 28px; font-weight:bold;'>Healthy Habits Assesment Response</h1>");
-        qrHeader += ("<h1 style='font-size: 20px; font-weight:bold;'>Date Last Updated Filler</h1>");
+        qrHeader += ("<h1 style='font-size: 20px; font-weight:bold;'>Date Last Authored: " + responseAuthored + "</h1>");
         qrHeader += ("<h1 style='font-size: 14px; font-weight:bold;'>click to see results</h1>");
         qrHeader += ("</div>");
 
@@ -314,12 +321,12 @@
                 var questionnaire = questionnaireCall.entry[0].resource;
             }
             if (questionnaireResponseCall.entry) {
-                console.log(questionnaireResponseCall.entry)
+                //console.log(questionnaireResponseCall.entry)
                 var response = questionnaireResponseCall.entry[0].resource;
             }
             
-            console.log("RESPONSE")
-            console.log(response)
+            //console.log("RESPONSE")
+            //console.log(response)
 
             var questionnaireId = "";
             if (questionnaire) {
@@ -335,13 +342,9 @@
                     questionnaireLastUpdated = (questionnaire.meta.lastUpdated ? questionnaire.meta.lastUpdated.split("T")[0] : "");
                 }
             }
-            var responseLastUpdated = "";
+            
             if(response)
             {
-                var responseAuthored = (response.authored ? response.authored.split("T")[0] : "");
-                if(response.meta){
-                    responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
-                }
                 var qAndA = [];
                 console.log(questionnaire);
                 for(var i = 0; i < questionnaire.group.question.length; i++) {
