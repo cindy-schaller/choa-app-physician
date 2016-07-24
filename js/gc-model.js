@@ -156,18 +156,13 @@
             var ChildHealthyEatingQuestionnaire = ChildHealthyEatingQuestionnaireCall.entry[0].resource;
             if (!window.sessionStorage.getItem('infant_questions_id'))
             {
-                window.sessionStorage.setItem('infant_questions_id',ChildHealthyEatingQuestionnaireCall.id );
+                window.sessionStorage.setItem('infant_questions_id',ChildHealthyEatingQuestionnaire.id );
             }
 
         }
 
-
-
         if (AdolescentHealthyEatingQuestionnaireCall.entry)
         {
-
-
-
             var AdolescentHealthyEatingQuestionnaire = AdolescentHealthyEatingQuestionnaireCall.entry[0].resource;
             if (!window.sessionStorage.getItem('adolescent_questions_id'))
             {
@@ -186,8 +181,6 @@
             }
 
         }
-
-
 
         if (ClarkCall.entry)
         {
@@ -234,8 +227,6 @@
             }
 
         }
-
-
     });
 
     /**

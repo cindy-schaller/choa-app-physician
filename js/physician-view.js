@@ -359,10 +359,10 @@
                     .attr("id", "healthyHabits-div")
                     .addClass("col-xs-5 col-xs-offset-1 text-center")
                     .append($("<h3></h3>")
-                            .html("Healthy Habits Assessment Response <br>")
+                        .html("Healthy Habits Assessment Response <br>")
                     )
                     .append($("<p></p>")
-                            .html("The patient has not completed the Healthy Eating Survey")
+                        .html("The patient has not completed the Healthy Eating Survey")
                     )
                 );
             }
@@ -439,60 +439,60 @@
                         qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
                     }
 
+                    theSurvey.append($("<div></div>")
+                        .html("<hr>")
+                        .append($("<h1></h1>")
+                            .addClass("text-center text-muted btn-group-sm")
+                            .html("Healthy habits questionnaire responses")
+                        )
+                    );
+
+                    for(var i = 0; i < questionnaire.group.question.length; i++) {
+                        var options = [];
+                        for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
+                            options.push(questionnaire.group.question[i].option[j].display);
+                        }
+                        var surveyRow = $("<div></div>")
+                            .addClass("btn-group")
+                            .attr("data-toggle", "buttons")
+                            .attr("role", "group");
+                        for (var j = 0; j < options.length; j++) {
+                            if (qAndA[i].answerCode == j) {
+                                surveyRow.append($("<div></div>")
+                                    .addClass("btn-group btn-group-sm")
+                                    .attr("role", "group")
+                                    .append($("<a></a>")
+                                        .addClass("btn btn-default btn-responsive active disabled")
+                                        .attr("type", "button")
+                                        .html(options[j])
+                                    )
+                                );
+                            }
+                            else {
+                                surveyRow.append($("<div></div>")
+                                    .addClass("btn-group btn-group-sm")
+                                    .attr("role", "group")
+                                    .append($("<a></a>")
+                                        .addClass("btn btn-default btn-responsive disabled")
+                                        .attr("type", "button")
+                                        .html(options[j])
+                                    )
+                                );
+                            }
+                        }
                         theSurvey.append($("<div></div>")
-                            .html("<hr>")
-                            .append($("<h1></h1>")
-                                .addClass("text-center text-muted btn-group-sm")
-                                .html("Healthy habits questionnaire responses")
+                            .addClass("row well")
+                            .append($("<div></div>")
+                                .addClass("text-center text-muted")
+                                .append($("<h4></h4>")
+                                    .html(qAndA[i].question)
+                                )
+                            )
+                            .append($("<div></div>")
+                                .append(surveyRow)
                             )
                         );
-
-                        for(var i = 0; i < questionnaire.group.question.length; i++) {
-                            var options = [];
-                            for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
-                                options.push(questionnaire.group.question[i].option[j].display);
-                            }
-                            var surveyRow = $("<div></div>")
-                                .addClass("btn-group")
-                                .attr("data-toggle", "buttons")
-                                .attr("role", "group");
-                            for (var j = 0; j < options.length; j++) {
-                                if (qAndA[i].answerCode == j) {
-                                    surveyRow.append($("<div></div>")
-                                        .addClass("btn-group btn-group-sm")
-                                        .attr("role", "group")
-                                        .append($("<a></a>")
-                                            .addClass("btn btn-default btn-responsive active disabled")
-                                            .attr("type", "button")
-                                            .html(options[j])
-                                        )
-                                    );
-                                }
-                                else {
-                                    surveyRow.append($("<div></div>")
-                                        .addClass("btn-group btn-group-sm")
-                                        .attr("role", "group")
-                                        .append($("<a></a>")
-                                            .addClass("btn btn-default btn-responsive disabled")
-                                            .attr("type", "button")
-                                            .html(options[j])
-                                        )
-                                    );
-                                }
-                            }
-                            theSurvey.append($("<div></div>")
-                                .addClass("row well")
-                                .append($("<div></div>")
-                                    .addClass("text-center text-muted")
-                                    .append($("<h4></h4>")
-                                        .html(qAndA[i].question)
-                                    )
-                                )
-                                .append($("<div></div>")
-                                    .append(surveyRow)
-                                )
-                            );
-                        }
+                    }
                 }
                 else {
                     $("#dialog").append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
