@@ -50,6 +50,23 @@
         return GC.App.getViewType() == "view";
     }
 
+    function create_hhh_tbl(container) {
+
+        var hhh_tbl = "";
+
+        hhh_tbl += ("<div id='physician-hhh-tbl'>");
+        hhh_tbl += ("<table> <tr> <th>Healthy Habit Goal</th> <th>Start Date</th> <th>End Date</th> <th>Barriers Discussed</th> </tr>"); 
+
+        hhh_tbl += ("<tr> <td>Reduce Sugary Drinks</td> <td>Jan 2016</td> <td>Current</td> <td>Clark does not like the taste of water </td> </tr>");
+        hhh_tbl += ("<tr> <td>Increase Fruits and Veggies</td> <td>Jun 2015</td> <td>Jan 2016</td> <td>Don't know how to cook the veggies to taste decent</td> </tr>");
+        hhh_tbl += ("<tr> <td>Increased Activity</td> <td>Jun 2014</td> <td>Jun 2015</td> <td>Can't find a place to play outside</td> </tr>");
+        
+        hhh_tbl += ("</table>");
+        hhh_tbl += ("</div>")
+        
+        $(container).append(hhh_tbl);
+    }
+
     function renderPhysicianView(container) {
         $(container).empty();
         var topContainer = $("<div></div>").addClass("row");
@@ -74,29 +91,37 @@
             return patientCall;
         })();
   
+        var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
+        var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id'); 
+
+        var questionsID = InfantQuestionsID;
+
+        //console.log("QUESTIONS")
+        //console.log(questionsID)
+
+        //console.log("PATIENT ID")
+        //console.log(patientID)
 
         var questionnaireResponseCall = (function () {
             var questionnaireResponseCall = null;
             $.ajax({
                 async: false,
                 global: false,
-                url: fhir_url +'QuestionnaireResponse?patient=' + patientID,
+                //url: fhir_url +'QuestionnaireResponse?patient=' + patientID,
+                url: fhir_url + 'QuestionnaireResponse?patient=' + patientID + "&questionnaire=" + questionsID,
                 dataType: 'json',
                 success: function (data) {
                     questionnaireResponseCall = data;
                 }
             });
+            //console.log("PATIENT ID " + patientID + " QUESTIONNIARE " + questionsID);
+            //console.log(questionnaireResponseCall);
             return questionnaireResponseCall;
         })();
-        
-        var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
-        var AdolescentQuestionsID =    window.sessionStorage.getItem('adolescent_questions_id'); 
-
-        console.log( "inafantid " +InfantQuestionsID);
-        console.log("adolecant id " +AdolescentQuestionsID);
+    
+        //console.log( "inafantid " +InfantQuestionsID);
+        //console.log("adolecant id " +AdolescentQuestionsID);
         //  TODO check age for correct questionare selection 
-
-        var questionsID = AdolescentQuestionsID;
         
         var questionnaireCall = (function () {
             var questionnaireCall = null;
@@ -110,23 +135,6 @@
                 }
             });
             return questionnaireCall;
-        })();
-
-        var patientBMICall = (function () {
-            var patientBMICall = null;
-            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
-
-            //Note LOINC Codes: 39156-5 for BMI Observations
-            $.ajax({
-                async: false,
-                global: false,
-                url: fhir_url +'Observation?subject:Patient=' + patientID + '&code=39156-5&_count=50',
-                dataType: 'json',
-                success: function (data) {
-                    patientBMICall = data;
-                }
-            });
-            return patientBMICall;
         })();
 
         var patientWeightCall = (function () {
@@ -163,7 +171,7 @@
             return patientHeightCall;
         })();
 
-        $.when(patientCall, questionnaireResponseCall, questionnaireCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
+        $.when(patientCall, questionnaireResponseCall, questionnaireCall, patientWeightCall, patientHeightCall).then(function() {
 
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
@@ -272,7 +280,9 @@
                         .attr("id", "patient-height")
                         .html("<strong>Height: </strong>" + height + " " + heightUnit + " (" + height_per + ")"))
             ));
-    
+
+        create_hhh_tbl(container)
+
         var qrHeader = "";
         var qrBody = "";
         var qrButtons = "";
@@ -304,9 +314,13 @@
                 var questionnaire = questionnaireCall.entry[0].resource;
             }
             if (questionnaireResponseCall.entry) {
+                console.log(questionnaireResponseCall.entry)
                 var response = questionnaireResponseCall.entry[0].resource;
             }
             
+            console.log("RESPONSE")
+            console.log(response)
+
             var questionnaireId = "";
             if (questionnaire) {
                 questionnaireId = (questionnaire.id ? questionnaire.id : "");

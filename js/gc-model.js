@@ -161,9 +161,11 @@
        if (ChildHealthyEatingQuestionnaireCall.entry) 
         {
             var ChildHealthyEatingQuestionnaire = ChildHealthyEatingQuestionnaireCall.entry[0].resource;
+            console.log(ChildHealthyEatingQuestionnaireCall);
+
             if (!window.sessionStorage.getItem('infant_questions_id')) 
             {
-                    window.sessionStorage.setItem('infant_questions_id',ChildHealthyEatingQuestionnaireCall.id );
+                    window.sessionStorage.setItem('infant_questions_id',ChildHealthyEatingQuestionnaire.id );
             } 
 
         }
