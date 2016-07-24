@@ -657,12 +657,13 @@
                         .attr("data-toggle", "buttons")
                         .attr("role", "group");
                     for (var i = 0; i < wicQAndA.length; i++) {
-                        for (var j = 0; j < subQuestionAnswerChoices.lenght; j++) {
+                        console.log("wicQandA " + wicQAndA[i].ID);
+                        for (var j = 0; j < subQuestionAnswerChoices.length; j++) {
+                            console.log("subQandA " + subQuestionAnswerChoices[j].ID)
                             if (wicQAndA[i].ID === subQuestionAnswerChoices[j].ID) {
                                 wicSurveyRow.append($("<div></div>")
                                     .addClass("text-center text-muted")
                                     .append($("<p></p>")
-                                        alert(wicQAndA[i].question)
                                         .html(wicQAndA[i].question)
                                     )
                                 )
@@ -682,7 +683,7 @@
                             .append($("<div></div>")
                                 .html(wicSurveyRow)
                             )
-                        );
+                        )
                     }
 
 
