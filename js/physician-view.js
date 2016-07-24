@@ -525,7 +525,7 @@
 
                     var wicQuestionnaire = wicQuestionnaireCall.group.group;
                     var linkId;
-                    var text;
+                    var questionGroups = [];
                     var hasSubQuestions;
                     var subQuestionLinkId;
                     var subQuestionType;
@@ -554,7 +554,7 @@
                             return;
                         }
 
-                        text = wicQuestionnaire[wicQRIndex].text;
+                        questionGroups.push(wicQuestionnaire[wicQRIndex].text);
 
                         var wicSubQRIndex = -1;
                         for (var j = 0; j < wicQuestionnaire[wicQRIndex].question.length; j++) {
@@ -571,17 +571,21 @@
                                 return;
                             }
 
+                            var codes = [];
+                            var options = [];
                             subQuestionType = wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].type;
                             var id = wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].linkId;
                             switch (true) {
                                 case (subQuestionType === "boolean"):
                                     for (var l = 0; l < wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].option.length; l++) {
-                                        subQuestionAnswerChoices.push({
-                                            ID: id,
-                                            answerCode: wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].option[l].code,
-                                            answerOption: wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].option[l].display
-                                        });
+                                        codes.push(wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].option[l].code);
+                                        options.push(wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].option[l].display);
                                     }
+                                    subQuestionAnswerChoices.push({
+                                        ID: id,
+                                        answerCode: codes,
+                                        answerOption: options
+                                    });
                                     break;
                                 case (subQuestionType === "text"):
                                     subQuestionAnswerChoices.push({
@@ -592,10 +596,14 @@
                                     break;
                                 case (subQuestionType === "integer"):
                                     for (var l = 0; l < wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].option.length; l++) {
+                                        for (var l = 0; l < wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].option.length; l++) {
+                                            codes.push(wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].option[l].code);
+                                            options.push(wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].option[l].display);
+                                        }
                                         subQuestionAnswerChoices.push({
-                                            ID: wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].linkId,
-                                            answerCode: wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].option[l].code,
-                                            answerOption: wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].option[l].display
+                                            ID: id,
+                                            answerCode: codes,
+                                            answerOption: options
                                         });
                                     }
                                     break;
@@ -607,32 +615,127 @@
                                 // });
                             }
 
-                            subQuestionAnsweredType = wicQuestionnaireResponse[wicQRIndex].question[wicSubQRIndex].answer[0];
-                            switch (true) {
-                                case (subQuestionAnsweredType.valueBoolean):
-                                    subQuestionAnswer = subQuestionAnsweredType.valueBoolean;
-                                    subQuestionAnsweredType = "boolean";
-                                    break;
-                                case (subQuestionAnsweredType.valueString):
-                                    subQuestionAnswer = subQuestionAnsweredType.valueString;
-                                    subQuestionAnsweredType = "text";
-                                    break;
-                                case (subQuestionAnsweredType.valueInteger):
-                                    subQuestionAnswer = subQuestionAnsweredType.valueInteger;
-                                    subQuestionAnsweredType = "integer";
-                                    break;
-                                default:
-                                    subQuestionAnswer = subQuestionAnsweredType;
-                            }
 
-                            wicQAndA.push({
-                                ID: wicSubQRIndex,
-                                question: (subQuestionAsked ? subQuestionAsked : ""),
-                                answer: (subQuestionAnswer ? subQuestionAnswer : ""),
-                                type: subQuestionAnsweredType
-                            });
+                            subQuestionLinkId = wicQuestionnaireResponse[wicQRIndex].question[wicSubQRIndex].linkId;
+                            subQuestionAsked = wicQuestionnaire[wicQRIndex].question[wicSubQRIndex].text;
+                            subQuestionAnsweredType = wicQuestionnaireResponse[wicQRIndex].question[wicSubQRIndex].answer[0];
+                            subQuestionType;
+                            if (subQuestionAnsweredType.valueBoolean !== undefined) {
+                                subQuestionAnswer = subQuestionAnsweredType.valueBoolean;
+                                subQuestionType = "boolean";
+                                wicQAndA.push({
+                                    ID: subQuestionLinkId,
+                                    question: subQuestionAsked,
+                                    answer: subQuestionAnswer,
+                                    type: subQuestionType
+                                });
+                            } else if (subQuestionAnsweredType.valueString !== undefined) {
+                                subQuestionAnswer = subQuestionAnsweredType.valueString;
+                                subQuestionType = "text";
+                                wicQAndA.push({
+                                    ID: subQuestionLinkId,
+                                    question: subQuestionAsked,
+                                    answer: subQuestionAnswer,
+                                    type: subQuestionType
+                                });
+                            } else if (subQuestionAnsweredType.valueInteger !== undefined) {
+                                    subQuestionAnswer = subQuestionAnsweredType.valueInteger;
+                                    subQuestionType = "integer";
+                                    wicQAndA.push({
+                                        ID: subQuestionLinkId,
+                                        question: subQuestionAsked,
+                                        answer: subQuestionAnswer,
+                                        type: subQuestionType
+                                    });
+                                }
                         }
                     }
+                    console.log(wicQAndA);
+                    console.log(subQuestionAnswerChoices);
+                    var wicSurveyRow = $("<div></div>")
+                        .addClass("btn-group")
+                        .attr("data-toggle", "buttons")
+                        .attr("role", "group");
+                    for (var i = 0; i < wicQAndA.length; i++) {
+                        for (var j = 0; j < subQuestionAnswerChoices.lenght; j++) {
+                            if (wicQAndA[i].ID === subQuestionAnswerChoices[j].ID) {
+                                wicSurveyRow.append($("<div></div>")
+                                    .addClass("text-center text-muted")
+                                    .append($("<p></p>")
+                                        alert(wicQAndA[i].question)
+                                        .html(wicQAndA[i].question)
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    for (var i = 0; i < questionGroups.length; i++) {
+                        wicSurvey.append($("<div></div>")
+                            .addClass("row well")
+                            .append($("<div></div>")
+                                .addClass("text-center text-muted")
+                                .append($("<p></p>")
+                                    .attr("font", "8px")
+                                    .html(questionGroups[i])
+                                )
+                            )
+                            .append($("<div></div>")
+                                .html(wicSurveyRow)
+                            )
+                        );
+                    }
+
+
+
+
+
+
+                    /*for(var i = 0; i < questionnaire.group.question.length; i++) {
+                        var options = [];
+                        for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
+                            options.push(questionnaire.group.question[i].option[j].display);
+                        }
+                        var surveyRow = $("<div></div>")
+                            .addClass("btn-group")
+                            .attr("data-toggle", "buttons")
+                            .attr("role", "group");
+                        for (var j = 0; j < options.length; j++) {
+                            if (qAndA[i].answerCode == j) {
+                                surveyRow.append($("<div></div>")
+                                    .addClass("btn-group btn-group-sm")
+                                    .attr("role", "group")
+                                    .append($("<a></a>")
+                                        .addClass("btn btn-default btn-responsive active disabled")
+                                        .attr("type", "button")
+                                        .html(options[j])
+                                    )
+                                );
+                            }
+                            else {
+                                surveyRow.append($("<div></div>")
+                                    .addClass("btn-group btn-group-sm")
+                                    .attr("role", "group")
+                                    .append($("<a></a>")
+                                        .addClass("btn btn-default btn-responsive disabled")
+                                        .attr("type", "button")
+                                        .html(options[j])
+                                    )
+                                );
+                            }
+                        }
+                        theSurvey.append($("<div></div>")
+                            .addClass("row well")
+                            .append($("<div></div>")
+                                .addClass("text-center text-muted")
+                                .append($("<h4></h4>")
+                                    .html(qAndA[i].question)
+                                )
+                            )
+                            .append($("<div></div>")
+                                .append(surveyRow)
+                            )
+                        );
+                    }*/
                 }
 
 
