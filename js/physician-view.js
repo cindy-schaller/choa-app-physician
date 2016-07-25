@@ -281,7 +281,177 @@
                         .html("<strong>Height: </strong>" + height + " " + heightUnit + " (" + height_per + ")"))
             ));
 
-        create_hhh_tbl(container)
+
+        var graph_str    ='                                                                        '
+                         +'        <div align="center">                                            '
+                         +'          <h2>Health Habit Item: Progress History</h2>                  '
+                         +'          <canvas id="canvas" height="400" width="650" ></canvas>       '
+                         +'       </div>                                                           ';
+
+        $(container).append(graph_str);    
+       
+        create_hhh_tbl(container);
+
+        /*****************************  graphs **************************/
+        
+
+                     
+        function create_graph( answer_date , multiple_choices) 
+        {
+
+        
+            var canvas = document.getElementById("canvas");
+            var context = canvas.getContext("2d");
+            
+            context.font = "20 pt Verdana"
+            
+            
+            //draw and label the row grid lines
+            context.strokeStyle="#009933"; // color of grid lines
+            var margin = 20;
+            var left_margin = 150; //size should be calculated the longest string in all the multiple_choices
+            var right_margin = 10; //size should be calculated to be as long as a date of the authored feild
+            var number_of_rows = multiple_choices.length;
+            var yStep = (canvas.height - margin ) / number_of_rows;  
+
+            context.beginPath();
+            for (var row_count = 0; row_count < number_of_rows; row_count++) 
+            { 
+                var y =  (canvas.height - margin) - (row_count * yStep) ; 
+                context.fillText(multiple_choices[row_count], margin, y );
+                context.moveTo(left_margin ,y);
+                context.lineTo(canvas.width,y);
+            }
+            context.stroke();
+
+
+            // print dates on X axis every 3 months
+            //1. convert newest and oldest dates into miliseconds 
+            var ms_in_3_months = (1000 * 60 * 60 * 24 * 30 *3);
+            var oldestDate = answer_date[  answer_date.length -1   ].authored; 
+            var oldestTime = new Date(oldestDate);  
+            var newestDate = answer_date[0].authored; 
+            var newestTime = new Date(newestDate);              
+            var diff_max = newestTime.getTime() - oldestTime.getTime();  //ms of span from oldest date to newest date
+            var diff_max_3_month_periods = diff_max / ms_in_3_months;
+            var length_x_axis = canvas.width - left_margin - right_margin;
+            var section_length = length_x_axis / diff_max_3_month_periods;
+
+            for (var i = 0; i < diff_max_3_month_periods; i++) 
+            {
+                
+                var d_time = oldestTime.getTime()  + (ms_in_3_months * i );
+                var d      = new Date(d_time);
+                var d_display = d.getMonth() + "/" + d.getFullYear() ;
+                var x = left_margin + i * section_length;
+            
+                context.fillText( d_display , x , (canvas.height - margin/2)); 
+            }
+
+
+            var x_y = [];
+
+            // calculate the iregular interval on x axis
+            //1. convert newest and oldest dates into miliseconds and figure out time span 
+            var oldestDate = answer_date[  answer_date.length -1   ].authored; 
+            var oldestTime = new Date(oldestDate);  
+            var newestDate = answer_date[0].authored; 
+            var newestTime = new Date(newestDate);              
+            var diff_max = newestTime.getTime() - oldestTime.getTime();  //ms of span from oldest date to newest date
+            var length_x_axis = canvas.width - left_margin - right_margin;
+
+
+            for (var i = 0; i < answer_date.length; i++) 
+            {
+                var currDate = answer_date[ i  ].authored; 
+                var currTime = new Date(currDate);  
+                var diff_to_curr = currTime.getTime() - oldestTime.getTime();
+                var frac_of_span = diff_to_curr /diff_max;
+                var X = (length_x_axis * frac_of_span) + left_margin;
+
+                var Y  = (canvas.height - margin) - ((answer_date[ i ].answer -1) * yStep) ; 
+                
+                x_y.push({ x:X , y:Y});
+
+                // draw the circles
+                context.fillStyle = "rgba(255, 255, 0, .5)";  //yellow
+                context.strokeStyle="#000000";
+                context.beginPath();
+                context.arc(X,Y,10,0,2*Math.PI);
+                context.closePath();
+                context.fill();
+                context.lineTo(X.Y ,y)
+                context.stroke();
+                
+            }
+            
+             console.log("x_y")
+             console.log(x_y);
+
+             //draw line on graph  
+             context.lineWidth=2;
+             context.beginPath();
+             context.moveTo(x_y[0].x,x_y[0].y)  ;
+             for (var i = 1; i < answer_date.length; i++) 
+             {
+                context.lineTo(x_y[i].x,x_y[i].y);
+
+             }
+             context.stroke();
+              
+        }
+
+                
+                   
+                    
+
+        var answer_date = [];
+        var multiple_choices = [];
+        var Question = '';
+        var Response = '';
+        var Answer = '';
+        var Authored = '';
+        var questionnaire = '';
+        
+        if (questionnaireCall.entry && questionnaireResponseCall.entry) 
+        {
+            questionnaire = questionnaireCall.entry[0].resource;
+
+            //for(var q = 0; q < questionnaire.group.question.length; q++) 
+            for(var q = 0; q < 1; q++) 
+            {
+                Question = questionnaire.group.question[q].text
+                console.log("Question")
+                console.log(Question);
+
+                
+                multiple_choices = [];
+                for(var j = 0; j < questionnaire.group.question[q].option.length; j++) 
+                {
+                        multiple_choices.push(questionnaire.group.question[q].option[j].display);
+                }
+
+                answer_date = [];
+                for(var  qr = 0; qr < questionnaireResponseCall.entry.length; qr++) 
+                {
+                   
+                   Response   =   questionnaireResponseCall.entry[ qr ].resource;
+                   Answer     =   Response.group.question[ q ].answer[ 0 ].valueInteger;
+                   Authored   =   Response.authored.split("T")[ 0 ] ;
+                   answer_date.push({ answer:Answer, authored:Authored});
+                }
+                
+                console.log("answer_date")
+                console.log(answer_date);
+
+                create_graph(answer_date, multiple_choices ) ;
+               
+            }        
+
+        }
+
+         /***************************** end  graphs **************************/
+
 
         var responseAuthored = ""
         if (questionnaireResponseCall.entry) {
