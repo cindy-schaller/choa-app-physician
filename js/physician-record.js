@@ -72,7 +72,7 @@ var json_observation_data ={
                   "issued": "2013-04-04T13:27:00+01:00", 
                   "effectiveDateTime": "2013-04-02",   
                   "valueQuantity": {
-                    "value": 31.0,
+                    "value": 31.0
                   }
                 };
 
@@ -167,7 +167,7 @@ var json_observation_data ={
             }
           ]
 
-        }
+        };
 
            
         //should be triggered by a button labled something like "POST Obesity diagnosis"
@@ -304,7 +304,7 @@ var json_observation_data ={
              }
           }
        ]
-    }
+    };
       
        //used to order a full set of diagnostic tests 
        var DiagnosticOrderPOST = function (){
@@ -326,43 +326,100 @@ var json_observation_data ={
         };
 
     function renderPhysicianGoalForPrint(container) {
-        var patientName = "Clark Kent";
-        var goalImgs = {'Make half your plate fruits and veggies': 'img/scrip/Veggies and Fruits.png',
-            'Be active': 'img/scrip/Be Active.png',
-            'Drink more water & limit sugary drinks': 'img/scrip/Limit Sugary Drinks.png',
-            'Limit screen time': 'img/scrip/Limit Screen Time.png',
-            'Other': 'img/scrip/Other.png'};
+        var patientCall = (function () {
+            var patientCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Patient?_id=' + patientID,
+                dataType: 'json',
+                success: function (data) {
+                    patientCall = data;
+                }
+            });
+            return patientCall;
+        })();
 
-        // TODO: get FHIR saved response instead
-        var qr = JSON.parse(window.sessionStorage.getItem('hhgoal_info'));
-        var goalText = qr["1"]; // "Be active";
-        var howText = qr["2"]; // "riding bikes together";
-        var whenText = qr["3"]; // "every day after school";
-        var whoText = qr["5"]; // "my mom";
-        var supportWhenText = qr["6"]; // "today, 7/21/16";
-        var supportHowText = qr["7"]; // "be ready to ride at 4:30";
-        $(container).empty();
-        $(container).css({"padding": "20pt"});
-        var headingContainer = $("<h3></h3>").html(patientName+"'s Healthy Habit Goal <img src='img/scrip/CHOA.png' style='float:right'/>")
-            .css({"line-height":"74pt", "vertical-align":"center", "color": "#ff7010"});
-        $(container).append(headingContainer);
-        var goalContainer = $("<div></div>").css({"background-color": "#DDDDDD", "padding": "15pt", "text-align": "center"});
-        for (var goal in goalImgs) {
-            if (goalImgs.hasOwnProperty(goal)) {
-                goalContainer.append("<img src='"+goalImgs[goal]+"' width='"+(goal == goalText ? 128 : 96)+"' style='padding:10pt' />");
+        var GoalQuestionsID = window.sessionStorage.getItem('healthy_habits_goal_questions_id');
+        var questionnaireResponseCall = (function () {
+            var questionnaireResponseCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'QuestionnaireResponse?patient=' + patientID + "&questionnaire=" + GoalQuestionsID + "&_sort:desc=authored",
+                dataType: 'json',
+                success: function (data) {
+                    questionnaireResponseCall = data;
+                }
+            });
+            return questionnaireResponseCall;
+        })();
+
+        $.when(patientCall, questionnaireResponseCall).then(function() {
+            var patient;
+            if (patientCall.entry) {
+                patient = patientCall.entry[0].resource;
             }
-        }
-        $(container).append(goalContainer);
-        var scripText = "<br/><br/>I/we will <b>"+goalText+"</b> by <b>"+howText+"</b> <b>"+whenText+"</b> with the help of <b>"+whoText+"</b>.";
-        var scripTextContainer = $("<div></div>").html(scripText);
-        $(container).append(scripTextContainer);
-        var parentHeadingContainer = $("<h3></h3>").html("Parent/Family Goal")
-            .css({"line-height":"74pt", "vertical-align":"center", "color": "#ff7010"});
-        $(container).append(parentHeadingContainer);
-        var parentText = "As of <b>"+supportWhenText+"</b>, I/we will <b>"+supportHowText+"</b>.";
-        var parentTextContainer = $("<div></div>").html(parentText);
-        $(container).append(parentTextContainer);
+            var patientName = patient.name[0] ? patient.name[0].given[0] + " " + patient.name[0].family[0] : "";
 
+            // TODO: pull this from HHG questionnaire
+            var goalMap = {
+                '1': 'Make half your plate fruits and veggies',
+                '2': 'Be active',
+                '3': 'Limit screen time',
+                '4': 'Drink more water & limit sugary drinks'
+            };
+            var goalImgs = {'Make half your plate fruits and veggies': 'img/scrip/Veggies and Fruits.png',
+                'Be active': 'img/scrip/Be Active.png',
+                'Drink more water & limit sugary drinks': 'img/scrip/Limit Sugary Drinks.png',
+                'Limit screen time': 'img/scrip/Limit Screen Time.png',
+                'Other': 'img/scrip/Other.png'};
+
+            var response = {};
+            if (questionnaireResponseCall.entry) {
+                response = questionnaireResponseCall.entry[0].resource;
+            }
+            var qr = {};
+            for (var i in response["group"]["question"]) {
+                if (response["group"]["question"].hasOwnProperty(i)) {
+                    var questionResponse = response["group"]["question"][i];
+                    if (questionResponse.hasOwnProperty("answer")) {
+                        if (questionResponse["answer"][0].hasOwnProperty("valueString")) {
+                            qr[questionResponse["linkId"]] = questionResponse["answer"][0]["valueString"];
+                        } else if (questionResponse["answer"][0].hasOwnProperty("valueInteger")) {
+                            qr[questionResponse["linkId"]] = questionResponse["answer"][0]["valueInteger"];
+                        }
+                    }
+                }
+            }
+            var goalText = goalMap[qr["1"]]; // "Be active";
+            var howText = qr["2"]; // "riding bikes together";
+            var whenText = qr["3"]; // "every day after school";
+            var whoText = qr["5"]; // "my mom";
+            var supportWhenText = qr["6"]; // "today, 7/21/16";
+            var supportHowText = qr["7"]; // "be ready to ride at 4:30";
+            $(container).empty();
+            $(container).css({"padding": "20pt"});
+            var headingContainer = $("<h3></h3>").html(patientName+"'s Healthy Habit Goal <img src='img/scrip/CHOA.png' style='float:right'/>")
+                .css({"line-height":"74pt", "vertical-align":"center", "color": "#ff7010"});
+            $(container).append(headingContainer);
+            var goalContainer = $("<div></div>").css({"background-color": "#DDDDDD", "padding": "15pt", "text-align": "center"});
+            for (var goal in goalImgs) {
+                if (goalImgs.hasOwnProperty(goal)) {
+                    goalContainer.append("<img src='"+goalImgs[goal]+"' width='"+(goal == goalText ? 128 : 96)+"' style='padding:10pt' />");
+                }
+            }
+            $(container).append(goalContainer);
+            var scripText = "<br/><br/>I/we will <b>"+goalText+"</b> by <b>"+howText+"</b> <b>"+whenText+"</b> with the help of <b>"+whoText+"</b>.";
+            var scripTextContainer = $("<div></div>").html(scripText);
+            $(container).append(scripTextContainer);
+            var parentHeadingContainer = $("<h3></h3>").html("Parent/Family Goal")
+                .css({"line-height":"74pt", "vertical-align":"center", "color": "#ff7010"});
+            $(container).append(parentHeadingContainer);
+            var parentText = "As of <b>"+supportWhenText+"</b>, I/we will <b>"+supportHowText+"</b>.";
+            var parentTextContainer = $("<div></div>").html(parentText);
+            $(container).append(parentTextContainer);
+        });
     }
 
 
@@ -389,20 +446,6 @@ var json_observation_data ={
             return patientCall;
         })();
 
-
-        var questionnaireResponseCall = (function () {
-            var questionnaireResponseCall = null;
-            $.ajax({
-                async: false,
-                global: false,
-                url: fhir_url +'QuestionnaireResponse?patient=' + patientID,
-                dataType: 'json',
-                success: function (data) {
-                    questionnaireResponseCall = data;
-                }
-            });
-            return questionnaireResponseCall;
-        })();
         var theSurvey = $("<div></div>").addClass("col-xs-8 col-xs-offset-1 content");
         theSurvey.attr("id", "theSurvey-div");
         $(container).append(theSurvey);
@@ -477,7 +520,7 @@ var json_observation_data ={
             return patientHeightCall;
         })();
 
-        $.when(patientCall, questionnaireResponseCall, questionnaireCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
+        $.when(patientCall, questionnaireCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
 
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
@@ -617,9 +660,6 @@ var json_observation_data ={
             if (questionnaireCall.entry) {
                 var questionnaire = questionnaireCall.entry[0].resource;
             }
-            if (questionnaireResponseCall.entry) {
-                var response = questionnaireResponseCall.entry[0].resource;
-            }
 
             var questionnaireId = "";
             if (questionnaire) {
@@ -636,33 +676,6 @@ var json_observation_data ={
 
                 }
             }
-            var responseLastUpdated = "";
-            if(response)
-            {
-                if(response.meta)
-                    responseLastUpdated = (response.meta.lastUpdated ? response.meta.lastUpdated.split("T") : "");
-
-
-
-                var qAndA = [];
-                for(var i = 0; i < questionnaire.group.question.length; i++) {
-                    //search for validated by LinkId final answer
-                    var question_link_ID = questionnaire.group.question[i].linkId;
-                    var qr_index = -1;
-                    for (var x = 0; x < response.group.question.length ; x++) {
-                        if(question_link_ID == response.group.question[x].linkId){
-                            qr_index = x;
-                            break;
-                        }
-                    }
-                    if(qr_index == -1){
-                        console.log("ERROR: could not validate linkId of question to any existing LinkID in the questionnaire-response");
-                        return;
-                    }
-                    var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
-                    qAndA.push({linkId:(questionnaire.group.question[qr_index].linkId), question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
-
-            }
             theSurvey.append($("<div id='hhg-question-wrapper'></div>")
                 .html("<hr>")
                 .append($("<h1></h1>")
@@ -671,40 +684,30 @@ var json_observation_data ={
             for(var i = 0; i < questionnaire.group.question.length; i++) {
                 var surveyRow;
                 if (typeof questionnaire.group.question[i].option != "undefined") {
-                    var options = [];
-                    for(var j = 0; j < questionnaire.group.question[i].option.length; j++) {
-                        options.push(questionnaire.group.question[i].option[j].display);
-                    }
+                    var linkId = questionnaire.group.question[i].linkId;
                     surveyRow = $("<div></div>")
                         .addClass("btn-group btn-group-justified question multi")
                         .attr("data-toggle", "buttons")
                         .attr("role", "group")
-                        .attr("link-id", qAndA[i].linkId);
-                    for (var j = 0; j < options.length; j++) {
-                        if (qAndA[i].answerCode == j) {
-                            surveyRow.append($("<div></div>")
-                                .addClass("btn-group btn-group-sm")
-                                .attr("role", "group")
-                                .append($("<a></a>")
-                                    .addClass("btn btn-default btn-responsive active disabled")
-                                    .attr("type", "button")
-                                    .html(options[j])));
-                        } else {
-                            surveyRow.append($("<div></div>")
-                                .addClass("btn-group btn-group-sm")
-                                .attr("role", "group")
-                                .append($("<a></a>")
-                                    .addClass("btn btn-default btn-responsive disabled")
-                                    .attr("type", "button")
-                                    .html(options[j])));
-                        }
+                        .attr("link-id", linkId);
+                    for (var j = 0; j < questionnaire.group.question[i].option.length; j++) {
+                        var display = questionnaire.group.question[i].option[j].display;
+                        surveyRow.append($("<div></div>")
+                            .addClass("btn-group btn-group-sm")
+                            .attr("role", "group")
+                            .append($("<a></a>")
+                                .addClass("btn btn-default btn-responsive btn-"+linkId)
+                                .attr("type", "button")
+                                .attr("value", questionnaire.group.question[i].option[j].code)
+                                .attr("onclick", "javascript:$('.btn-"+linkId+"').removeClass('active');$(this).addClass('active');")
+                                .html(display)));
                     }
                 } else {
                     surveyRow = $("<div></div>")
                         .addClass("question freeform")
                         .attr("data-toggle", "textarea")
                         .attr("role", "group")
-                        .attr("link-id", qAndA[i].linkId);
+                        .attr("link-id", questionnaire.group.question[i].linkId);
                     surveyRow.append($("<textarea style='width:100%'></textarea>"));
                 }
                 theSurvey.append($("<div></div>")
@@ -712,7 +715,7 @@ var json_observation_data ={
                     .append($("<div></div>")
                         .addClass("text-center text-muted")
                         .append($("<h4></h4>")
-                            .html(qAndA[i].question)))
+                            .html(questionnaire.group.question[i].text)))
                     .append($("<div></div>")
                         .append(surveyRow)));
             	}
@@ -721,47 +724,51 @@ var json_observation_data ={
                     .attr("type", "button")
                     .attr("onclick", "javascript:GC.saveAndPrintPhysicianGoal()")
                     .html("Save and Print"));
-            }
-            else
-            {
-                $(container).append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
-
-            }
 
         });
     }
 
     NS.savePhysicianGoal = function() {
-        var qr = {};
+        var qr = [];
         var questions = $('#theSurvey-div').find('.question').each(function(i) {
-            var answer = false;
+            var answer = {};
             if ($(this).hasClass('multi')) {
                 $(this).find('a').each(function(j) {
                     if ($(this).hasClass('active')) {
-                        answer = $(this).html();
+                        answer = {"valueInteger": $(this).attr('value')};
                     }
                 });
             } else if ($(this).hasClass('freeform')) {
-                answer = $(this).children('textarea').val();
+                answer = {"valueString": $(this).children('textarea').val()};
             }
-            qr[$(this).attr('link-id')] = answer;
+            qr.push({
+                "linkId": $(this).attr('link-id'),
+                "answer": [answer]
+            });
         });
-
         window.sessionStorage.setItem('hhgoal_info', JSON.stringify(qr));
-        return qr;
-        /*
-        // TODO: post response
+
         // TODO: find out why other POSTs in the app aren't using the FHIR client for this...
         // because they aren't I'm also avoiding it here (for now), but not 100% sure whether
         // I should *really* be doing that.
+
+        var GoalQuestionsID = window.sessionStorage.getItem('healthy_habits_goal_questions_id');
+        var timestamp = new Date();
         var response = {
             "resourceType": "QuestionnaireResponse",
-           "text": {
-              "status": "generated",
-              "div": "<div>Patient response to Healthy Habits Goal questionnaire</div>"
-           },
-           "status": "final"
-
+            "questionnaire": {"reference": "Questionnaire/" + GoalQuestionsID},
+            "text": {
+                "status": "generated",
+                "div": "<div>Patient response to Healthy Habits Goal questionnaire</div>"
+            },
+            "status": "completed",
+            "author": {"reference": "Patient/" + patientID},
+            "subject": {"reference": "Patient/" + patientID},
+            "authored": timestamp.toISOString(),
+            "group": {
+                "linkId":"root",
+                "question":qr
+            }
         };
 
         var QuestionnaireResponsePOST = null;
@@ -779,7 +786,7 @@ var json_observation_data ={
             }
         });
         return QuestionnaireResponsePOST;
-        */
+        //return qr;
     };
 
     NS.saveAndPrintPhysicianGoal = function() {
