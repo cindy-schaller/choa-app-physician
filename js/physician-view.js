@@ -282,11 +282,21 @@
             ));
 
 
-        var graph_str    ='                                                                        '
-                         +'        <div align="center">                                            '
-                         +'          <h2>Health Habit Item: Progress History</h2>                  '
-                         +'          <canvas id="canvas" height="400" width="650" ></canvas>       '
-                         +'       </div>                                                           ';
+         var graph_str   ='                                                                                                               ' 
+                         +'        <style>  '
+                         +'   .row-eq-height { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display:         flex;}'
+                         +'        </style>                                                                                                   '
+
+                         +'        <h2  align="center">Health Habit Item: Progress History</h2>                                           '
+                         +'        <div class="container" id="historyGraphDiscuss">                                                       '
+                         +'            <div class="row">                                                                                  '
+                         +'                 <div class="col-sm-8" id="graph_div"></div>       '
+                         +'                 <div class="col-sm-2" id="graph_key_div" style="border:1px solid black"></div>       '
+                         +'                 <div class="col-sm-2" id="wants_to_discuss_div"></div>                                   ' 
+                         +'            </div>                                                                                             '  
+                         +'        </div><p> </p>                                                                                             ';   
+                
+                      
 
         $(container).append(graph_str);    
        
@@ -296,21 +306,42 @@
         
 
                      
-        function create_graph( answer_date , multiple_choices) 
+        function create_graph( Question, key_word, answer_date , multiple_choices) 
         {
+            var key_class= "key_class_" + key_word;
 
-        
-            var canvas = document.getElementById("canvas");
+            //append the keyword to the graph key
+            $( graph_key_div ).append( '<h3 class="' + key_class +'"><font color="blue">'+ key_word +'</font></h3> <p> </p>'  );
+
+
+
+
+            var margin = 30;
+            var left_margin = 180; //size should be calculated the longest string in all the multiple_choices
+            var right_margin = 30; //size should be calculated to be as long as a date of the authored feild
+   
+            
+            var canvas_id= "canvas_" + key_word;
+
+            $( graph_div ).append( '<canvas id="' + canvas_id + '" height="400" width="750" style="border:1px solid #000000;" ></canvas>'  );
+            
+
+
+            var canvas = document.getElementById(canvas_id);
             var context = canvas.getContext("2d");
             
-            context.font = "20 pt Verdana"
             
+
+            context.font = "bold 13px Verdana"
+            context.fillText(Question, margin , margin );
+
+            context.font = "10px Verdana"
             
             //draw and label the row grid lines
             context.strokeStyle="#009933"; // color of grid lines
-            var margin = 20;
-            var left_margin = 150; //size should be calculated the longest string in all the multiple_choices
-            var right_margin = 10; //size should be calculated to be as long as a date of the authored feild
+
+
+
             var number_of_rows = multiple_choices.length;
             var yStep = (canvas.height - margin ) / number_of_rows;  
 
@@ -342,10 +373,10 @@
                 
                 var d_time = oldestTime.getTime()  + (ms_in_3_months * i );
                 var d      = new Date(d_time);
-                var d_display = d.getMonth() + "/" + d.getFullYear() ;
+                var d_display = (d.getMonth() + 1 ) + "/" + d.getFullYear() ;
                 var x = left_margin + i * section_length;
             
-                context.fillText( d_display , x , (canvas.height - margin/2)); 
+                context.fillText( d_display , x , (canvas.height -margin/2 )); 
             }
 
 
@@ -398,12 +429,15 @@
 
              }
              context.stroke();
-              
+         
+
+
         }
 
                 
                    
-                    
+        //$( wants_to_discuss_div).html(  '<h3> Patient wants to discuss the following Healthy Habit: </h3> <h3> Barriers faced by patient: </h3>');            
+        $( graph_key_div ).append( '<h3> Click on Healthy Habit to see change over time: </h3>  <p> </p>'  );
 
         var answer_date = [];
         var multiple_choices = [];
@@ -417,37 +451,79 @@
         {
             questionnaire = questionnaireCall.entry[0].resource;
 
-            //for(var q = 0; q < questionnaire.group.question.length; q++) 
-            for(var q = 0; q < 1; q++) 
+            for(var q = 0; q < questionnaire.group.question.length; q++) 
+            //for(var q = 0; q < 1; q++) 
             {
                 Question = questionnaire.group.question[q].text
                 console.log("Question")
                 console.log(Question);
-
                 
-                multiple_choices = [];
-                for(var j = 0; j < questionnaire.group.question[q].option.length; j++) 
-                {
-                        multiple_choices.push(questionnaire.group.question[q].option[j].display);
-                }
+                var graph_question = "";
+                var want_graph = false;
 
-                answer_date = [];
-                for(var  qr = 0; qr < questionnaireResponseCall.entry.length; qr++) 
+                //only let through the questions about "veggies and fruits", "active", "fruit juice", "sweet drinks", "television" 
+                
+                var KeyWord = 'veggies and fruits';
+                var want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                
+                if(want_graph == false)
                 {
-                   
-                   Response   =   questionnaireResponseCall.entry[ qr ].resource;
-                   Answer     =   Response.group.question[ q ].answer[ 0 ].valueInteger;
-                   Authored   =   Response.authored.split("T")[ 0 ] ;
-                   answer_date.push({ answer:Answer, authored:Authored});
+                    KeyWord = 'active';
+                    want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                    console.log("active")
                 }
                 
-                console.log("answer_date")
-                console.log(answer_date);
+                if(want_graph == false)
+                {
+                    KeyWord = 'fruit juice';
+                    want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                    console.log("fruit juice")
+                }
 
-                create_graph(answer_date, multiple_choices ) ;
-               
-            }        
+                if(want_graph == false)
+                {
+                    KeyWord = 'sweet drinks';
+                    want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                    console.log("fruit juice")
+                }
+                
+                if(want_graph == false)
+                {
+                    KeyWord = 'foods';
+                    want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question); 
+                }
+                
+                if(want_graph == false)
+                {
+                    KeyWord = 'television';
+                    want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question); 
+                    KeyWord = 'screen time';
+                }
+                
+                if(want_graph == true )
+                { 
+                
+                    multiple_choices = [];
+                    for(var j = 0; j < questionnaire.group.question[q].option.length; j++) 
+                    {
+                            multiple_choices.push(questionnaire.group.question[q].option[j].display);
+                    }
 
+                    answer_date = [];
+                    for(var  qr = 0; qr < questionnaireResponseCall.entry.length; qr++) 
+                    {
+                       
+                       Response   =   questionnaireResponseCall.entry[ qr ].resource;
+                       Answer     =   Response.group.question[ q ].answer[ 0 ].valueInteger;
+                       Authored   =   Response.authored.split("T")[ 0 ] ;
+                       answer_date.push({ answer:Answer, authored:Authored});
+                    }
+                    
+                    console.log("answer_date")
+                    console.log(answer_date);
+                    create_graph(Question, KeyWord, answer_date, multiple_choices ) ;
+                }
+            }  
         }
 
          /***************************** end  graphs **************************/
