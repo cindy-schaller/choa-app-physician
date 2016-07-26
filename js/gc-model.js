@@ -13,12 +13,12 @@
 
     // Dummy localStorage
     var localStorage = window.localStorage || {
-            removeItem : function(name) {
-                if (name !== "removeItem" && this.hasOwnProperty(name)) {
-                    delete this[name];
-                }
+        removeItem : function(name) {
+            if (name !== "removeItem" && this.hasOwnProperty(name)) {
+                delete this[name];
             }
-        };
+        }
+    };
 
     // Just in case :)
     if (!window.localStorage) {
@@ -36,188 +36,175 @@
     var fhir_url = window.sessionStorage.getItem('fhir_url_global')  + '/';
 
     var ChildHealthyEatingQuestionnaireCall = (function ()
-    {
+      {
         //GET http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?title=Healthy Habits Questionnaire
-        var ChildHealthyEatingQuestionnaireCall = null;
-        $.ajax({
-            async: false,
-            global: false,
-            url: fhir_url +'Questionnaire?title=Healthy Habits Questionnaire',
-            dataType: 'json',
-            success: function (data) {
-                ChildHealthyEatingQuestionnaireCall = data;
-            }
-        });
+            var ChildHealthyEatingQuestionnaireCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Questionnaire?title=Healthy Habits Questionnaire',
+                dataType: 'json',
+                success: function (data) {
+                    ChildHealthyEatingQuestionnaireCall = data;
+                }
+            });
 
-        return ChildHealthyEatingQuestionnaireCall;
-    })();
+            return ChildHealthyEatingQuestionnaireCall;
+        })();
 
-    var AdolescentHealthyEatingQuestionnaireCall = (function ()
-    {
+      var AdolescentHealthyEatingQuestionnaireCall = (function ()
+      {
         //  GET http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?title=Healthy Habits Tracker (adolescent)
-        var AdolescentHealthyEatingQuestionnaireCall = null;
-        $.ajax({
-            async: false,
-            global: false,
-            url: fhir_url +'Questionnaire?title=Healthy Habits Tracker (adolescent)',
-            dataType: 'json',
-            success: function (data) {
-                AdolescentHealthyEatingQuestionnaireCall = data;
-            }
-        });
-        return AdolescentHealthyEatingQuestionnaireCall;
-    })();
+            var AdolescentHealthyEatingQuestionnaireCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Questionnaire?title=Healthy Habits Tracker (adolescent)',
+                dataType: 'json',
+                success: function (data) {
+                    AdolescentHealthyEatingQuestionnaireCall = data;
+                }
+            });
+            return AdolescentHealthyEatingQuestionnaireCall;
+        })();
 
     var InsecurityQuestionnaireCall = (function ()
-    {
-        var InsecurityQuestionnaireCall = null;
-        $.ajax({
-            async: false,
-            global: false,
-            url: fhir_url +'Questionnaire?title=Food Insecurity Questionnaire',
-            dataType: 'json',
-            success: function (data) {
-                InsecurityQuestionnaireCall = data;
-            }
-        });
-        return InsecurityQuestionnaireCall;
-    })();
-
-
+      {
+            var InsecurityQuestionnaireCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Questionnaire?title=Food Insecurity Questionnaire',
+                dataType: 'json',
+                success: function (data) {
+                    InsecurityQuestionnaireCall = data;
+                }
+            });
+            return InsecurityQuestionnaireCall;
+        })();
 
 //http://52.72.172.54:8080/fhir/baseDstu2/Patient?family=Kent&given=Clark&birthdate=2006-03-30
     var ClarkCall = (function ()
-    {
-        var ClarkCall = null;
-        $.ajax({
-            async: false,
-            global: false,
-            url: fhir_url +'Patient?family=Kent&given=Clark&birthdate=2011-03-30',
-            dataType: 'json',
-            success: function (data) {
-                ClarkCall = data;
-            }
-        });
-        return ClarkCall;
-    })();
+      {
+            var ClarkCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Patient?family=Kent&given=Clark&birthdate=2011-03-30',
+                dataType: 'json',
+                success: function (data) {
+                    ClarkCall = data;
+                }
+            });
+            return ClarkCall;
+        })();
 
-    var KaraCall = (function ()
-    {
-        var KaraCall = null;
-        $.ajax({
-            async: false,
-            global: false,
-            url: fhir_url +'Patient?family=Kent&given=Kara&birthdate=2014-05-01',
-            dataType: 'json',
-            success: function (data) {
-                KaraCall = data;
-            }
-        });
-        return KaraCall;
-    })();
+  var KaraCall = (function ()
+      {
+            var KaraCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Patient?family=Kent&given=Kara&birthdate=2014-05-01',
+                dataType: 'json',
+                success: function (data) {
+                    KaraCall = data;
+                }
+            });
+            return KaraCall;
+        })();
 
     var MDCall = (function ()
-    {
-        var MDCall = null;
-        $.ajax({
-            async: false,
-            global: false,
-            url: fhir_url +'Organization?name=MD',
-            dataType: 'json',
-            success: function (data) {
-                MDCall = data;
-            }
-        });
-        return MDCall;
-    })();
+      {
+            var MDCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Organization?name=MD',
+                dataType: 'json',
+                success: function (data) {
+                    MDCall = data;
+                }
+            });
+            return MDCall;
+        })();
 
     var CoordCall = (function ()
+      {
+            var CoordCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Organization?name=Patient+Care+Coordinator',
+                dataType: 'json',
+                success: function (data) {
+                    CoordCall = data;
+                }
+            });
+            return CoordCall;
+        })();
+
+
+   $.when(CoordCall, MDCall, KaraCall, ClarkCall, InsecurityQuestionnaireCall, AdolescentHealthyEatingQuestionnaireCall, ChildHealthyEatingQuestionnaireCall).then(function()
     {
-        var CoordCall = null;
-        $.ajax({
-            async: false,
-            global: false,
-            url: fhir_url +'Organization?name=Patient+Care+Coordinator',
-            dataType: 'json',
-            success: function (data) {
-                CoordCall = data;
-            }
-        });
-        return CoordCall;
-    })();
-
-
-    $.when(CoordCall, MDCall, KaraCall, ClarkCall, InsecurityQuestionnaireCall, AdolescentHealthyEatingQuestionnaireCall, ChildHealthyEatingQuestionnaireCall).then(function()
-    {
-
-
-        if (ChildHealthyEatingQuestionnaireCall.entry)
+       if (ChildHealthyEatingQuestionnaireCall.entry)
         {
             var ChildHealthyEatingQuestionnaire = ChildHealthyEatingQuestionnaireCall.entry[0].resource;
+            console.log(ChildHealthyEatingQuestionnaireCall);
+
             if (!window.sessionStorage.getItem('infant_questions_id'))
             {
-                window.sessionStorage.setItem('infant_questions_id',ChildHealthyEatingQuestionnaire.id );
+                    window.sessionStorage.setItem('infant_questions_id',ChildHealthyEatingQuestionnaire.id );
             }
 
         }
-
-        if (AdolescentHealthyEatingQuestionnaireCall.entry)
+       if (AdolescentHealthyEatingQuestionnaireCall.entry)
         {
             var AdolescentHealthyEatingQuestionnaire = AdolescentHealthyEatingQuestionnaireCall.entry[0].resource;
             if (!window.sessionStorage.getItem('adolescent_questions_id'))
             {
-                window.sessionStorage.setItem('adolescent_questions_id',AdolescentHealthyEatingQuestionnaire.id );
+                    window.sessionStorage.setItem('adolescent_questions_id',AdolescentHealthyEatingQuestionnaire.id );
             }
-
         }
-
-
-        if (InsecurityQuestionnaireCall.entry)
+       if (InsecurityQuestionnaireCall.entry)
         {
             var InsecurityQuestionnaire = InsecurityQuestionnaireCall.entry[0].resource;
             if (!window.sessionStorage.getItem('food_insecurity_questions_id_global'))
             {
-                window.sessionStorage.setItem('food_insecurity_questions_id_global',InsecurityQuestionnaire.id );
+                    window.sessionStorage.setItem('food_insecurity_questions_id_global',InsecurityQuestionnaire.id );
             }
 
         }
-
-        if (ClarkCall.entry)
+       if (ClarkCall.entry)
         {
             var Clark = ClarkCall.entry[0].resource;
             if (!window.sessionStorage.getItem('Clark_ID_global'))
             {
-                window.sessionStorage.setItem('Clark_ID_global',Clark.id );
+                    window.sessionStorage.setItem('Clark_ID_global',Clark.id );
             }
-
             //Clark Kent
             if (!window.sessionStorage.getItem('patientid_global'))
             {
-                window.sessionStorage.setItem('patientid_global',Clark.id  );
+                    window.sessionStorage.setItem('patientid_global',Clark.id  );
             }
 
         }
-
-        if (KaraCall.entry)
+       if (KaraCall.entry)
         {
             var Kara = KaraCall.entry[0].resource;
             if (!window.sessionStorage.getItem('Kara_ID_global'))
             {
-                window.sessionStorage.setItem('Kara_ID_global',Kara.id );
+                    window.sessionStorage.setItem('Kara_ID_global',Kara.id );
             }
-
         }
-
-        if (MDCall.entry)
+       if (MDCall.entry)
         {
             var MD = MDCall.entry[0].resource;
             if (!window.sessionStorage.getItem('MD_ID_global'))
             {
-                window.sessionStorage.setItem('MD_ID_global',MD.id );
+                    window.sessionStorage.setItem('MD_ID_global',MD.id );
             }
-
         }
-
         if (CoordCall.entry)
         {
             var Coor = CoordCall.entry[0].resource;
@@ -225,9 +212,8 @@
             {
                 window.sessionStorage.setItem('PatientCareCoordinatorID_global',Coor.id  );
             }
-
         }
-    });
+     });
 
     /**
      * Collects and returns (as an array) all the methods of the given object
@@ -536,8 +522,8 @@
                             };
                             this.trigger(
                                 isNew ?
-                                "create:" + name :
-                                "set:" + name,
+                                    "create:" + name :
+                                    "set:" + name,
                                 eventData
                             );
                             this.trigger(
@@ -566,7 +552,7 @@
                     // Called to write, but an intermediate path segment was not
                     // found - create it and continue
                     cur[name] = isNaN(parseFloat(name)) ||
-                    String(parseFloat(name)) !== String(name) ? {} : [];
+                        String(parseFloat(name)) !== String(name) ? {} : [];
                 }
 
                 cur = cur[name];
