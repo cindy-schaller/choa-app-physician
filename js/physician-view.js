@@ -490,21 +490,18 @@
                     {
                         KeyWord = 'active';
                         want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
-                        console.log("active")
                     }
 
                     if(want_graph == false)
                     {
                         KeyWord = 'fruit juice';
                         want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
-                        console.log("fruit juice")
                     }
 
                     if(want_graph == false)
                     {
                         KeyWord = 'sweet drinks';
                         want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
-                        console.log("fruit juice")
                     }
 
                     if(want_graph == false)
@@ -829,7 +826,6 @@
                             }
                         }
                     }
-console.log(wicQAndA);
 
                     wicSurvey.append($("<div></div>")
                         .html("<hr>")
@@ -848,7 +844,6 @@ console.log(wicQAndA);
                         for (var j = 0; j < wicQAndA.length; j++) {
                             if (questionGroups[i].groupID == 1 && wicQAndA[j].groupID == 1) {
                                if (wicQAndA[j].responseType == "boolean") {
-                                   console.log(wicQAndA[j].question)
                                    var _linkID1 = $("<div></div>")
                                        .addClass("col-md-2")
                                        .attr("id", "subquestion-container")
@@ -860,7 +855,6 @@ console.log(wicQAndA);
                                            );
                                 }
                                 if (wicQAndA[j].responseType == "text") {
-                                    console.log(wicQAndA[j].answer)
                                      _linkID1 = $("<div></div>")
                                         .addClass("col-md-4 col-md-offset-2")
                                         .append($("<input></input>")
