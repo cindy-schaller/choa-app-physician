@@ -467,11 +467,11 @@
         qrHeader += ("<div id='physician-qr-header' class='physician-qr-container'>");
         qrHeader += ("<h1 style='font-size: 28px; font-weight:bold;'>Healthy Habits Assesment Response</h1>");
         qrHeader += ("<h1 style='font-size: 20px; font-weight:bold;'>Date Last Authored: " + responseAuthored + "</h1>");
-        qrHeader += ("<h1 style='font-size: 14px; font-weight:bold;'>click to see results</h1>");
+        //qrHeader += ("<h1 style='font-size: 14px; font-weight:bold;'>click to see results</h1>");
         qrHeader += ("</div>");
 
         qrButtons += ("<div id='physician-qr-buttons' class='physician-qr-container'>");
-        qrButtons += ("<a id='view-qr' type='button' style='margin-right: 10px;'>-></a>");
+        qrButtons += ("<a id='view-qr' type='button' style='margin-right: 10px;'>Click here to see results</a>");
         qrButtons += ("</div>");
 
         $(container).append(qrHeader);
