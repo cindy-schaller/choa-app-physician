@@ -62,7 +62,7 @@
         hhh_tbl += ("<tr> <td>Increased Activity</td> <td>Jun 2014</td> <td>Jun 2015</td> <td>Can't find a place to play outside</td> </tr>");
 
         hhh_tbl += ("</table>");
-        hhh_tbl += ("</div>")
+        hhh_tbl += ("</div>");
 
         $(container).append(hhh_tbl);
     }
@@ -76,6 +76,10 @@
         topContainer.append(thePatient);
         var patientInfo = $("<div></div>").addClass("col-xs-4");
         patientInfo.attr("id", "patientInfo-div");
+
+        var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
+        var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id');
+        var questionsID = InfantQuestionsID;
 
         var patientCall = (function () {
             var patientCall = null;
@@ -96,7 +100,7 @@
             $.ajax({
                 async: false,
                 global: false,
-                url: fhir_url +'QuestionnaireResponse?patient=' + patientID,
+                url: fhir_url + 'QuestionnaireResponse?patient=' + patientID + "&questionnaire=" + questionsID + "&_sort:desc=authored",
                 dataType: 'json',
                 success: function (data) {
                     questionnaireResponseCall = data;
@@ -119,12 +123,6 @@
             return wicQuestionnaireResponseCall;
         })();
 
-        var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
-        var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id');
-        //  TODO check age for correct questionnaire selection
-
-        var questionsID = AdolescentQuestionsID;
-
         var questionnaireCall = (function () {
             var questionnaireCall = null;
             $.ajax({
@@ -144,7 +142,7 @@
             $.ajax({
                 async: false,
                 global: false,
-                url: fhir_url+'/Questionnaire/1081184',
+                url: fhir_url + 'Questionnaire/1081184',
                 dataType: 'json',
                 success: function (data) {
                     wicQuestionnaireCall = data;
@@ -208,7 +206,7 @@
             return patientHeightCall;
         })();
 
-        $.when(patientCall, questionnaireResponseCall, wicQuestionnaireResponseCall, questionnaireCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
+        $.when(patientCall, questionnaireResponseCall, wicQuestionnaireResponseCall, questionnaireCall, patientWeightCall, patientHeightCall).then(function() {
 
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
@@ -332,7 +330,219 @@
                 )
             );
 
+            var graph_str   ='                                                                                                               '
+                +'        <style>  '
+                +'   .row-eq-height { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display:         flex;}'
+                +'        </style>                                                                                                   '
+
+                +'        <h2  align="center">Health Habit Item: Progress History</h2>                                           '
+                +'        <div class="container" id="historyGraphDiscuss">                                                       '
+                +'            <div class="row">                                                                                  '
+                +'                 <div class="col-sm-8" id="graph_div"></div>       '
+                +'                 <div class="col-sm-2" id="graph_key_div" style="border:1px solid black"></div>       '
+                +'                 <div class="col-sm-2" id="wants_to_discuss_div"></div>                                   '
+                +'            </div>                                                                                             '
+                +'        </div><p> </p>                                                                                             ';
+
+            $(container).append(graph_str);
+
             create_hhh_tbl(container);
+            /*****************************  graphs **************************/
+
+
+
+            function create_graph( Question, key_word, answer_date , multiple_choices)
+            {
+                var key_class= "key_class_" + key_word;
+
+                //append the keyword to the graph key
+                $( graph_key_div ).append( '<h3 class="' + key_class +'"><font color="blue">'+ key_word +'</font></h3> <p> </p>'  );
+
+                var margin = 30;
+                var left_margin = 180; //size should be calculated the longest string in all the multiple_choices
+                var right_margin = 30; //size should be calculated to be as long as a date of the authored feild
+
+                var canvas_id= "canvas_" + key_word;
+
+                $( graph_div ).append( '<canvas id="' + canvas_id + '" height="400" width="750" style="border:1px solid #000000;" ></canvas>'  );
+
+                var canvas = document.getElementById(canvas_id);
+                var context = canvas.getContext("2d");
+
+                context.font = "bold 13px Verdana"
+                context.fillText(Question, margin , margin );
+
+                context.font = "10px Verdana"
+
+                //draw and label the row grid lines
+                context.strokeStyle="#009933"; // color of grid lines
+
+                var number_of_rows = multiple_choices.length;
+                var yStep = (canvas.height - margin ) / number_of_rows;
+
+                context.beginPath();
+                for (var row_count = 0; row_count < number_of_rows; row_count++)
+                {
+                    var y =  (canvas.height - margin) - (row_count * yStep) ;
+                    context.fillText(multiple_choices[row_count], margin, y );
+                    context.moveTo(left_margin ,y);
+                    context.lineTo(canvas.width,y);
+                }
+                context.stroke();
+
+                // print dates on X axis every 3 months
+                //1. convert newest and oldest dates into miliseconds
+                var ms_in_3_months = (1000 * 60 * 60 * 24 * 30 *3);
+                var oldestDate = answer_date[  answer_date.length -1   ].authored;
+                var oldestTime = new Date(oldestDate);
+                var newestDate = answer_date[0].authored;
+                var newestTime = new Date(newestDate);
+                var diff_max = newestTime.getTime() - oldestTime.getTime();  //ms of span from oldest date to newest date
+                var diff_max_3_month_periods = diff_max / ms_in_3_months;
+                var length_x_axis = canvas.width - left_margin - right_margin;
+                var section_length = length_x_axis / diff_max_3_month_periods;
+
+                for (var i = 0; i < diff_max_3_month_periods; i++)
+                {
+                    var d_time = oldestTime.getTime()  + (ms_in_3_months * i );
+                    var d      = new Date(d_time);
+                    var d_display = (d.getMonth() + 1 ) + "/" + d.getFullYear() ;
+                    var x = left_margin + i * section_length;
+
+                    context.fillText( d_display , x , (canvas.height -margin/2 ));
+                }
+
+                var x_y = [];
+
+                // calculate the iregular interval on x axis
+                //1. convert newest and oldest dates into miliseconds and figure out time span
+                var oldestDate = answer_date[  answer_date.length -1   ].authored;
+                var oldestTime = new Date(oldestDate);
+                var newestDate = answer_date[0].authored;
+                var newestTime = new Date(newestDate);
+                var diff_max = newestTime.getTime() - oldestTime.getTime();  //ms of span from oldest date to newest date
+                var length_x_axis = canvas.width - left_margin - right_margin;
+
+                for (var i = 0; i < answer_date.length; i++)
+                {
+                    var currDate = answer_date[ i  ].authored;
+                    var currTime = new Date(currDate);
+                    var diff_to_curr = currTime.getTime() - oldestTime.getTime();
+                    var frac_of_span = diff_to_curr /diff_max;
+                    var X = (length_x_axis * frac_of_span) + left_margin;
+
+                    var Y  = (canvas.height - margin) - ((answer_date[ i ].answer -1) * yStep) ;
+
+                    x_y.push({ x:X , y:Y});
+
+                    // draw the circles
+                    context.fillStyle = "rgba(255, 255, 0, .5)";  //yellow
+                    context.strokeStyle="#000000";
+                    context.beginPath();
+                    context.arc(X,Y,10,0,2*Math.PI);
+                    context.closePath();
+                    context.fill();
+                    context.lineTo(X.Y ,y)
+                    context.stroke();
+                }
+
+                //draw line on graph
+                context.lineWidth=2;
+                context.beginPath();
+                context.moveTo(x_y[0].x,x_y[0].y)  ;
+                for (var i = 1; i < answer_date.length; i++)
+                {
+                    context.lineTo(x_y[i].x,x_y[i].y);
+
+                }
+                context.stroke();
+            }
+
+            //$( wants_to_discuss_div).html(  '<h3> Patient wants to discuss the following Healthy Habit: </h3> <h3> Barriers faced by patient: </h3>');
+            $( graph_key_div ).append( '<h3> Click on Healthy Habit to see change over time: </h3>  <p> </p>'  );
+
+            var answer_date = [];
+            var multiple_choices = [];
+            var Question = '';
+            var Response = '';
+            var Answer = '';
+            var Authored = '';
+            var questionnaire = '';
+
+            if (questionnaireCall.entry && questionnaireResponseCall.entry)
+            {
+                questionnaire = questionnaireCall.entry[0].resource;
+
+                for(var q = 0; q < questionnaire.group.question.length; q++)
+                    //for(var q = 0; q < 1; q++)
+                {
+                    Question = questionnaire.group.question[q].text
+
+                    var graph_question = "";
+                    var want_graph = false;
+
+                    //only let through the questions about "veggies and fruits", "active", "fruit juice", "sweet drinks", "television"
+
+                    var KeyWord = 'veggies and fruits';
+                    var want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+
+                    if(want_graph == false)
+                    {
+                        KeyWord = 'active';
+                        want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                        console.log("active")
+                    }
+
+                    if(want_graph == false)
+                    {
+                        KeyWord = 'fruit juice';
+                        want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                        console.log("fruit juice")
+                    }
+
+                    if(want_graph == false)
+                    {
+                        KeyWord = 'sweet drinks';
+                        want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                        console.log("fruit juice")
+                    }
+
+                    if(want_graph == false)
+                    {
+                        KeyWord = 'foods';
+                        want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                    }
+
+                    if(want_graph == false)
+                    {
+                        KeyWord = 'television';
+                        want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                        KeyWord = 'screen time';
+                    }
+
+                    if(want_graph == true )
+                    {
+                        multiple_choices = [];
+                        for(var j = 0; j < questionnaire.group.question[q].option.length; j++)
+                        {
+                            multiple_choices.push(questionnaire.group.question[q].option[j].display);
+                        }
+
+                        answer_date = [];
+                        for(var  qr = 0; qr < questionnaireResponseCall.entry.length; qr++)
+                        {
+                            Response   =   questionnaireResponseCall.entry[ qr ].resource;
+                            Answer     =   Response.group.question[ q ].answer[0].valueInteger;
+                            Authored   =   Response.authored.split("T")[ 0 ] ;
+                            answer_date.push({ answer:Answer, authored:Authored});
+                        }
+
+                        create_graph(Question, KeyWord, answer_date, multiple_choices ) ;
+                    }
+                }
+            }
+
+            /***************************** end  graphs **************************/
 
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
             var hhLastUpdated = new Date(questionnaireResponseCall.entry[0].resource.authored ? questionnaireResponseCall.entry[0].resource.authored : "-");
