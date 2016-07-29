@@ -50,17 +50,69 @@
         return GC.App.getViewType() == "view";
     }
 
-    function create_hhh_tbl(container) {
+    function create_hhh_tbl(container, hhg_qr) {
+
+        var goalMap = {
+            1: 'Make half your plate fruits and veggies',
+            2: 'Be active',
+            3: 'Limit screen time',
+            4: 'Drink more water & limit sugary drinks'
+        };
 
         var hhh_tbl = "";
 
         hhh_tbl += ("<div id='physician-hhh-tbl'>");
         hhh_tbl += ("<table> <tr> <th>Healthy Habit Goal</th> <th>Start Date</th> <th>End Date</th> <th>Barriers Discussed</th> </tr>"); 
 
-        hhh_tbl += ("<tr> <td>Reduce Sugary Drinks</td> <td>Jan 2016</td> <td>Current</td> <td>Clark does not like the taste of water </td> </tr>");
-        hhh_tbl += ("<tr> <td>Increase Fruits and Veggies</td> <td>Jun 2015</td> <td>Jan 2016</td> <td>Don't know how to cook the veggies to taste decent</td> </tr>");
-        hhh_tbl += ("<tr> <td>Increased Activity</td> <td>Jun 2014</td> <td>Jun 2015</td> <td>Can't find a place to play outside</td> </tr>");
-        
+        if(hhg_qr.entry){
+            
+            var hhg_qr_len = hhg_qr.entry.length;
+            
+            var prevGoal = 0;
+            var prevStartDate = "";
+            var prevEndDate = "";
+
+            //console.log("QR LENGTH " + hhg_qr_len);
+            for (var i = 0; i < hhg_qr_len; i++) {
+
+                var response = hhg_qr.entry[i].resource;
+                
+                //console.log(i + " " + hhg_qr.entry[i].resource.group.question[0].answer[0].valueInteger);
+                var goalResp = response.group.question[0].answer[0].valueInteger;
+                var goalSet = goalMap[goalResp];
+
+                var authorDate = (response.authored ? response.authored.split("T")[0] : "N/A");
+
+                //console.log(i + " " + hhg_qr.entry[i].resource.group.question[7].answer[0].valueString);
+                var barriersDiscussed = response.group.question[7].answer[0].valueString;
+ 
+                var endDate = "";
+                if(i == 0){
+                    endDate = "Current";
+                    prevEndDate = endDate;
+                    prevStartDate = authorDate;
+                    prevGoal = goalResp;
+                } else {
+                    if (goalResp == prevGoal) {
+                        endDate = prevEndDate;
+                        prevEndDate = endDate;
+                        prevStartDate = authorDate;
+                    } else {
+                        endDate = prevStartDate;
+                        prevEndDate = endDate;
+                        prevStartDate = authorDate;
+                        prevGoal = goalResp;
+                    }
+                }
+
+                hhh_tbl += ("<tr> <td>" + goalSet + "</td> <td>" + authorDate + "</td> <td>" + endDate + "</td> <td>" + barriersDiscussed + "</td> </tr>");
+
+            }
+
+        } else {
+            hhh_tbl += ("<tr> <td>No Healthy Habit Goal Set</td> <td>N/A</td> <td>N/A</td> </tr>");
+        }
+
         hhh_tbl += ("</table>");
         hhh_tbl += ("</div>")
         
@@ -90,17 +142,11 @@
             });
             return patientCall;
         })();
-  
+
         var InfantQuestionsID = window.sessionStorage.getItem('infant_questions_id');
         var AdolescentQuestionsID = window.sessionStorage.getItem('adolescent_questions_id'); 
 
         var questionsID = InfantQuestionsID;
-
-        //console.log("QUESTIONS")
-        //console.log(questionsID)
-
-        //console.log("PATIENT ID")
-        //console.log(patientID)
 
         var questionnaireResponseCall = (function () {
             var questionnaireResponseCall = null;
@@ -137,6 +183,24 @@
             return questionnaireCall;
         })();
 
+        var hhgQuestionsID = window.sessionStorage.getItem('hhg_questions_id');
+
+        var hhgQuestionnaireResponseCall = (function () {
+            var hhgQuestionnaireResponseCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url + 'QuestionnaireResponse?patient=' + patientID + "&questionnaire=" + hhgQuestionsID + "&_sort:desc=authored",
+                dataType: 'json',
+                success: function (data) {
+                    hhgQuestionnaireResponseCall = data;
+                }
+            });
+            //console.log("PATIENT ID " + patientID + " QUESTIONNIARE " + questionsID);
+            //console.log(questionnaireResponseCall);
+            return hhgQuestionnaireResponseCall;
+        })();
+
         var patientWeightCall = (function () {
             var patientWeightCall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
@@ -171,7 +235,7 @@
             return patientHeightCall;
         })();
 
-        $.when(patientCall, questionnaireResponseCall, questionnaireCall, patientWeightCall, patientHeightCall).then(function() {
+        $.when(patientCall, questionnaireResponseCall, questionnaireCall, hhgQuestionnaireResponseCall, patientWeightCall, patientHeightCall).then(function() {
 
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
@@ -300,7 +364,11 @@
 
         $(container).append(graph_str);    
        
-        create_hhh_tbl(container);
+        var hhg_qr = hhgQuestionnaireResponseCall;
+        console.log("HHG");
+        console.log(hhg_qr);
+
+        create_hhh_tbl(container, hhg_qr);
 
         /*****************************  graphs **************************/
         
@@ -416,8 +484,8 @@
                 
             }
             
-             console.log("x_y")
-             console.log(x_y);
+             //console.log("x_y")
+             //console.log(x_y);
 
              //draw line on graph  
              context.lineWidth=2;
@@ -455,8 +523,8 @@
             //for(var q = 0; q < 1; q++) 
             {
                 Question = questionnaire.group.question[q].text
-                console.log("Question")
-                console.log(Question);
+                //console.log("Question")
+                //console.log(Question);
                 
                 var graph_question = "";
                 var want_graph = false;
@@ -470,21 +538,21 @@
                 {
                     KeyWord = 'active';
                     want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
-                    console.log("active")
+                    //console.log("active")
                 }
                 
                 if(want_graph == false)
                 {
                     KeyWord = 'fruit juice';
                     want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
-                    console.log("fruit juice")
+                    //console.log("fruit juice")
                 }
 
                 if(want_graph == false)
                 {
                     KeyWord = 'sweet drinks';
                     want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
-                    console.log("fruit juice")
+                    //console.log("fruit juice")
                 }
                 
                 if(want_graph == false)
@@ -519,8 +587,8 @@
                        answer_date.push({ answer:Answer, authored:Authored});
                     }
                     
-                    console.log("answer_date")
-                    console.log(answer_date);
+                    //console.log("answer_date")
+                    //console.log(answer_date);
                     create_graph(Question, KeyWord, answer_date, multiple_choices ) ;
                 }
             }  
@@ -531,7 +599,7 @@
 
         var responseAuthored = ""
         if (questionnaireResponseCall.entry) {
-            console.log(questionnaireResponseCall.entry[0]);
+            //console.log(questionnaireResponseCall.entry[0]);
             var response = questionnaireResponseCall.entry[0].resource;
             responseAuthored = (response.authored ? response.authored.split("T")[0] : "");
         }
@@ -543,7 +611,6 @@
         qrHeader += ("<div id='physician-qr-header' class='physician-qr-container'>");
         qrHeader += ("<h1 style='font-size: 28px; font-weight:bold;'>Healthy Habits Assesment Response</h1>");
         qrHeader += ("<h1 style='font-size: 20px; font-weight:bold;'>Date Last Authored: " + responseAuthored + "</h1>");
-        //qrHeader += ("<h1 style='font-size: 14px; font-weight:bold;'>click to see results</h1>");
         qrHeader += ("</div>");
 
         qrButtons += ("<div id='physician-qr-buttons' class='physician-qr-container'>");
@@ -592,7 +659,7 @@
             if(response)
             {
                 var qAndA = [];
-                console.log(questionnaire);
+                //console.log(questionnaire);
                 for(var i = 0; i < questionnaire.group.question.length; i++) {
                     //search for validated by LinkId final answer
                     var question_link_ID = questionnaire.group.question[i].linkId;
@@ -656,12 +723,12 @@
                             .append(surveyRow)));
                     }
                 }
-                else
-                {
-                    $("#dialog").append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
+            else
+            {
+                $("#dialog").append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
 
-                } 
-                $("#dialog").dialog("open");
+            } 
+            $("#dialog").dialog("open");
             });
         });
     }

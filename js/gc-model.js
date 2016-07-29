@@ -59,7 +59,7 @@
             return ChildHealthyEatingQuestionnaireCall;
         })();
 
-      var AdolescentHealthyEatingQuestionnaireCall = (function () 
+    var AdolescentHealthyEatingQuestionnaireCall = (function () 
       {
         //  GET http://52.72.172.54:8080/fhir/baseDstu2/Questionnaire?title=Healthy Habits Tracker (adolescent)
             var AdolescentHealthyEatingQuestionnaireCall = null;
@@ -74,6 +74,21 @@
             });
             return AdolescentHealthyEatingQuestionnaireCall;
         })();   
+
+    var HealthyHabitsGoalQuestionnaireCall = (function ()
+      {
+        var HealthyHabitsGoalQuestionnaireCall = null;
+        $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Questionnaire?title=Healthy Habits Goal Questionnaire',
+                dataType: 'json',
+                success: function (data) {
+                    HealthyHabitsGoalQuestionnaireCall = data;
+                }
+            });
+            return HealthyHabitsGoalQuestionnaireCall;
+       })();   
 
     var InsecurityQuestionnaireCall = (function () 
       {
@@ -154,7 +169,7 @@
         })();
 
 
-   $.when(CoordCall, MDCall, KaraCall, ClarkCall, InsecurityQuestionnaireCall, AdolescentHealthyEatingQuestionnaireCall, ChildHealthyEatingQuestionnaireCall).then(function() 
+   $.when(CoordCall, MDCall, KaraCall, ClarkCall, InsecurityQuestionnaireCall, AdolescentHealthyEatingQuestionnaireCall, ChildHealthyEatingQuestionnaireCall, HealthyHabitsGoalQuestionnaireCall).then(function() 
     {
 
 
@@ -171,16 +186,23 @@
         }
 
 
-
        if (AdolescentHealthyEatingQuestionnaireCall.entry) 
         {
-
-           
-       
             var AdolescentHealthyEatingQuestionnaire = AdolescentHealthyEatingQuestionnaireCall.entry[0].resource;
             if (!window.sessionStorage.getItem('adolescent_questions_id')) 
             {
                     window.sessionStorage.setItem('adolescent_questions_id',AdolescentHealthyEatingQuestionnaire.id );
+            } 
+
+        }
+
+
+       if (HealthyHabitsGoalQuestionnaireCall.entry) 
+        {       
+            var HealthyHabitsGoalQuestionnaire = HealthyHabitsGoalQuestionnaireCall.entry[0].resource;
+            if (!window.sessionStorage.getItem('hhg_questions_id')) 
+            {
+                    window.sessionStorage.setItem('hhg_questions_id',HealthyHabitsGoalQuestionnaire.id );
             } 
 
         }
@@ -195,8 +217,6 @@
             } 
 
         }
-
-
 
        if (ClarkCall.entry) 
         {
