@@ -899,7 +899,26 @@
                         .addClass("form-group");
 
                     var linkID9Form = $("<div></div>")
-                        .addClass("form-group row");
+                        .addClass("form-group");
+
+                    var linkID10Form = $("<div></div>")
+                        .addClass("form-group");
+
+                    var linkID11Form = $("<form></form>")
+                        .addClass("form horizontal")
+                        .attr("role", "form");
+
+                    var linkID11SelectorDiv = $("<div></div>")
+                        .addClass("form-group");
+
+                    var linkID11Selector =$("<select></select>")
+                        .addClass("form-control")
+                        .attr("multiple", "")
+                        .css("height", "185px")
+                        .css("width", "80%");
+
+                    var linkID12Form = $("<div></div>")
+                        .addClass("form-group");
 
                     for (var i = 0; i < questionGroups.length; i++) { 
                         for (var j = 0; j < wicQAndA.length; j++) { 
@@ -1478,7 +1497,7 @@
                             //region linkID9
                             if (questionGroups[i].groupID == 9 && wicQAndA[j].groupID == 9) {
                                 var linkID9Title = $("<div></div>")
-                                    .attr("id", "linkID4-title-div")
+                                    .attr("id", "linkID9-title-div")
                                     .append($("<h4></h4>")
                                         .html(questionGroups[i].Topic)
                                     );
@@ -1500,9 +1519,281 @@
                             linkID9Form.append(linkID9);
                             //endregion
 
+                            //region linkID10
                             if (questionGroups[i].groupID == 10 && wicQAndA[j].groupID  == 10) {
+                                var linkID10Title = $("<div></div>")
+                                    .attr("id", "linkID10-title-div")
+                                    .append($("<h4></h4>")
+                                        .html(questionGroups[i].Topic)
+                                    );
 
+                                var _linkID10 = $("<label></label>")
+                                    .addClass("radio-in-line")
+                                    .html(wicQAndA[j].question + "<br>");
+
+                                if (wicQAndA[j].answer == true) {
+                                    var linkID10Radio = $("<div></div>")
+                                        .attr("id", "first-choice-selected")
+                                        .append($("<form></form>")
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID10Radio" + wicQAndA[j].ID +"selected")
+                                                .html(wicQAndA[j].responseChoices[0])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID10Radio" + wicQAndA[j].ID+"selected")
+                                                    .prop("checked", true)
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID10Radio"+wicQAndA[j].ID+"notselected")
+                                                .html(wicQAndA[j].responseChoices[1])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID10Radio" + wicQAndA[j].ID+"notselected")
+                                                )
+                                            )
+                                        );
+                                } else {
+                                    linkID10Radio = $("<div></div>")
+                                        .attr("id", "second-choice-selected")
+                                        .append($("<form></form>")
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "notselected-choice")
+                                                .attr("for", "linkID4Radio" + wicQAndA[j].ID + "notselected")
+                                                .html(wicQAndA[j].responseChoices[0])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type", "radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID10Radio" + wicQAndA[j].ID + "notselected")
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID10Radio" + wicQAndA[j].ID + "selected")
+                                                .html(wicQAndA[j].responseChoices[1])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type", "radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID10Radio" + wicQAndA[j].ID + "selected")
+                                                    .prop("checked", true)
+                                                )
+                                            )
+                                        );
+                                }
+                                    _linkID10.append(linkID10Radio);
                             }
+                            linkID10Form.append(_linkID10);
+                            //endregion
+
+                            //region linkID11
+                            if (questionGroups[i].groupID == 11 && wicQAndA[j].groupID == 11) {
+
+                                var linkID11Title = $("<div></div>")
+                                    .attr("id", "linkID11-title-div")
+                                    .append($("<h4></h4>")
+                                        .html(questionGroups[i].Topic)
+                                    );
+
+                                for (var k = 0; k < wicQAndA[j].responseChoices.length; k++) {
+                                    var _linkID11 = $("<option></option>")
+                                        .addClass("form-control text-center")
+                                        .attr("multiple", "")
+                                        .prop("selected", wicQAndA[j].answer)
+                                        .attr("disabled", "disabled")
+                                        .css("border", "0px")
+                                        .css("outline", "0px")
+                                        .css("width", "80%")
+                                        .html(wicQAndA[j].question);
+                                }
+                            }
+                            linkID11Selector.append(_linkID11);
+                            linkID11SelectorDiv.append(linkID11Selector);
+                            linkID11Form.append(linkID11SelectorDiv);
+                            //endregion
+
+                            //region linkID12
+                            if (questionGroups[i].groupID == 12 && wicQAndA[j].groupID == 12) {
+                                var linkID12Title = $("<div></div>")
+                                    .attr("id", "linkID12-title-div")
+                                    .append($("<h4></h4>")
+                                        .html(questionGroups[i].Topic)
+                                    );
+
+                                var _linkID12 = $("<label></label>")
+                                    .addClass("radio-in-line")
+                                    .html(wicQAndA[j].question + "<br>");
+
+
+                                if (wicQAndA[j].answer == 1) {
+                                    var linkID12Radio = $("<div></div>")
+                                        .attr("id", "first-choice-selected")
+                                        .addClass("form-group")
+                                        .append($("<form></form>")
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline text-center")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID12Radio" + wicQAndA[j].ID +"selected")
+                                                .css("width", "30%")
+                                                .html(wicQAndA[j].responseChoices[0])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID12Radio" + wicQAndA[j].ID+"selected")
+                                                    .prop("checked", true)
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "notselected-choice")
+                                                .attr("for", "linkID12Radio"+wicQAndA[j].ID+"notselected")
+                                                .css("width", "30%")
+                                                .html(wicQAndA[j].responseChoices[1])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID12Radio" + wicQAndA[j].ID+"notselected")
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "notselected-choice")
+                                                .attr("for", "linkID12Radio"+wicQAndA[j].ID+"notselected")
+                                                .css("width", "30%")
+                                                .html(wicQAndA[j].responseChoices[2])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID12Radio" + wicQAndA[j].ID+"notselected")
+                                                )
+                                            )
+                                        );
+                                } else if (wicQAndA[j].answer == 2){
+                                    linkID12Radio =  $("<div></div>")
+                                        .attr("id", "second-choice-selected")
+                                        .addClass("form-group")
+                                        .append($("<form></form>")
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "notselected-choice")
+                                                .attr("for", "linkID12Radio" + wicQAndA[j].ID +"notselected")
+                                                .css("width", "30%")
+                                                .html(wicQAndA[j].responseChoices[0])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID12Radio" + wicQAndA[j].ID+"notselected")
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID12Radio"+wicQAndA[j].ID+"selected")
+                                                .css("width", "30%")
+                                                .html(wicQAndA[j].responseChoices[1])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID12Radio" + wicQAndA[j].ID+"selected")
+                                                    .prop("checked", true)
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "notselected-choice")
+                                                .attr("for", "linkID12Radio"+wicQAndA[j].ID+"notselected")
+                                                .css("width", "30%")
+                                                .html(wicQAndA[j].responseChoices[2])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID12Radio" + wicQAndA[j].ID+"notselected")
+                                                )
+                                            )
+                                        );
+                                } else if (wicQAndA[j].answer == 3) {
+                                    linkID12Radio =  $("<div></div>")
+                                        .attr("id", "third-choice-selected")
+                                        .addClass("form-group")
+                                        .append($("<form></form>")
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "notselected-choice")
+                                                .attr("for", "linkID12Radio" + wicQAndA[j].ID +"notselected")
+                                                .css("width", "30%")
+                                                .html(wicQAndA[j].responseChoices[0])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID12Radio" + wicQAndA[j].ID+"notselected")
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "notselected-choice")
+                                                .attr("for", "linkID12Radio"+wicQAndA[j].ID+"notselected")
+                                                .css("width", "30%")
+                                                .html(wicQAndA[j].responseChoices[1])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID12Radio" + wicQAndA[j].ID+"notselected")
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID12Radio"+wicQAndA[j].ID+"selected")
+                                                .css("width", "30%")
+                                                .html(wicQAndA[j].responseChoices[2])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID12Radio" + wicQAndA[j].ID+"selected")
+                                                    .prop("checked", true)
+                                                )
+                                            )
+                                        );
+                                }
+                                _linkID12.append(linkID12Radio);
+                            }
+                            linkID12Form.append(_linkID12);
+                            //endregion
+
+
                         }
                     } 
 
@@ -1524,7 +1815,13 @@
                     rightDiv.append(linkID8Title)
                         .append(linkID8Form)
                         .append(linkID9Title)
-                        .append(linkID9Form);
+                        .append(linkID9Form)
+                        .append(linkID10Title)
+                        .append(linkID10Form)
+                        .append(linkID11Title)
+                        .append(linkID11Form)
+                        .append(linkID12Title)
+                        .append(linkID12Form);
 
                     wicSurvey.append(leftDiv);
                     wicSurvey.append(rightDiv);
