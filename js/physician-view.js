@@ -52,7 +52,7 @@
 
     function create_hhh_panel(container, hhg_qr, qr) {
 
-        console.log(qr);
+        //console.log(qr);
         var goalMap = {
             1: 'Making half of their plate fruits and veggies',
             2: 'Being active',
@@ -81,7 +81,7 @@
         var hhh_panel = "";
         hhh_panel += ("<div id='physician-hhh-panel'>");
         hhh_panel += ("<h4>Patient wanted to discuss:</h4>");
-        hhh_panel += ("<blockquote>  <b>" + selectedGoal + "</b> </blockquote>");
+        hhh_panel += ("<blockquote> <b>" + selectedGoal + "</b> </blockquote>");
         hhh_panel += ("<h4>Last discussion of barriers:</h4>");
         hhh_panel += ("<blockquote>" + barriersDiscussed + "</blockquote>");
         hhh_panel += ("<h4>Other notes:</h4>");
@@ -407,8 +407,8 @@
         var hhg_qr = hhgQuestionnaireResponseCall;
         var qr = questionnaireResponseCall;
         
-        console.log("HHG");
-        console.log(hhg_qr);
+        //console.log("HHG");
+        //console.log(hhg_qr);
 
         create_hhh_tbl(container, hhg_qr);
         create_hhh_panel(container, hhg_qr, qr);
