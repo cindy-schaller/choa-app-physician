@@ -50,6 +50,19 @@
         return GC.App.getViewType() == "view";
     }
 
+    function create_hhh_panel(container, hhg_qr, qr) {
+        var goalMap = {
+            1: 'Make half your plate fruits and veggies',
+            2: 'Be active',
+            3: 'Limit screen time',
+            4: 'Drink more water & limit sugary drinks'
+        };
+
+        var otherNotes = (hhg_qr.entry ? hhg_qr.entry[0].resource.group.question[8].answer[0].valueString : "N/A");
+        //var selectedGoal = qr.entry[0].resource.group.question[].answer[0].valueInteger : 
+
+    }
+
     function create_hhh_tbl(container, hhg_qr) {
 
         var goalMap = {
@@ -660,6 +673,7 @@
             {
                 var qAndA = [];
                 //console.log(questionnaire);
+                //console.log("QUEST");
                 for(var i = 0; i < questionnaire.group.question.length; i++) {
                     //search for validated by LinkId final answer
                     var question_link_ID = questionnaire.group.question[i].linkId;
@@ -675,6 +689,8 @@
                         return;
                     }
                     var final_answer = response.group.question[qr_index].answer[0].valueInteger - 1;
+                    //console.log(questionnaire.group.question[qr_index]);
+                    //console.log(qr_index);
                     qAndA.push({question:(questionnaire.group.question[qr_index].text), answerCode:final_answer});
 
                 }
@@ -723,12 +739,12 @@
                             .append(surveyRow)));
                     }
                 }
-            else
-            {
-                $("#dialog").append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
+                else
+                {
+                    $("#dialog").append("<div id='physician-questionnaire-blank'>The patient has not completed the Healthy Eating Survey.</div>");
 
-            } 
-            $("#dialog").dialog("open");
+                } 
+                $("#dialog").dialog("open");
             });
         });
     }
