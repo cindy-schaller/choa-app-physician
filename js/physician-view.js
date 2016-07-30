@@ -710,7 +710,7 @@
                 $("#dialog").dialog("open");
             });
 
-            $("#dialog").dialog({ autoOpen: false, height: 600, width: 1150, overflow: scroll });
+            $("#dialog").dialog({ autoOpen: false, height: 600, width: 1200, overflow: scroll });
             $("#view-WICQuestionnaireAndResponse").click(function() {
 
                 $("#dialog").empty();
@@ -830,6 +830,8 @@
                         }
                     }
 
+                    //FIX ME: This was done just to get things to show and there is a lot of repetitive code
+
                     wicSurvey.append($("<div></div>")
                         .html("<hr>")
                         .attr("id", "wic-questionnaire-title-div") 
@@ -871,7 +873,7 @@
                         .addClass("form-group");
 
                     var linkID6Form = $("<form></form>")
-                        .addClass("row form horizontal")
+                        .addClass("form horizontal")
                         .attr("role", "form");
 
                     var linkID6SelectorDiv = $("<div></div>")
@@ -883,7 +885,7 @@
                         .css("height", "185px");
 
                     var linkID7Form = $("<form></form>")
-                        .addClass("row form horizontal")
+                        .addClass("form horizontal")
                         .attr("role", "form");
 
                     var linkID7SelectorDiv = $("<div></div>")
@@ -918,6 +920,19 @@
                         .css("width", "80%");
 
                     var linkID12Form = $("<div></div>")
+                        .addClass("form-group");
+
+                    var linkID13Form = $("<div></div>")
+                        .addClass("form-group");
+
+                    var linkID14Form = $("<div></div>")
+                        .addClass("form-group");
+
+                    var linkID15Form = $("<form></form>")
+                        .addClass("row col-xs-12 form-horizontal")
+                        .attr("role", "form");
+
+                    var linkID16Form = $("<div></div>")
                         .addClass("form-group");
 
                     for (var i = 0; i < questionGroups.length; i++) { 
@@ -1793,6 +1808,182 @@
                             linkID12Form.append(_linkID12);
                             //endregion
 
+                            //region linkID13
+                            if (questionGroups[i].groupID == 13 && wicQAndA[j].groupID == 13) {
+                                var linkID13Title = $("<div></div>")
+                                    .attr("id", "linkID13-title-div")
+                                    .append($("<h4></h4>")
+                                        .html(questionGroups[i].Topic)
+                                    );
+
+                                var linkID13 = $("<label></label>")
+                                    .attr("for", "linkID"+wicQAndA[j].ID+"textfield")
+                                    .css("width", "80%")
+                                    .html(wicQAndA[j].question + "<br>")
+                                    .append($("<input>")
+                                        .addClass("form-control")
+                                        .attr("type", "text")
+                                        .attr("disabled", true)
+                                        .attr("id", "linkID"+wicQAndA[j].ID+"textfield")
+                                        .attr("placeholder", wicQAndA[j].answer)
+                                        .css("width", "100%")
+                                    )
+
+                            }
+                            linkID13Form.append(linkID13);
+                            //endregion
+
+                            //region linkID14
+                            if (questionGroups[i].groupID == 14 && wicQAndA[j].groupID == 14) {
+                                var linkID14Title = $("<div></div>")
+                                    .attr("id", "linkID8-title-div")
+                                    .append($("<h4></h4>")
+                                        .html(questionGroups[i].Topic)
+                                    );
+
+                                var _linkID14 = $("<label></label>")
+                                    .addClass("radio-in-line")
+                                    .html(wicQAndA[j].question + "<br>");
+
+                                if (wicQAndA[j].answer == true) {
+                                    var linkID14Radio = $("<div></div>")
+                                        .attr("id", "first-choice-selected")
+                                        .append($("<form></form>")
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID14Radio" + wicQAndA[j].ID +"selected")
+                                                .html(wicQAndA[j].responseChoices[0])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID14Radio" + wicQAndA[j].ID+"selected")
+                                                    .prop("checked", true)
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID14Radio"+wicQAndA[j].ID+"notselected")
+                                                .html(wicQAndA[j].responseChoices[1])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID14Radio" + wicQAndA[j].ID+"notselected")
+                                                )
+                                            )
+                                        );
+                                } else {
+                                    linkID14Radio = $("<div></div>")
+                                        .attr("id", "second-choice-selected")
+                                        .append($("<form></form>")
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "notselected-choice")
+                                                .attr("for", "linkID14Radio" + wicQAndA[j].ID +"notselected")
+                                                .html(wicQAndA[j].responseChoices[0])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID14Radio" + wicQAndA[j].ID+"notselected")
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID14Radio"+wicQAndA[j].ID+"selected")
+                                                .html(wicQAndA[j].responseChoices[1])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID14Radio" + wicQAndA[j].ID+"selected")
+                                                    .prop("checked", true)
+                                                )
+                                            )
+                                        );
+                                }
+                                _linkID14.append(linkID14Radio);
+                            }
+                            linkID14Form.append(_linkID14);
+                            //endregion
+
+                            //region linkID15
+                            if (questionGroups[i].groupID == 15 && wicQAndA[j].groupID == 15) {
+                                if (wicQAndA[j].responseType == "boolean") {
+                                    var linkID15QuestionID = parseFloat(wicQAndA[j].ID).toFixed(1);
+
+                                    var linkID15Title = $("<div></div>")
+                                        .attr("id", "linkID15-title-div")
+                                        .append($("<h4></h4>")
+                                            .html(questionGroups[i].Topic)
+                                        );
+                                    var _linkID15 = $("<div></div>")
+                                        .addClass("checkbox")
+                                        .append($("<input>")
+                                            .attr("id", "linkID: " + wicQAndA[j].ID)
+                                            .attr("type", "checkbox")
+                                            .attr("disabled", true)
+                                            .prop("checked", wicQAndA[j].answer)
+                                            .css("padding", "1px")
+                                            .css("width", "60px")
+                                            .css("height", "30px")
+                                        )
+                                        .append($("<p></p>")
+                                            .css("padding", "5px 3px 0px 55px")
+                                            .attr("id", "linkID: " + wicQAndA[j].ID)
+                                            .html(wicQAndA[j].question)
+                                        );
+                                }
+                                if (wicQAndA[j].responseType == "text") {
+                                    var linkID15AnswerID =  wicQAndA[j].ID;
+                                    var _linkID15a = $("<textarea></textarea>")
+                                        .addClass("form-control")
+                                        .attr("disabled", true)
+                                        .attr("placeholder", wicQAndA[j].answer)
+                                        .css("margin-left", "30px")
+                                        .css("height", "20px");
+                                }
+                                var linkID15AdjustedQuestionID = (Number(questionID)+0.1).toFixed(parseInt(1));
+
+                                if (Number(linkID15AnswerID) == linkID15AdjustedQuestionID) {
+                                    _linkID15.append(_linkID15a);
+                                }
+                            }
+                            linkID15Form.append(_linkID15);
+                            //endregion
+
+                            //region linkID16
+                            if (questionGroups[i].groupID == 16 && wicQAndA[j].groupID == 16) {
+                                var linkID16Title = $("<div></div>")
+                                    .attr("id", "linkID16-title-div")
+                                    .append($("<h4></h4>")
+                                        .html(questionGroups[i].Topic)
+                                    );
+
+                                var linkID16 = $("<label></label>")
+                                    .attr("for", "linkID"+wicQAndA[j].ID+"textfield")
+                                    .css("width", "80%")
+                                    .html(wicQAndA[j].question + "<br>")
+                                    .append($("<input>")
+                                        .addClass("form-control")
+                                        .attr("type", "text")
+                                        .attr("disabled", true)
+                                        .attr("id", "linkID"+wicQAndA[j].ID+"textfield")
+                                        .attr("placeholder", wicQAndA[j].answer)
+                                        .css("width", "100%")
+                                    )
+
+                            }
+                            linkID16Form.append(linkID16);
+                            //endregion
 
                         }
                     } 
@@ -1808,11 +1999,11 @@
                         .append(linkID5Title)
                         .append(linkID5Form)
                         .append(linkID6Title)
-                        .append(linkID6Form)
-                        .append(linkID7Title)
-                        .append(linkID7Form);
+                        .append(linkID6Form);
 
-                    rightDiv.append(linkID8Title)
+                    rightDiv.append(linkID7Title)
+                        .append(linkID7Form)
+                        .append(linkID8Title)
                         .append(linkID8Form)
                         .append(linkID9Title)
                         .append(linkID9Form)
@@ -1821,7 +2012,15 @@
                         .append(linkID11Title)
                         .append(linkID11Form)
                         .append(linkID12Title)
-                        .append(linkID12Form);
+                        .append(linkID12Form)
+                        .append(linkID13Title)
+                        .append(linkID13Form)
+                        .append(linkID14Title)
+                        .append(linkID14Form)
+                        .append(linkID15Title)
+                        .append(linkID15Form)
+                        .append(linkID16Title)
+                        .append(linkID16Form);
 
                     wicSurvey.append(leftDiv);
                     wicSurvey.append(rightDiv);
