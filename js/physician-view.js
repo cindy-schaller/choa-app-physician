@@ -13,7 +13,6 @@
 
     var selectedIndex = -1,
         PATIENT,
-
         /**
          * The cached value from GC.App.getMetrics()
          */
@@ -50,6 +49,68 @@
         return GC.App.getViewType() == "view";
     }
 
+    /**
+    * Returns the last record having the given property "propName".
+    * Can also be called before the patient has been initialized, in which case
+    * it returns null.
+    * @param {String} propName The name of the property to serach for inside 
+    *                          the recods.
+    */
+    function getLastEnryHaving(propName) {
+        if ( !PATIENT ) {
+            return null;
+        }
+        return PATIENT.getLastEnryHaving(propName);
+    } 
+
+    /**
+     * Modified getVitals function from gc-parental-view
+     * Collects and returns the latest measurements and returns them as an 
+     * useful object...
+     */
+    function getVitals(PATIENT) {
+        var out = {
+                height : { value : undefined, "percentile" : null},
+                weight : { value : undefined, "percentile" : null},
+                headc  : { value : undefined, "percentile" : null},
+                bmi    : { value : undefined, "percentile" : null},
+                
+                age : PATIENT.getCurrentAge()
+            },
+            src    = out.age.getYears() > 2 ? "CDC" : "WHO",
+            gender = PATIENT.gender;
+
+        $.each({
+            height : { modelProp: "lengthAndStature", dsType : "LENGTH" },
+            weight : { modelProp: "weight"          , dsType : "WEIGHT" },
+            headc  : { modelProp: "headc"           , dsType : "HEADC"  },
+            bmi    : { modelProp: "bmi"             , dsType : "BMI"    }
+        }, function(key, meta) {
+            var lastEntry = getLastEnryHaving( meta.modelProp ), ds, pct;
+            if (lastEntry) {
+                ds = GC.getDataSet(src, meta.dsType, gender, 0, lastEntry.agemos);
+                out[key].value  = lastEntry[meta.modelProp];
+                if (ds) {
+                    pct = GC.findPercentileFromX(
+                        out[key].value, 
+                        ds, 
+                        gender, 
+                        lastEntry.agemos
+                    );
+                    if ( !isNaN(pct) ) {
+                        out[key].percentile  = pct;
+                    }
+                }
+            }
+        });
+        
+        return out;
+    }
+
+    function convertToPercent(decimal) {
+        return Math.round(decimal * 100) + '%';
+    }
+
     function create_hhh_panel(container, hhg_qr, qr) {
 
         //console.log(qr);
@@ -62,7 +123,7 @@
 
         var selectedGoal = "N/A";
         if(qr.entry){
-            var selectedIndex = qr.entry[0].resource.group.question[5].answer[0].valueInteger
+            var selectedIndex = qr.entry[0].resource.group.question[5].answer[0].valueInteger;
             selectedGoal = goalMap[selectedIndex];
         }
         
@@ -301,7 +362,7 @@
             patient.telecom[0].system + " " : "") +
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
-            
+
             var weightUnit = "kg";
             if(patientWeightCall)
                 if(patientWeightCall.entry)
@@ -318,18 +379,21 @@
                         if(patientHeightCall.entry[0].resource.valueQuantity)
                             heightUnit = patientHeightCall.entry[0].resource.valueQuantity.unit ? patientHeightCall.entry[0].resource.valueQuantity.unit : "";
 
-            function convertToPercent(decimal) {
-                return Math.round(decimal * 100) + '%';
-            }
+            //console.log("PATIENT");
+            PATIENT = GC.App.getPatient();
+            //console.log(PATIENT);
+            //console.log(getVitals(PATIENT));
 
-            var height = window.sessionStorage.getItem('height_global');
-            var height_per = convertToPercent(window.sessionStorage.getItem("height_per_global"))
+            var model = getVitals(PATIENT);
 
-            var weight = window.sessionStorage.getItem('weight_global');
-            var weight_per = convertToPercent(window.sessionStorage.getItem("weight_per_global"))
+            var height = model.height.value
+            var height_per = convertToPercent(model.height.percentile)
 
-            var BMI = window.sessionStorage.getItem('bmi_global');
-            var BMI_per = convertToPercent(window.sessionStorage.getItem("bmi_per_global"))
+            var weight = model.weight.value;
+            var weight_per = convertToPercent(model.weight.percentile);
+
+            var BMI = model.bmi.value;
+            var BMI_per = convertToPercent(model.bmi.percentile);
 
             localStorage.setItem("BMI", BMI);
             
