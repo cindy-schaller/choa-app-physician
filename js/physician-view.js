@@ -882,6 +882,25 @@
                         .attr("multiple", "")
                         .css("height", "185px");
 
+                    var linkID7Form = $("<form></form>")
+                        .addClass("row form horizontal")
+                        .attr("role", "form");
+
+                    var linkID7SelectorDiv = $("<div></div>")
+                        .addClass("form-group");
+
+                    var linkID7Selector =$("<select></select>")
+                        .addClass("form-control")
+                        .attr("multiple", "")
+                        .css("height", "185px")
+                        .css("width", "100%");
+
+                    var linkID8Form = $("<div></div>")
+                        .addClass("form-group");
+
+                    var linkID9Form = $("<div></div>")
+                        .addClass("form-group row");
+
                     for (var i = 0; i < questionGroups.length; i++) { 
                         for (var j = 0; j < wicQAndA.length; j++) { 
 
@@ -1304,6 +1323,7 @@
                             linkID5Form.append(_linkID5);
                             //endregion
 
+                            //region LinkID6
                             if (questionGroups[i].groupID == 6 && wicQAndA[j].groupID == 6) {
 
                                 var linkID6Title = $("<div></div>")
@@ -1345,6 +1365,144 @@
                             linkID6SelectorDiv.append(linkID6Selector);
                             linkID6Form.append(linkID6SelectorDiv);
                             linkID6Form.append(_linkID6Text);
+                            //endregion
+
+                            //region LinkID7
+                            if (questionGroups[i].groupID == 7 && wicQAndA[j].groupID == 7) {
+
+                                var linkID7Title = $("<div></div>")
+                                    .attr("id", "linkID7-title-div")
+                                    .append($("<h4></h4>")
+                                        .html(questionGroups[i].Topic)
+                                    );
+
+                                for (var k = 0; k < wicQAndA[j].responseChoices.length; k++) {
+                                    var _linkID7 = $("<option></option>")
+                                        .addClass("form-control text-center")
+                                        .attr("multiple", "")
+                                        .prop("selected", wicQAndA[j].answer)
+                                        .attr("disabled", "disabled")
+                                        .css("border", "0px")
+                                        .css("outline", "0px")
+                                        .css("width", "80%")
+                                        .html(wicQAndA[j].question);
+                                }
+                            }
+                            linkID7Selector.append(_linkID7);
+                            linkID7SelectorDiv.append(linkID7Selector);
+                            linkID7Form.append(linkID7SelectorDiv);
+                            //endregion
+
+                            //region linkID8
+                            if (questionGroups[i].groupID == 8 && wicQAndA[j].groupID == 8) {
+                                var linkID8Title = $("<div></div>")
+                                    .attr("id", "linkID8-title-div")
+                                    .append($("<h4></h4>")
+                                        .html(questionGroups[i].Topic)
+                                    );
+
+                                var _linkID8 = $("<label></label>")
+                                    .addClass("radio-in-line")
+                                    .html(wicQAndA[j].question + "<br>");
+
+                                if (wicQAndA[j].answer == true) {
+                                    var linkID8Radio = $("<div></div>")
+                                        .attr("id", "first-choice-selected")
+                                        .append($("<form></form>")
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID8Radio" + wicQAndA[j].ID +"selected")
+                                                .html(wicQAndA[j].responseChoices[0])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID8Radio" + wicQAndA[j].ID+"selected")
+                                                    .prop("checked", true)
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID8Radio"+wicQAndA[j].ID+"notselected")
+                                                .html(wicQAndA[j].responseChoices[1])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID8Radio" + wicQAndA[j].ID+"notselected")
+                                                )
+                                            )
+                                        );
+                                } else {
+                                    linkID8Radio = $("<div></div>")
+                                        .attr("id", "second-choice-selected")
+                                        .append($("<form></form>")
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "notselected-choice")
+                                                .attr("for", "linkID8Radio" + wicQAndA[j].ID +"notselected")
+                                                .html(wicQAndA[j].responseChoices[0])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID8Radio" + wicQAndA[j].ID+"notselected")
+                                                )
+                                            )
+                                            .append($("<label></label>")
+                                                .addClass("form-check-inline")
+                                                .attr("id", "selected-choice")
+                                                .attr("for", "linkID8Radio"+wicQAndA[j].ID+"selected")
+                                                .html(wicQAndA[j].responseChoices[1])
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID8Radio" + wicQAndA[j].ID+"selected")
+                                                    .prop("checked", true)
+                                                )
+                                            )
+                                        );
+                                }
+                                _linkID8.append(linkID8Radio);
+                            }
+                            linkID8Form.append(_linkID8);
+                            //endregion
+
+                            //region linkID9
+                            if (questionGroups[i].groupID == 9 && wicQAndA[j].groupID == 9) {
+                                var linkID9Title = $("<div></div>")
+                                    .attr("id", "linkID4-title-div")
+                                    .append($("<h4></h4>")
+                                        .html(questionGroups[i].Topic)
+                                    );
+
+                                var linkID9 = $("<label></label>")
+                                    .attr("for", "linkID"+wicQAndA[j].ID+"textfield")
+                                    .css("width", "80%")
+                                    .html(wicQAndA[j].question + "<br>")
+                                    .append($("<input>")
+                                        .addClass("form-control")
+                                        .attr("type", "text")
+                                        .attr("disabled", true)
+                                        .attr("id", "linkID"+wicQAndA[j].ID+"textfield")
+                                        .attr("placeholder", wicQAndA[j].answer)
+                                        .css("width", "100%")
+                                    )
+
+                            }
+                            linkID9Form.append(linkID9);
+                            //endregion
+
+                            if (questionGroups[i].groupID == 10 && wicQAndA[j].groupID  == 10) {
+
+                            }
                         }
                     } 
 
@@ -1359,14 +1517,17 @@
                         .append(linkID5Title)
                         .append(linkID5Form)
                         .append(linkID6Title)
-                        .append(linkID6Form);
+                        .append(linkID6Form)
+                        .append(linkID7Title)
+                        .append(linkID7Form);
 
-                    // rightDiv.append(linkID3Form)
-                    //     .append(linkID4Form)
-                    //     .append(linkID5Form);
+                    rightDiv.append(linkID8Title)
+                        .append(linkID8Form)
+                        .append(linkID9Title)
+                        .append(linkID9Form);
 
                     wicSurvey.append(leftDiv);
-                    // wicSurvey.append(rightDiv);
+                    wicSurvey.append(rightDiv);
 
                 }
                 else {
