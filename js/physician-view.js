@@ -51,16 +51,44 @@
     }
 
     function create_hhh_panel(container, hhg_qr, qr) {
+
+        console.log(qr);
         var goalMap = {
-            1: 'Make half your plate fruits and veggies',
-            2: 'Be active',
-            3: 'Limit screen time',
-            4: 'Drink more water & limit sugary drinks'
+            1: 'Making half of their plate fruits and veggies',
+            2: 'Being active',
+            3: 'Limiting screen time',
+            4: 'Drinking more water & limiting sugary drinks'
         };
 
-        var otherNotes = (hhg_qr.entry ? hhg_qr.entry[0].resource.group.question[8].answer[0].valueString : "N/A");
-        //var selectedGoal = qr.entry[0].resource.group.question[].answer[0].valueInteger : 
+        var selectedGoal = "N/A";
+        if(qr.entry){
+            var selectedIndex = qr.entry[0].resource.group.question[5].answer[0].valueInteger
+            selectedGoal = goalMap[selectedIndex];
+        }
+        
+        var barriersDiscussed = "N/A";
+        var barriersTemp = hhg_qr.entry[0].resource.group.question[7].answer;
+        if(barriersTemp) { 
+            barriersDiscussed = barriersTemp[0].valueString;
+        }
 
+        var otherNotes = "N/A";
+        var otherNotesTemp = hhg_qr.entry[0].resource.group.question[8].answer;
+        if(otherNotesTemp) { 
+            otherNotes = otherNotesTemp[0].valueString;
+        }
+        
+        var hhh_panel = "";
+        hhh_panel += ("<div id='physician-hhh-panel'>");
+        hhh_panel += ("<h4>Patient wanted to discuss:</h4>");
+        hhh_panel += ("<blockquote>  <b>" + selectedGoal + "</b> </blockquote>");
+        hhh_panel += ("<h4>Last discussion of barriers:</h4>");
+        hhh_panel += ("<blockquote>" + barriersDiscussed + "</blockquote>");
+        hhh_panel += ("<h4>Other notes:</h4>");
+        hhh_panel += ("<blockquote>" + otherNotes + "</blockquote>");
+        hhh_panel += ("</div>");
+
+        $(container).append(hhh_panel);        
     }
 
     function create_hhh_tbl(container, hhg_qr) {
@@ -119,7 +147,6 @@
                 }
 
                 hhh_tbl += ("<tr> <td>" + goalSet + "</td> <td>" + authorDate + "</td> <td>" + endDate + "</td> <td>" + barriersDiscussed + "</td> </tr>");
-
             }
 
         } else {
@@ -378,10 +405,13 @@
         $(container).append(graph_str);    
        
         var hhg_qr = hhgQuestionnaireResponseCall;
+        var qr = questionnaireResponseCall;
+        
         console.log("HHG");
         console.log(hhg_qr);
 
         create_hhh_tbl(container, hhg_qr);
+        create_hhh_panel(container, hhg_qr, qr);
 
         /*****************************  graphs **************************/
         
