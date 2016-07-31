@@ -153,9 +153,7 @@
         $( wants_to_discuss_div ).append( hhh_panel);
 
         var CurrentGoal_str   ='                                                                                     ' 
-                              +' <p> Most recent goal:  <b>' + selectedGoal + '</b></p>        ' 
-                              +' <p> Most recent notes:  <b>' + otherNotes + '</b></p>        '
-                              +' <p> Most recent barriers Discussed:  <b>' + barriersDiscussed + '</b></p>        ';
+                              +'  Current Goal: <blockquote> <b>' + selectedGoal + '</b> </blockquote>       ';  
 
         $( CurrentGoal_div ).append( CurrentGoal_str);
 
