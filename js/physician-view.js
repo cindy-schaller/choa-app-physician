@@ -450,18 +450,32 @@
             ));
 
 
-         var graph_str   ='                                                                                                               ' 
+         var graph_str   ='                                                                                     ' 
                          +'        <style>  '
-                         +'   .row-eq-height { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display:         flex;}'
+                         +'        .row-eq-height { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display:         flex;}'
+                         +'        .carousel-control.left, .carousel-control.right { background-image: none}         '
                          +'        </style>                                                                                                   '
-
                          +'        <h2  align="center">Health Habit Item: Progress History</h2>                                           '
                          +'        <div class="container" id="historyGraphDiscuss">                                                       '
                          +'            <div class="row">                                                                                  '
-                         +'                 <div class="col-sm-8" id="graph_div"></div>       '
-                         +'                 <div class="col-sm-2" id="graph_key_div" style="border:1px solid black"></div>       '
-                         +'                 <div class="col-sm-2" id="wants_to_discuss_div"></div>                                   ' 
-                         +'            </div>                                                                                             '  
+                         +'                 <div class="col-sm-8" id="GraphCarousel_div">     '
+                         +'                       <div id="myGraphCarousel" class="carousel slide" data-ride="carousel">       '
+                         +'                          <ol id="GraphCarouselIndicators"  class="carousel-indicators"> </ol>'
+                         +'                          <div id="carousel_inner_id" class="carousel-inner" role="listbox"> </div> '
+                         +'                           <!-- Left and right controls -->'
+                         +'                           <a class="left carousel-control" href="#myGraphCarousel" role="button" data-slide="prev">'
+                         +'                              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'
+                         +'                              <span class="sr-only">Previous</span>'
+                         +'                           </a>'
+                         +'                           <a class="right carousel-control" href="#myGraphCarousel" role="button" data-slide="next">'
+                         +'                              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>'
+                         +'                              <span class="sr-only">Next</span>'
+                         +'                           </a>'
+                         +'                       </div>    '
+                         +'                  </div>    '
+                         +'                  <div class="col-sm-2" id="graph_key_div" style="border:1px solid black"></div>       '
+                         +'                  <div class="col-sm-2" id="wants_to_discuss_div"></div>                                   ' 
+                         +'            </div>    '
                          +'        </div><p> </p>                                                                                             ';   
                 
                       
@@ -481,28 +495,36 @@
         
 
                      
-        function create_graph( Question, key_word, answer_date , multiple_choices) 
+        function create_graph( Question, key_word, answer_date , multiple_choices, canvasCount) 
         {
-            var key_class= "key_class_" + key_word;
-
-            //append the keyword to the graph key
-            $( graph_key_div ).append( '<h3 class="' + key_class +'"><font color="blue">'+ key_word +'</font></h3> <p> </p>'  );
-
-
-
-
+            var legend_id= "legend_id_" + canvasCount;
             var margin = 30;
             var left_margin = 180; //size should be calculated the longest string in all the multiple_choices
             var right_margin = 30; //size should be calculated to be as long as a date of the authored feild
-   
+
+
+            var canvas_Carousel_id= "canvas_Carousel" + key_word;
+            var canvas_str = '<canvas id="' + canvas_Carousel_id + '" height="400" width="750" style="border:1px solid #000000;" ></canvas>';
+           
+            //insert canvas into bootstrap carousel
+            if(canvasCount == 0)// todo change to id of current goal
+            {
+                var ol_str = '<li data-target="#myGraphCarousel" data-slide-to="'+canvasCount+ '" class="active"></li>';
+
+                var item_str ='<div class="item active">'+ canvas_str +'</div>';
+
+            }
+            else
+            {
+                var ol_str = '<li data-target="#myGraphCarousel" data-slide-to="'+canvasCount+ '" ></li>';
+                var item_str ='<div class="item">'+ canvas_str +'</div>';
+            }
             
-            var canvas_id= "canvas_" + key_word;
+            $('#GraphCarouselIndicators').append( ol_str);
+            $('#carousel_inner_id').append( item_str);
 
-            $( graph_div ).append( '<canvas id="' + canvas_id + '" height="400" width="750" style="border:1px solid #000000;" ></canvas>'  );
-            
+            var canvas = document.getElementById(canvas_Carousel_id);
 
-
-            var canvas = document.getElementById(canvas_id);
             var context = canvas.getContext("2d");
             
             
@@ -605,6 +627,8 @@
              }
              context.stroke();
          
+           //append the keyword to the graph key
+            $( graph_key_div ).append( '<h3 id="'+ legend_id +'"  class="legend_class" ><font color="blue">'+ key_word +'</font></h3> <p> </p>'  );
 
 
         }
@@ -621,6 +645,7 @@
         var Answer = '';
         var Authored = '';
         var questionnaire = '';
+        var canvasCount =0;
         
         if (questionnaireCall.entry && questionnaireResponseCall.entry) 
         {
@@ -661,13 +686,7 @@
                     want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
                     //console.log("fruit juice")
                 }
-                
-                if(want_graph == false)
-                {
-                    KeyWord = 'foods';
-                    want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question); 
-                }
-                
+                                
                 if(want_graph == false)
                 {
                     KeyWord = 'television';
@@ -696,10 +715,25 @@
                     
                     //console.log("answer_date")
                     //console.log(answer_date);
-                    create_graph(Question, KeyWord, answer_date, multiple_choices ) ;
+
+                    create_graph(Question, KeyWord, answer_date, multiple_choices,canvasCount ) ;
+                    canvasCount++;
                 }
             }  
         }
+
+       $('#myGraphCarousel').carousel('pause');
+
+       $(".legend_class").click(function()
+        {
+
+            var this_id = this.id;
+            var this_slider_number = this_id.replace(/^legend_id_/, '');   
+            $('#myGraphCarousel').carousel(Number(this_slider_number));
+            $('#myGraphCarousel').carousel('pause');
+
+        });
+
 
          /***************************** end  graphs **************************/
 
