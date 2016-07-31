@@ -10,7 +10,7 @@
     "use strict";
     var fhir_url = window.sessionStorage.getItem('fhir_url_global')  + '/';
     var patientID = window.sessionStorage.getItem('patientid_global');
-
+    
     var selectedIndex = -1,
         PATIENT,
         /**
@@ -111,7 +111,7 @@
         return Math.round(decimal * 100) + '%';
     }
 
-    function create_hhh_panel(container, hhg_qr, qr) {
+    function create_hhh_panel( hhg_qr, qr) {
 
         //console.log(qr);
         var goalMap = {
@@ -152,7 +152,16 @@
         //$(container).append(hhh_panel);  
         $( wants_to_discuss_div ).append( hhh_panel);
 
+        var CurrentGoal_str   ='                                                                                     ' 
+                              +'  Current Goal: <blockquote> <b>' + selectedGoal + '</b> </blockquote>       ';  
+
+        $( CurrentGoal_div ).append( CurrentGoal_str);
+
     }
+
+
+
+
 
     function create_hhh_tbl(container, hhg_qr) {
 
@@ -163,7 +172,8 @@
             4: 'Drink more water & limit sugary drinks'
         };
 
-        var hhh_tbl = "";
+        //changed to a global so graph can use the same table
+        var hhh_tbl  ="";
 
         hhh_tbl += ("<div id='physician-hhh-tbl'>");
         hhh_tbl += ("<table> <tr> <th>Healthy Habit Goal</th> <th>Start Date</th> <th>End Date</th> <th>Barriers Discussed</th> </tr>"); 
@@ -459,7 +469,7 @@
                          +'        <h2  align="center">Health Habit Item: Progress History</h2>                                           '
                          +'        <div class="container" id="historyGraphDiscuss">                                                       '
                          +'            <div class="row">                                                                                  '
-                         +'                 <div class="col-sm-8 graph_col_h1" id="GraphCarousel_div">     '
+                         +'                 <div class="col-sm-8 graph_col_h1" id="GraphCarousel_div" style="border:1px solid black" >     '
                          +'                       <div id="myGraphCarousel" class="carousel slide" data-ride="carousel">       '
                          +'                          <ol id="GraphCarouselIndicators"  class="carousel-indicators"> </ol>'
                          +'                          <div id="carousel_inner_id" class="carousel-inner" role="listbox"> </div> '
@@ -477,6 +487,9 @@
                          +'                  <div class="col-sm-1 graph_col_h1" id="graph_key_div" style="border:1px solid black"><b>Click on Healthy Habit to see change over time graph:</b><p></p> </div>       '
                          +'                  <div class="col-sm-2 graph_col_h1" id="wants_to_discuss_div" ></div>                                   ' 
                          +'            </div>    '
+                         +'            <div class="row">                                                                                  '
+                         +'                 <div class="col-sm-8 " id="CurrentGoal_div" style="border:1px solid black"> </div>    '
+                         +'            </div>    '
                          +'        </div><p> </p>                                                                                             ';   
                 
                       
@@ -489,8 +502,9 @@
         //console.log("HHG");
         //console.log(hhg_qr);
 
+        
         create_hhh_tbl(container, hhg_qr);
-        create_hhh_panel(container, hhg_qr, qr);
+        create_hhh_panel( hhg_qr, qr);
 
 
     
@@ -642,6 +656,9 @@
         //$( wants_to_discuss_div).html(  '<h3> Patient wants to discuss the following Healthy Habit: </h3> <h3> Barriers faced by patient: </h3>');            
         //$( graph_key_div ).append( '<p> Click on Healthy Habit to see change over time: </p>'  );
 
+
+        
+
         var answer_date = [];
         var multiple_choices = [];
         var Question = '';
@@ -650,8 +667,8 @@
         var Authored = '';
         var questionnaire = '';
         var canvasCount =0;
-        
-        if (questionnaireCall.entry && questionnaireResponseCall.entry) 
+         
+        if (questionnaireCall.entry && questionnaireResponseCall.entry && hhgQuestionnaireResponseCall.entry ) 
         {
             questionnaire = questionnaireCall.entry[0].resource;
 
