@@ -149,9 +149,7 @@
         hhh_panel += ("<blockquote>" + otherNotes + "</blockquote>");
         hhh_panel += ("</div>");
 
-        //$(container).append(hhh_panel);  
-        $( wants_to_discuss_div ).append( hhh_panel);
-
+        $(container).append(hhh_panel);        
     }
 
     function create_hhh_tbl(container, hhg_qr) {
@@ -454,12 +452,13 @@
 
          var graph_str   ='                                                                                     ' 
                          +'        <style>  '
+                         +'        .row-eq-height { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display:         flex;}'
                          +'        .carousel-control.left, .carousel-control.right { background-image: none}         '
                          +'        </style>                                                                                                   '
                          +'        <h2  align="center">Health Habit Item: Progress History</h2>                                           '
                          +'        <div class="container" id="historyGraphDiscuss">                                                       '
                          +'            <div class="row">                                                                                  '
-                         +'                 <div class="col-sm-8 graph_col_h1" id="GraphCarousel_div">     '
+                         +'                 <div class="col-sm-8" id="GraphCarousel_div">     '
                          +'                       <div id="myGraphCarousel" class="carousel slide" data-ride="carousel">       '
                          +'                          <ol id="GraphCarouselIndicators"  class="carousel-indicators"> </ol>'
                          +'                          <div id="carousel_inner_id" class="carousel-inner" role="listbox"> </div> '
@@ -474,8 +473,8 @@
                          +'                           </a>'
                          +'                       </div>    '
                          +'                  </div>    '
-                         +'                  <div class="col-sm-1 graph_col_h1" id="graph_key_div" style="border:1px solid black"><b>Click on Healthy Habit to see change over time graph:</b><p></p> </div>       '
-                         +'                  <div class="col-sm-2 graph_col_h1" id="wants_to_discuss_div" ></div>                                   ' 
+                         +'                  <div class="col-sm-2" id="graph_key_div" style="border:1px solid black"></div>       '
+                         +'                  <div class="col-sm-2" id="wants_to_discuss_div"></div>                                   ' 
                          +'            </div>    '
                          +'        </div><p> </p>                                                                                             ';   
                 
@@ -491,9 +490,6 @@
 
         create_hhh_tbl(container, hhg_qr);
         create_hhh_panel(container, hhg_qr, qr);
-
-
-    
 
         /*****************************  graphs **************************/
         
@@ -632,7 +628,7 @@
              context.stroke();
          
            //append the keyword to the graph key
-            $( graph_key_div ).append( '<p id="'+ legend_id +'"  class="legend_class" ><font color="blue">'+ key_word +'</font></p> <p> </p>'  );
+            $( graph_key_div ).append( '<h3 id="'+ legend_id +'"  class="legend_class" ><font color="blue">'+ key_word +'</font></h3> <p> </p>'  );
 
 
         }
@@ -640,7 +636,7 @@
                 
                    
         //$( wants_to_discuss_div).html(  '<h3> Patient wants to discuss the following Healthy Habit: </h3> <h3> Barriers faced by patient: </h3>');            
-        //$( graph_key_div ).append( '<p> Click on Healthy Habit to see change over time: </p>'  );
+        $( graph_key_div ).append( '<h3> Click on Healthy Habit to see change over time: </h3>  <p> </p>'  );
 
         var answer_date = [];
         var multiple_choices = [];
@@ -726,10 +722,8 @@
             }  
         }
 
-       //stop gragh scrolling automatically
        $('#myGraphCarousel').carousel('pause');
 
-       //give legend clicks functionality
        $(".legend_class").click(function()
         {
 
@@ -740,18 +734,6 @@
 
         });
 
-        // set graph colums same height
-        $( document ).ready(function() 
-        {
-            var heights = $(".graph_col_h1").map(function() 
-            {
-                return $(this).height();
-            }).get(),
-
-            maxHeight = Math.max.apply(null, heights);
-
-            $(".graph_col_h1").height(maxHeight);
-        });
 
          /***************************** end  graphs **************************/
 

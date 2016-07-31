@@ -59,6 +59,12 @@ GC.get_data = function() {
     $.when(ptFetch, vitalsFetch, familyHistoryFetch).done(onData);
 
     function onData(patient, vitals, familyHistories){
+      console.log('patient');
+      console.log(patient);
+      console.log('vitals');
+      console.log(vitals);
+      console.log('familyHistories');
+      console.log(familyHistories);
       var vitalsByCode = smart.byCode(vitals, 'code');
 
       var t0 = new Date().getTime();
