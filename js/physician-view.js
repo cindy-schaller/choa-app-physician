@@ -111,7 +111,7 @@
         return Math.round(decimal * 100) + '%';
     }
 
-    function create_hhh_panel(container, hhg_qr, qr) {
+    function create_hhh_panel( hhg_qr, qr) {
 
         //console.log(qr);
         var goalMap = {
@@ -149,7 +149,16 @@
         hhh_panel += ("<blockquote>" + otherNotes + "</blockquote>");
         hhh_panel += ("</div>");
 
-        $(container).append(hhh_panel);
+        //$(container).append(hhh_panel);  
+        $( wants_to_discuss_div ).append( hhh_panel);
+
+        var CurrentGoal_str   ='                                                                                     ' 
+                              +' <p> Most recent goal:  <b>' + selectedGoal + '</b></p>        ' 
+                              +' <p> Most recent notes:  <b>' + otherNotes + '</b></p>        '
+                              +' <p> Most recent barriers Discussed:  <b>' + barriersDiscussed + '</b></p>        ';
+
+        $( CurrentGoal_div ).append( CurrentGoal_str);
+
     }
 
     function create_hhh_tbl(container, hhg_qr) {
@@ -543,37 +552,39 @@
 
             topContainer.append(patientInfo);
 
-            var graph_str   ='                                                                                     '
-                +'        <style>  '
-                +'        .row-eq-height { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display:         flex;}'
-                +'        .carousel-control.left, .carousel-control.right { background-image: none}         '
-                +'        </style>                                                                                                   '
-                +'        <h2  align="center">Health Habit Item: Progress History</h2>                                           '
-                +'        <div class="container" id="historyGraphDiscuss">                                                       '
-                +'            <div class="row">                                                                                  '
-                +'                 <div class="col-sm-8" id="GraphCarousel_div">     '
-                +'                       <div id="myGraphCarousel" class="carousel slide" data-ride="carousel">       '
-                +'                          <ol id="GraphCarouselIndicators"  class="carousel-indicators"> </ol>'
-                +'                          <div id="carousel_inner_id" class="carousel-inner" role="listbox"> </div> '
-                +'                           <!-- Left and right controls -->'
-                +'                           <a class="left carousel-control" href="#myGraphCarousel" role="button" data-slide="prev">'
-                +'                              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'
-                +'                              <span class="sr-only">Previous</span>'
-                +'                           </a>'
-                +'                           <a class="right carousel-control" href="#myGraphCarousel" role="button" data-slide="next">'
-                +'                              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>'
-                +'                              <span class="sr-only">Next</span>'
-                +'                           </a>'
-                +'                       </div>    '
-                +'                  </div>    '
-                +'                  <div class="col-sm-2" id="graph_key_div" style="border:1px solid black"></div>       '
-                +'                  <div class="col-sm-2" id="wants_to_discuss_div"></div>                                   '
-                +'            </div>    '
-                +'        </div><p> </p>                                                                                             ';
+         var graph_str   ='                                                                                     ' 
+                         +'        <style>  '
+                         +'        .carousel-control.left, .carousel-control.right { background-image: none}         '
+                         +'        </style>                                                                                                   '
+                         +'        <h2  align="center">Health Habit Item: Progress History</h2>                                           '
+                         +'        <div class="container" id="historyGraphDiscuss">                                                       '
+                         +'            <div class="row">                                                                                  '
+                         +'                 <div class="col-sm-8 graph_col_h1" id="GraphCarousel_div" style="border:1px solid black" >     '
+                         +'                       <div id="myGraphCarousel" class="carousel slide" data-ride="carousel">       '
+                         +'                          <ol id="GraphCarouselIndicators"  class="carousel-indicators"> </ol>'
+                         +'                          <div id="carousel_inner_id" class="carousel-inner" role="listbox"> </div> '
+                         +'                           <!-- Left and right controls -->'
+                         +'                           <a class="left carousel-control" href="#myGraphCarousel" role="button" data-slide="prev">'
+                         +'                              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'
+                         +'                              <span class="sr-only">Previous</span>'
+                         +'                           </a>'
+                         +'                           <a class="right carousel-control" href="#myGraphCarousel" role="button" data-slide="next">'
+                         +'                              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>'
+                         +'                              <span class="sr-only">Next</span>'
+                         +'                           </a>'
+                         +'                       </div>    '
+                         +'                  </div>    '
+                         +'                  <div class="col-sm-1 graph_col_h1" id="graph_key_div" style="border:1px solid black"><b>Click on Healthy Habit to see change over time graph:</b><p></p> </div>       '
+                         +'                  <div class="col-sm-2 graph_col_h1" id="wants_to_discuss_div" ></div>                                   ' 
+                         +'            </div>    '
+                         +'            <div class="row">                                                                                  '
+                         +'                 <div class="col-sm-8 " id="CurrentGoal_div" style="border:1px solid black"> </div>    '
+                         +'            </div>    '
+                         +'        </div><p> </p>                                                                                             ';   
+                
+                      
 
-
-
-            $(container).append(graph_str);
+        $(container).append(graph_str);    
 
             var hhg_qr = hhgQuestionnaireResponseCall;
             var qr = questionnaireResponseCall;
@@ -582,7 +593,7 @@
             //console.log(hhg_qr);
 
             create_hhh_tbl(container, hhg_qr);
-            create_hhh_panel(container, hhg_qr, qr);
+        create_hhh_panel( hhg_qr, qr);
 
             /*****************************  graphs **************************/
 
@@ -591,14 +602,16 @@
             function create_graph( Question, key_word, answer_date , multiple_choices, canvasCount)
             {
                 var legend_id= "legend_id_" + canvasCount;
+                var height = 400;
+                var width = 795;
                 var margin = 30;
                 var left_margin = 180; //size should be calculated the longest string in all the multiple_choices
                 var right_margin = 30; //size should be calculated to be as long as a date of the authored feild
 
 
                 var canvas_Carousel_id= "canvas_Carousel" + key_word;
-                var canvas_str = '<canvas id="' + canvas_Carousel_id + '" height="400" width="750" style="border:1px solid #000000;" ></canvas>';
-
+                var canvas_str = '<canvas id="' + canvas_Carousel_id + '" height="'+ height +'" width="'+ width +'" style="border:1px solid #000000;" ></canvas>';
+           
                 //insert canvas into bootstrap carousel
                 if(canvasCount == 0)// todo change to id of current goal
                 {
@@ -721,16 +734,14 @@
                 context.stroke();
 
                 //append the keyword to the graph key
-                $( graph_key_div ).append( '<h3 id="'+ legend_id +'"  class="legend_class" ><font color="blue">'+ key_word +'</font></h3> <p> </p>'  );
+                $( graph_key_div ).append( '<p id="'+ legend_id +'"  class="legend_class" ><font color="blue">'+ key_word +'</font></p> <p> </p>'  );
 
 
             }
 
 
 
-            //$( wants_to_discuss_div).html(  '<h3> Patient wants to discuss the following Healthy Habit: </h3> <h3> Barriers faced by patient: </h3>');
-            $( graph_key_div ).append( '<h3> Click on Healthy Habit to see change over time: </h3>  <p> </p>'  );
-
+           
             var answer_date = [];
             var multiple_choices = [];
             var Question = '';
@@ -740,8 +751,8 @@
             var questionnaire = '';
             var canvasCount =0;
 
-            if (questionnaireCall.entry && questionnaireResponseCall.entry)
-            {
+        if (questionnaireCall.entry && questionnaireResponseCall.entry && hhgQuestionnaireResponseCall.entry ) 
+        {
                 questionnaire = questionnaireCall.entry[0].resource;
 
                 for(var q = 0; q < questionnaire.group.question.length; q++)
@@ -815,8 +826,10 @@
                 }
             }
 
-            $('#myGraphCarousel').carousel('pause');
+           //stop gragh scrolling automatically
+           $('#myGraphCarousel').carousel('pause');
 
+          //give legend clicks functionality
             $(".legend_class").click(function()
             {
 
@@ -827,7 +840,18 @@
 
             });
 
+        // set graph colums same height
+        $( document ).ready(function() 
+        {
+            var heights = $(".graph_col_h1").map(function() 
+            {
+                return $(this).height();
+            }).get(),
 
+            maxHeight = Math.max.apply(null, heights);
+
+            $(".graph_col_h1").height(maxHeight);
+        });
             /***************************** end  graphs **************************/
 
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
