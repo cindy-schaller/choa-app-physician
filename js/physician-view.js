@@ -214,7 +214,7 @@
             }
 
         } else {
-            hhh_tbl += ("<tr> <td>No Healthy Habit Goal Set</td> <td>N/A</td> <td>N/A</td> </tr>");
+            hhh_tbl += ("<tr> <td>No Healthy Habit Goal Set</td> <td>N/A</td> <td>N/A</td> <td>N/A</td> </tr>");
         }
 
         hhh_tbl += ("</table>");
