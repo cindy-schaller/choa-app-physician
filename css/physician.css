@@ -68,3 +68,53 @@
     padding: 9px;
     margin-top: 20px;
 }
+
+.physician-qr-container {
+    margin-left: 15px;
+}
+
+#physician-qr-header {
+    color: #4F5F6B;
+}
+
+#physician-qr-body, #physician-qr-buttons {
+    margin-left: 30px;
+}
+
+#physician-qr-buttons a {
+
+    color: white;
+    background: #4F5F6B;
+    height: 40px;
+    padding: 9px;
+    margin-top: 20px;
+}
+
+#physician-hhh-tbl table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#physician-hhh-tbl td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+#physician-hhh-tbl th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    font-weight: bold;
+}
+
+#physician-hhh-tbl tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+#physician-hhh-panel {
+    margin-left: 30px;
+}
+
+
