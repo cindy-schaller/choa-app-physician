@@ -13,7 +13,6 @@
 
     var selectedIndex = -1,
         PATIENT,
-
         /**
          * The cached value from GC.App.getMetrics()
          */
@@ -50,19 +49,173 @@
         return GC.App.getViewType() == "view";
     }
 
-    function create_hhh_tbl(container) {
+    /**
+     * Returns the last record having the given property "propName".
+     * Can also be called before the patient has been initialized, in which case
+     * it returns null.
+     * @param {String} propName The name of the property to serach for inside
+     *                          the recods.
+     */
+    function getLastEnryHaving(propName) {
+        if ( !PATIENT ) {
+            return null;
+        }
+        return PATIENT.getLastEnryHaving(propName);
+    }
+
+    /**
+     * Modified getVitals function from gc-parental-view
+     * Collects and returns the latest measurements and returns them as an
+     * useful object...
+     */
+    function getVitals(PATIENT) {
+        var out = {
+                height : { value : undefined, "percentile" : null},
+                weight : { value : undefined, "percentile" : null},
+                headc  : { value : undefined, "percentile" : null},
+                bmi    : { value : undefined, "percentile" : null},
+
+                age : PATIENT.getCurrentAge()
+            },
+            src    = out.age.getYears() > 2 ? "CDC" : "WHO",
+            gender = PATIENT.gender;
+
+        $.each({
+            height : { modelProp: "lengthAndStature", dsType : "LENGTH" },
+            weight : { modelProp: "weight"          , dsType : "WEIGHT" },
+            headc  : { modelProp: "headc"           , dsType : "HEADC"  },
+            bmi    : { modelProp: "bmi"             , dsType : "BMI"    }
+        }, function(key, meta) {
+            var lastEntry = getLastEnryHaving( meta.modelProp ), ds, pct;
+            if (lastEntry) {
+                ds = GC.getDataSet(src, meta.dsType, gender, 0, lastEntry.agemos);
+                out[key].value  = lastEntry[meta.modelProp];
+                if (ds) {
+                    pct = GC.findPercentileFromX(
+                        out[key].value,
+                        ds,
+                        gender,
+                        lastEntry.agemos
+                    );
+                    if ( !isNaN(pct) ) {
+                        out[key].percentile  = pct;
+                    }
+                }
+            }
+        });
+
+        return out;
+    }
+
+    function convertToPercent(decimal) {
+        return Math.round(decimal * 100) + '%';
+    }
+
+    function create_hhh_panel(container, hhg_qr, qr) {
+
+        //console.log(qr);
+        var goalMap = {
+            1: 'Making half of their plate fruits and veggies',
+            2: 'Being active',
+            3: 'Limiting screen time',
+            4: 'Drinking more water & limiting sugary drinks'
+        };
+
+        var selectedGoal = "N/A";
+        if(qr.entry){
+            var selectedIndex = qr.entry[0].resource.group.question[5].answer[0].valueInteger;
+            selectedGoal = goalMap[selectedIndex];
+        }
+
+        var barriersDiscussed = "N/A";
+        var barriersTemp = hhg_qr.entry[0].resource.group.question[7].answer;
+        if(barriersTemp) {
+            barriersDiscussed = barriersTemp[0].valueString;
+        }
+
+        var otherNotes = "N/A";
+        var otherNotesTemp = hhg_qr.entry[0].resource.group.question[8].answer;
+        if(otherNotesTemp) {
+            otherNotes = otherNotesTemp[0].valueString;
+        }
+
+        var hhh_panel = "";
+        hhh_panel += ("<div id='physician-hhh-panel'>");
+        hhh_panel += ("<h4>Patient wanted to discuss:</h4>");
+        hhh_panel += ("<blockquote> <b>" + selectedGoal + "</b> </blockquote>");
+        hhh_panel += ("<h4>Last discussion of barriers:</h4>");
+        hhh_panel += ("<blockquote>" + barriersDiscussed + "</blockquote>");
+        hhh_panel += ("<h4>Other notes:</h4>");
+        hhh_panel += ("<blockquote>" + otherNotes + "</blockquote>");
+        hhh_panel += ("</div>");
+
+        $(container).append(hhh_panel);
+    }
+
+    function create_hhh_tbl(container, hhg_qr) {
+
+        var goalMap = {
+            1: 'Make half your plate fruits and veggies',
+            2: 'Be active',
+            3: 'Limit screen time',
+            4: 'Drink more water & limit sugary drinks'
+        };
 
         var hhh_tbl = "";
 
         hhh_tbl += ("<div id='physician-hhh-tbl'>");
         hhh_tbl += ("<table> <tr> <th>Healthy Habit Goal</th> <th>Start Date</th> <th>End Date</th> <th>Barriers Discussed</th> </tr>");
 
-        hhh_tbl += ("<tr> <td>Reduce Sugary Drinks</td> <td>Jan 2016</td> <td>Current</td> <td>Clark does not like the taste of water </td> </tr>");
-        hhh_tbl += ("<tr> <td>Increase Fruits and Veggies</td> <td>Jun 2015</td> <td>Jan 2016</td> <td>Don't know how to cook the veggies to taste decent</td> </tr>");
-        hhh_tbl += ("<tr> <td>Increased Activity</td> <td>Jun 2014</td> <td>Jun 2015</td> <td>Can't find a place to play outside</td> </tr>");
+        if(hhg_qr.entry){
+
+            var hhg_qr_len = hhg_qr.entry.length;
+
+            var prevGoal = 0;
+            var prevStartDate = "";
+            var prevEndDate = "";
+
+            //console.log("QR LENGTH " + hhg_qr_len);
+            for (var i = 0; i < hhg_qr_len; i++) {
+
+                var response = hhg_qr.entry[i].resource;
+
+                //console.log(i + " " + hhg_qr.entry[i].resource.group.question[0].answer[0].valueInteger);
+                var goalResp = response.group.question[0].answer[0].valueInteger;
+                var goalSet = goalMap[goalResp];
+
+                var authorDate = (response.authored ? response.authored.split("T")[0] : "N/A");
+
+                //console.log(i + " " + hhg_qr.entry[i].resource.group.question[7].answer[0].valueString);
+                var barriersDiscussed = response.group.question[7].answer[0].valueString;
+
+                var endDate = "";
+                if(i == 0){
+                    endDate = "Current";
+                    prevEndDate = endDate;
+                    prevStartDate = authorDate;
+                    prevGoal = goalResp;
+                } else {
+                    if (goalResp == prevGoal) {
+                        endDate = prevEndDate;
+                        prevEndDate = endDate;
+                        prevStartDate = authorDate;
+                    } else {
+                        endDate = prevStartDate;
+                        prevEndDate = endDate;
+                        prevStartDate = authorDate;
+                        prevGoal = goalResp;
+                    }
+                }
+
+                hhh_tbl += ("<tr> <td>" + goalSet + "</td> <td>" + authorDate + "</td> <td>" + endDate + "</td> <td>" + barriersDiscussed + "</td> </tr>");
+            }
+
+        } else {
+            hhh_tbl += ("<tr> <td>No Healthy Habit Goal Set</td> <td>N/A</td> <td>N/A</td> </tr>");
+        }
 
         hhh_tbl += ("</table>");
-        hhh_tbl += ("</div>");
+        hhh_tbl += ("</div>")
 
         $(container).append(hhh_tbl);
     }
@@ -155,6 +308,22 @@
         theQuestionnaires.attr("id", "theQuestionnaires-div");
         $(container).append(theQuestionnaires);
 
+        var hhgQuestionsID = window.sessionStorage.getItem('hhg_questions_id');
+
+        var hhgQuestionnaireResponseCall = (function () {
+            var hhgQuestionnaireResponseCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url + 'QuestionnaireResponse?patient=' + patientID + "&questionnaire=" + hhgQuestionsID + "&_sort:desc=authored",
+                dataType: 'json',
+                success: function (data) {
+                    hhgQuestionnaireResponseCall = data;
+                }
+            });
+            return hhgQuestionnaireResponseCall;
+        })();
+
         var patientBMICall = (function () {
             var patientBMICall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
@@ -206,7 +375,7 @@
             return patientHeightCall;
         })();
 
-        $.when(patientCall, questionnaireResponseCall, wicQuestionnaireResponseCall, questionnaireCall, patientWeightCall, patientHeightCall).then(function() {
+        $.when(patientCall, questionnaireResponseCall, wicQuestionnaireResponseCall ,questionnaireCall, hhgQuestionnaireResponseCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
 
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
@@ -232,38 +401,79 @@
             patient.telecom[0].system + " " : "") +
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
-            
-            var weightUnit = "kg";
-            if(patientWeightCall)
-                if(patientWeightCall.entry)
-                if(patientWeightCall.entry[0])
-                    if(patientWeightCall.entry[0].resource)
-                        if(patientWeightCall.entry[0].resource.valueQuantity)
-                            weightUnit = patientWeightCall.entry[0].resource.valueQuantity.unit ? patientWeightCall.entry[0].resource.valueQuantity.unit : "";
 
-            var heightUnit =  "cm";
-            if(patientHeightCall)
-                if(patientHeightCall.entry)
-                if(patientHeightCall.entry[0])
-                    if(patientHeightCall.entry[0].resource)
-                        if(patientHeightCall.entry[0].resource.valueQuantity)
-                            heightUnit = patientHeightCall.entry[0].resource.valueQuantity.unit ? patientHeightCall.entry[0].resource.valueQuantity.unit : "";
+            // stamp = 0 = Unix Epoch. Fingers crossed that we don't deal with
+            // "children" that are older than the age of 46 in this app.
+            var latestRecording = { 'stamp': 0, 'text': '',
+                'weight': -1, 'weightUnit': 'kg', 'weightStamp': 0,
+                'height': -1, 'heightUnit': 'cm', 'heightStamp': 0,
+                'bmi': -1, 'bmiUnit': 'kg/m2', 'bmiStamp': 0,
+                'hemo': -1,  'hemoUnit': 'mg/dL', 'hemoStamp': 0 };
+            // If not, hell breaks loose
 
-            function convertToPercent(decimal) {
-                return Math.round(decimal * 100) + '%';
+            var process = function(d, l) {
+                for (var i = d.length - 1; i >= 0; i--) {
+                    if (d[i] != undefined &&
+                        d[i].resource.effectiveDateTime != undefined) {
+                        var t = Date.parse(d[i].resource.effectiveDateTime);
+
+                        if (t > latestRecording[l + 'Stamp']) {
+                            latestRecording[l + 'Stamp'] = t
+                            latestRecording[l] = d[i].resource.valueQuantity.value;
+                            latestRecording[l + 'Unit'] = d[i].resource.valueQuantity.unit;
+                        }
+                    }
+                }
             }
 
-            var height = window.sessionStorage.getItem('height_global');
-            var height_per = convertToPercent(window.sessionStorage.getItem("height_per_global"));
+            // FIXME: Optimize this into one FHIR query instead of 3 (or.actually,
+            // when the app loads there are *6* observation requests...)
+            process(patientWeightCall.entry, 'weight');
+            process(patientHeightCall.entry, 'height');
+            process(patientBMICall.entry, 'bmi');
+            // FIXME: Implement hemoglobin A fetching
+            // process(patientHeightCall.entry, 'hemo');
 
-            var weight = window.sessionStorage.getItem('weight_global');
-            var weight_per = convertToPercent(window.sessionStorage.getItem("weight_per_global"));
+            localStorage.setItem("BMI", latestRecording.bmi);
 
-            var BMI = window.sessionStorage.getItem('bmi_global');
-            var BMI_per = convertToPercent(window.sessionStorage.getItem("bmi_per_global"));
+            var bmiText, bmiClass;
 
-            localStorage.setItem("BMI", BMI);
-            
+            // FIXME: The comparisons can be optimized by inversing the evaluation order
+            switch (true) {
+                case (latestRecording.bmi <= 18.5):
+                    bmiText = 'Underweight </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-warning'
+                    break;
+                case (18.5 < latestRecording.bmi && latestRecording.bmi <= 25):
+                    bmiText = 'Normal weight </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-info'
+                    break;
+                case (25 < latestRecording.bmi && latestRecording.bmi <= 30):
+                    bmiText = 'Overweight </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-warning'
+                    break;
+                case (30 < latestRecording.bmi && latestRecording.bmi <= 35):
+                    bmiText = 'Class II obesity </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-warning'
+                    break;
+                case (35 < latestRecording.bmi && latestRecording.bmi <= 40):
+                    bmiText = 'Class II obesity </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-danger'
+                    break;
+                case (40 < latestRecording.bmi):
+                    bmiText = 'Class III obesity </br> BMI: ' + latestRecording.bmi;
+                    bmiClass = 'text-danger'
+                    break;
+                default:
+                // This should never happen
+                // BMIClassification = "BMI: ー"
+            }
+
+            var BMIClassification = $("<div></div>")
+                .append($("<strong></strong>")
+                    .addClass(bmiClass)
+                    .html(bmiText));
+
             thePatient.append($("<blockquote></blockquote>")
                 .append($("<div></div>")
                     .addClass("patient-info")
@@ -287,6 +497,10 @@
                             .html(address)
                         )
                     )
+					.append($("<div></div>")
+                        .attr("id", "patient-BMI")
+                        .append(BMIClassification)
+					)
                     .append($("<small></small>")
                         .append($("<div></div>")
                             .addClass("patient-gender text-capitalize")
@@ -297,7 +511,6 @@
                 )
             );
 
-            topContainer.append(patientInfo);
             patientInfo.append($("<div></div>")
                 .addClass("patient-info")
                 .append($("<blockquote></blockquote>")
@@ -313,60 +526,101 @@
                         .html("<strong>Birthdate: </strong>" + patientBDay)
                     )
                     .append($("<div></div>")
-                        .addClass("patient-BMI")
                         .attr("id", "patient-BMI")
-                        .html("<strong>BMI: </strong>" + BMI + " (" + BMI_per + ")")
-                    )
+                        .append(BMIClassification))
                     .append($("<div></div>")
                         .addClass("patient-weight")
                         .attr("id", "patient-weight")
-                        .html("<strong>Weight: </strong>" + weight + " " + weightUnit + " (" + weight_per + ")")
+                        .html("<strong>Weight: </strong>" + latestRecording.weight + " " + latestRecording.weightUnit)
                     )
                     .append($("<div></div>")
                         .addClass("patient-height")
                         .attr("id", "patient-height")
-                        .html("<strong>Height: </strong>" + height + " " + heightUnit + " (" + height_per + ")")
+                        .html("<strong>Height: </strong>" + latestRecording.height + " " + latestRecording.heightUnit)
                     )
-                )
-            );
+                 )
+              );
 
-            var graph_str   ='                                                                                                               '
+            topContainer.append(patientInfo);
+
+            var graph_str   ='                                                                                     '
                 +'        <style>  '
-                +'   .row-eq-height { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display:         flex;}'
+                +'        .row-eq-height { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display:         flex;}'
+                +'        .carousel-control.left, .carousel-control.right { background-image: none}         '
                 +'        </style>                                                                                                   '
-
                 +'        <h2  align="center">Health Habit Item: Progress History</h2>                                           '
                 +'        <div class="container" id="historyGraphDiscuss">                                                       '
                 +'            <div class="row">                                                                                  '
-                +'                 <div class="col-sm-8" id="graph_div"></div>       '
-                +'                 <div class="col-sm-2" id="graph_key_div" style="border:1px solid black"></div>       '
-                +'                 <div class="col-sm-2" id="wants_to_discuss_div"></div>                                   '
-                +'            </div>                                                                                             '
+                +'                 <div class="col-sm-8" id="GraphCarousel_div">     '
+                +'                       <div id="myGraphCarousel" class="carousel slide" data-ride="carousel">       '
+                +'                          <ol id="GraphCarouselIndicators"  class="carousel-indicators"> </ol>'
+                +'                          <div id="carousel_inner_id" class="carousel-inner" role="listbox"> </div> '
+                +'                           <!-- Left and right controls -->'
+                +'                           <a class="left carousel-control" href="#myGraphCarousel" role="button" data-slide="prev">'
+                +'                              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>'
+                +'                              <span class="sr-only">Previous</span>'
+                +'                           </a>'
+                +'                           <a class="right carousel-control" href="#myGraphCarousel" role="button" data-slide="next">'
+                +'                              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>'
+                +'                              <span class="sr-only">Next</span>'
+                +'                           </a>'
+                +'                       </div>    '
+                +'                  </div>    '
+                +'                  <div class="col-sm-2" id="graph_key_div" style="border:1px solid black"></div>       '
+                +'                  <div class="col-sm-2" id="wants_to_discuss_div"></div>                                   '
+                +'            </div>    '
                 +'        </div><p> </p>                                                                                             ';
+
+
 
             $(container).append(graph_str);
 
-            create_hhh_tbl(container);
+            var hhg_qr = hhgQuestionnaireResponseCall;
+            var qr = questionnaireResponseCall;
+
+            //console.log("HHG");
+            //console.log(hhg_qr);
+
+            create_hhh_tbl(container, hhg_qr);
+            create_hhh_panel(container, hhg_qr, qr);
+
             /*****************************  graphs **************************/
 
-            //region create_graph
-            function create_graph( Question, key_word, answer_date , multiple_choices)
+
+
+            function create_graph( Question, key_word, answer_date , multiple_choices, canvasCount)
             {
-                var key_class= "key_class_" + key_word;
-
-                //append the keyword to the graph key
-                $( graph_key_div ).append( '<h3 class="' + key_class +'"><font color="blue">'+ key_word +'</font></h3> <p> </p>'  );
-
+                var legend_id= "legend_id_" + canvasCount;
                 var margin = 30;
                 var left_margin = 180; //size should be calculated the longest string in all the multiple_choices
                 var right_margin = 30; //size should be calculated to be as long as a date of the authored feild
 
-                var canvas_id= "canvas_" + key_word;
 
-                $( graph_div ).append( '<canvas id="' + canvas_id + '" height="400" width="750" style="border:1px solid #000000;" ></canvas>'  );
+                var canvas_Carousel_id= "canvas_Carousel" + key_word;
+                var canvas_str = '<canvas id="' + canvas_Carousel_id + '" height="400" width="750" style="border:1px solid #000000;" ></canvas>';
 
-                var canvas = document.getElementById(canvas_id);
+                //insert canvas into bootstrap carousel
+                if(canvasCount == 0)// todo change to id of current goal
+                {
+                    var ol_str = '<li data-target="#myGraphCarousel" data-slide-to="'+canvasCount+ '" class="active"></li>';
+
+                    var item_str ='<div class="item active">'+ canvas_str +'</div>';
+
+                }
+                else
+                {
+                    var ol_str = '<li data-target="#myGraphCarousel" data-slide-to="'+canvasCount+ '" ></li>';
+                    var item_str ='<div class="item">'+ canvas_str +'</div>';
+                }
+
+                $('#GraphCarouselIndicators').append( ol_str);
+                $('#carousel_inner_id').append( item_str);
+
+                var canvas = document.getElementById(canvas_Carousel_id);
+
                 var context = canvas.getContext("2d");
+
+
 
                 context.font = "bold 13px Verdana"
                 context.fillText(Question, margin , margin );
@@ -375,6 +629,8 @@
 
                 //draw and label the row grid lines
                 context.strokeStyle="#009933"; // color of grid lines
+
+
 
                 var number_of_rows = multiple_choices.length;
                 var yStep = (canvas.height - margin ) / number_of_rows;
@@ -388,6 +644,7 @@
                     context.lineTo(canvas.width,y);
                 }
                 context.stroke();
+
 
                 // print dates on X axis every 3 months
                 //1. convert newest and oldest dates into miliseconds
@@ -403,6 +660,7 @@
 
                 for (var i = 0; i < diff_max_3_month_periods; i++)
                 {
+
                     var d_time = oldestTime.getTime()  + (ms_in_3_months * i );
                     var d      = new Date(d_time);
                     var d_display = (d.getMonth() + 1 ) + "/" + d.getFullYear() ;
@@ -410,6 +668,7 @@
 
                     context.fillText( d_display , x , (canvas.height -margin/2 ));
                 }
+
 
                 var x_y = [];
 
@@ -421,6 +680,7 @@
                 var newestTime = new Date(newestDate);
                 var diff_max = newestTime.getTime() - oldestTime.getTime();  //ms of span from oldest date to newest date
                 var length_x_axis = canvas.width - left_margin - right_margin;
+
 
                 for (var i = 0; i < answer_date.length; i++)
                 {
@@ -443,7 +703,11 @@
                     context.fill();
                     context.lineTo(X.Y ,y)
                     context.stroke();
+
                 }
+
+                //console.log("x_y")
+                //console.log(x_y);
 
                 //draw line on graph
                 context.lineWidth=2;
@@ -455,10 +719,15 @@
 
                 }
                 context.stroke();
-            }
-            //endregion
 
-            //region all graphs
+                //append the keyword to the graph key
+                $( graph_key_div ).append( '<h3 id="'+ legend_id +'"  class="legend_class" ><font color="blue">'+ key_word +'</font></h3> <p> </p>'  );
+
+
+            }
+
+
+
             //$( wants_to_discuss_div).html(  '<h3> Patient wants to discuss the following Healthy Habit: </h3> <h3> Barriers faced by patient: </h3>');
             $( graph_key_div ).append( '<h3> Click on Healthy Habit to see change over time: </h3>  <p> </p>'  );
 
@@ -469,6 +738,7 @@
             var Answer = '';
             var Authored = '';
             var questionnaire = '';
+            var canvasCount =0;
 
             if (questionnaireCall.entry && questionnaireResponseCall.entry)
             {
@@ -478,6 +748,8 @@
                     //for(var q = 0; q < 1; q++)
                 {
                     Question = questionnaire.group.question[q].text
+                    //console.log("Question")
+                    //console.log(Question);
 
                     var graph_question = "";
                     var want_graph = false;
@@ -491,24 +763,21 @@
                     {
                         KeyWord = 'active';
                         want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                        //console.log("active")
                     }
 
                     if(want_graph == false)
                     {
                         KeyWord = 'fruit juice';
                         want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                        //console.log("fruit juice")
                     }
 
                     if(want_graph == false)
                     {
                         KeyWord = 'sweet drinks';
                         want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
-                    }
-
-                    if(want_graph == false)
-                    {
-                        KeyWord = 'foods';
-                        want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
+                        //console.log("fruit juice")
                     }
 
                     if(want_graph == false)
@@ -520,6 +789,7 @@
 
                     if(want_graph == true )
                     {
+
                         multiple_choices = [];
                         for(var j = 0; j < questionnaire.group.question[q].option.length; j++)
                         {
@@ -529,17 +799,34 @@
                         answer_date = [];
                         for(var  qr = 0; qr < questionnaireResponseCall.entry.length; qr++)
                         {
+
                             Response   =   questionnaireResponseCall.entry[ qr ].resource;
-                            Answer     =   Response.group.question[ q ].answer[0].valueInteger;
+                            Answer     =   Response.group.question[ q ].answer[ 0 ].valueInteger;
                             Authored   =   Response.authored.split("T")[ 0 ] ;
                             answer_date.push({ answer:Answer, authored:Authored});
                         }
 
-                        create_graph(Question, KeyWord, answer_date, multiple_choices ) ;
+                        //console.log("answer_date")
+                        //console.log(answer_date);
+
+                        create_graph(Question, KeyWord, answer_date, multiple_choices,canvasCount ) ;
+                        canvasCount++;
                     }
                 }
             }
-            //endregion
+
+            $('#myGraphCarousel').carousel('pause');
+
+            $(".legend_class").click(function()
+            {
+
+                var this_id = this.id;
+                var this_slider_number = this_id.replace(/^legend_id_/, '');
+                $('#myGraphCarousel').carousel(Number(this_slider_number));
+                $('#myGraphCarousel').carousel('pause');
+
+            });
+
 
             /***************************** end  graphs **************************/
 
@@ -834,22 +1121,22 @@
 
                     wicSurvey.append($("<div></div>")
                         .html("<hr>")
-                        .attr("id", "wic-questionnaire-title-div") 
-                        .append($("<h1></h1>") 
-                            .addClass("text-center text-muted btn-group-sm") 
-                            .html("WIC Questionnaire Response") 
-                        ) 
-                    );  
-                    var leftDiv = $("<div></div>") 
-                        .addClass("col-xs-5 form-group") 
+                        .attr("id", "wic-questionnaire-title-div")
+                        .append($("<h1></h1>")
+                            .addClass("text-center text-muted btn-group-sm")
+                            .html("WIC Questionnaire Response")
+                        )
+                    );
+                    var leftDiv = $("<div></div>")
+                        .addClass("col-xs-5 form-group")
                         .attr("id", "leftDiv");
 
                     var rightDiv = $("<div></div>")
                         .addClass("col-xs-offset-7 form group")
                         .attr("id", "rightDiv");
 
-                    var linkID1Form = $("<form></form>") 
-                        .addClass("row col-xs-12 form-horizontal") 
+                    var linkID1Form = $("<form></form>")
+                        .addClass("row col-xs-12 form-horizontal")
                         .attr("role", "form");
 
                     var linkID2Form = $("<form></form>")
@@ -935,52 +1222,52 @@
                     var linkID16Form = $("<div></div>")
                         .addClass("form-group");
 
-                    for (var i = 0; i < questionGroups.length; i++) { 
-                        for (var j = 0; j < wicQAndA.length; j++) { 
+                    for (var i = 0; i < questionGroups.length; i++) {
+                        for (var j = 0; j < wicQAndA.length; j++) {
 
                             //region LinkID1
                             if (questionGroups[i].groupID == 1 && wicQAndA[j].groupID == 1) {
-                                    if (wicQAndA[j].responseType == "boolean") {
-                                        var questionID = parseFloat(wicQAndA[j].ID).toFixed(1);
+                                if (wicQAndA[j].responseType == "boolean") {
+                                    var questionID = parseFloat(wicQAndA[j].ID).toFixed(1);
 
-                                        var linkID1Title = $("<div></div>")
-                                            .attr("id", "linkID1-title-div")
-                                            .append($("<h4></h4>")
-                                                .html(questionGroups[i].Topic)
-                                            );
-                                        var _linkID1 = $("<div></div>")
-                                            .addClass("checkbox")
-                                            .append($("<input>")
-                                                .attr("id", "linkID: " + wicQAndA[j].ID)
-                                                .attr("type", "checkbox")
-                                                .attr("disabled", true)
-                                                .prop("checked", wicQAndA[j].answer)
-                                                .css("padding", "1px")
-                                                .css("width", "60px")
-                                                .css("height", "30px")
-                                            )
-                                            .append($("<p></p>")
-                                                .css("padding", "5px 3px 0px 55px")
-                                                .attr("id", "linkID: " + wicQAndA[j].ID)
-                                                .html(wicQAndA[j].question)
-                                            );
-                                    }
-                                    if (wicQAndA[j].responseType == "text") {
-                                        var answerID =  wicQAndA[j].ID;
-                                        var _linkID1a = $("<textarea></textarea>")
-                                            .addClass("form-control")
+                                    var linkID1Title = $("<div></div>")
+                                        .attr("id", "linkID1-title-div")
+                                        .append($("<h4></h4>")
+                                            .html(questionGroups[i].Topic)
+                                        );
+                                    var _linkID1 = $("<div></div>")
+                                        .addClass("checkbox")
+                                        .append($("<input>")
+                                            .attr("id", "linkID: " + wicQAndA[j].ID)
+                                            .attr("type", "checkbox")
                                             .attr("disabled", true)
-                                            .attr("placeholder", wicQAndA[j].answer)
-                                            .css("margin-left", "30px")
-                                            .css("height", "20px");
-                                    }
-                                    var adjustedQuestionID = (Number(questionID)+0.1).toFixed(parseInt(1));
-
-                                    if (Number(answerID) == adjustedQuestionID) {
-                                        _linkID1.append(_linkID1a);
-                                    }
+                                            .prop("checked", wicQAndA[j].answer)
+                                            .css("padding", "1px")
+                                            .css("width", "60px")
+                                            .css("height", "30px")
+                                        )
+                                        .append($("<p></p>")
+                                            .css("padding", "5px 3px 0px 55px")
+                                            .attr("id", "linkID: " + wicQAndA[j].ID)
+                                            .html(wicQAndA[j].question)
+                                        );
                                 }
-                                linkID1Form.append(_linkID1);
+                                if (wicQAndA[j].responseType == "text") {
+                                    var answerID =  wicQAndA[j].ID;
+                                    var _linkID1a = $("<textarea></textarea>")
+                                        .addClass("form-control")
+                                        .attr("disabled", true)
+                                        .attr("placeholder", wicQAndA[j].answer)
+                                        .css("margin-left", "30px")
+                                        .css("height", "20px");
+                                }
+                                var adjustedQuestionID = (Number(questionID)+0.1).toFixed(parseInt(1));
+
+                                if (Number(answerID) == adjustedQuestionID) {
+                                    _linkID1.append(_linkID1a);
+                                }
+                            }
+                            linkID1Form.append(_linkID1);
                             //endregion
 
                             //region LinkID2
@@ -1076,7 +1363,7 @@
                                     linkID3Radio = $("<div></div>")
                                         .attr("id", "second-choice-selected")
                                         .addClass("form-group")
-                                            .append($("<label></label>")
+                                        .append($("<label></label>")
                                             .addClass("form-check-inline")
                                             .attr("id", "notselected-choice")
                                             .attr("for", "linkID3Radio" + wicQAndA[j].ID +"notselected")
@@ -1104,9 +1391,9 @@
                                             )
                                         );
                                 }
-                                    _linkID3.append(linkID3Radio);
+                                _linkID3.append(linkID3Radio);
                             }
-                                linkID3Form.append(_linkID3);
+                            linkID3Form.append(_linkID3);
                             //endregion
 
                             //region LinkID4
@@ -1144,13 +1431,13 @@
                                                 .attr("id", "selected-choice")
                                                 .attr("for", "linkID4Radio"+wicQAndA[j].ID+"notselected")
                                                 .html(wicQAndA[j].responseChoices[1])
-                                                    .append($("<input>")
-                                                        .addClass("form-check-input")
-                                                        .attr("type","radio")
-                                                        .attr("disabled", true)
-                                                        .attr("name", "inlineRadioOptions")
-                                                        .attr("id", "linkID4Radio" + wicQAndA[j].ID+"notselected")
-                                                    )
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID4Radio" + wicQAndA[j].ID+"notselected")
+                                                )
                                             )
                                         );
                                 } else {
@@ -1175,14 +1462,14 @@
                                                 .attr("id", "selected-choice")
                                                 .attr("for", "linkID4Radio"+wicQAndA[j].ID+"selected")
                                                 .html(wicQAndA[j].responseChoices[1])
-                                                    .append($("<input>")
-                                                        .addClass("form-check-input")
-                                                        .attr("type","radio")
-                                                        .attr("disabled", true)
-                                                        .attr("name", "inlineRadioOptions")
-                                                        .attr("id", "linkID4Radio" + wicQAndA[j].ID+"selected")
-                                                        .prop("checked", true)
-                                                    )
+                                                .append($("<input>")
+                                                    .addClass("form-check-input")
+                                                    .attr("type","radio")
+                                                    .attr("disabled", true)
+                                                    .attr("name", "inlineRadioOptions")
+                                                    .attr("id", "linkID4Radio" + wicQAndA[j].ID+"selected")
+                                                    .prop("checked", true)
+                                                )
                                             )
                                         );
                                 }
@@ -1611,7 +1898,7 @@
                                             )
                                         );
                                 }
-                                    _linkID10.append(linkID10Radio);
+                                _linkID10.append(linkID10Radio);
                             }
                             linkID10Form.append(_linkID10);
                             //endregion
@@ -1986,7 +2273,7 @@
                             //endregion
 
                         }
-                    } 
+                    }
 
                     leftDiv.append(linkID1Title)
                         .append(linkID1Form)

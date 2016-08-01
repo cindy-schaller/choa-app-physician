@@ -68,6 +68,21 @@
             return AdolescentHealthyEatingQuestionnaireCall;
         })();
 
+    var HealthyHabitsGoalQuestionnaireCall = (function ()
+      {
+        var HealthyHabitsGoalQuestionnaireCall = null;
+        $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url +'Questionnaire?title=Healthy Habits Goal Questionnaire',
+                dataType: 'json',
+                success: function (data) {
+                    HealthyHabitsGoalQuestionnaireCall = data;
+                }
+            });
+            return HealthyHabitsGoalQuestionnaireCall;
+       })();   
+
     var InsecurityQuestionnaireCall = (function ()
       {
             var InsecurityQuestionnaireCall = null;
@@ -145,7 +160,7 @@
         })();
 
 
-   $.when(CoordCall, MDCall, KaraCall, ClarkCall, InsecurityQuestionnaireCall, AdolescentHealthyEatingQuestionnaireCall, ChildHealthyEatingQuestionnaireCall).then(function()
+   $.when(CoordCall, MDCall, KaraCall, ClarkCall, InsecurityQuestionnaireCall, AdolescentHealthyEatingQuestionnaireCall, ChildHealthyEatingQuestionnaireCall, HealthyHabitsGoalQuestionnaireCall).then(function() 
     {
        if (ChildHealthyEatingQuestionnaireCall.entry)
         {
@@ -166,7 +181,20 @@
                     window.sessionStorage.setItem('adolescent_questions_id',AdolescentHealthyEatingQuestionnaire.id );
             }
         }
-       if (InsecurityQuestionnaireCall.entry)
+
+
+       if (HealthyHabitsGoalQuestionnaireCall.entry) 
+        {       
+            var HealthyHabitsGoalQuestionnaire = HealthyHabitsGoalQuestionnaireCall.entry[0].resource;
+            if (!window.sessionStorage.getItem('hhg_questions_id')) 
+            {
+                    window.sessionStorage.setItem('hhg_questions_id',HealthyHabitsGoalQuestionnaire.id );
+            } 
+
+        }
+
+
+       if (InsecurityQuestionnaireCall.entry) 
         {
             var InsecurityQuestionnaire = InsecurityQuestionnaireCall.entry[0].resource;
             if (!window.sessionStorage.getItem('food_insecurity_questions_id_global'))
