@@ -1013,7 +1013,7 @@
 
             $("#dialog").dialog({ autoOpen: false, height: 600, width: 1200, overflow: scroll });
             $("#view-WICQuestionnaireAndResponse").click(function() {
-
+                $("dialog").css("overflow-x", "hidden");
                 $("#dialog").empty();
 
                 var wicSurvey = $("<div></div>").addClass("col-xs-12");
@@ -1196,7 +1196,7 @@
                         .addClass("form-control")
                         .attr("multiple", "")
                         .css("height", "185px")
-                        .css("width", "100%");
+                        .css("width", "80%");
 
                     var linkID8Form = $("<div></div>")
                         .addClass("form-group");
@@ -1713,7 +1713,7 @@
 
                                 for (var k = 0; k < wicQAndA[j].responseChoices.length; k++) {
                                     var _linkID7 = $("<option></option>")
-                                        .addClass("form-control text-center")
+                                        .addClass("form-control text-center col-xs-offset-1")
                                         .attr("multiple", "")
                                         .prop("selected", wicQAndA[j].answer)
                                         .attr("disabled", "disabled")
@@ -1928,7 +1928,7 @@
 
                                 for (var k = 0; k < wicQAndA[j].responseChoices.length; k++) {
                                     var _linkID11 = $("<option></option>")
-                                        .addClass("form-control text-center")
+                                        .addClass("form-control text-center col-xs-offset-1")
                                         .attr("multiple", "")
                                         .prop("selected", wicQAndA[j].answer)
                                         .attr("disabled", "disabled")
