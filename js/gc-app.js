@@ -472,6 +472,15 @@
         });
     };
 
+    NS.App.updatePatientDialog = function() {
+        GC.App.dialog("update-patient.html", null, {
+            "modal" : false,
+            "title" : 'Log Values',
+            "height" : "auto",
+            "width" : "auto"
+        });
+    };
+
     NS.App.viewAnnotations = function() {
         if (ANNOTATIONS_WINDOW === null || ANNOTATIONS_WINDOW.closed) {
             ANNOTATIONS_WINDOW = window.open("annotations.html", "annotationsWindow", "resizable=yes,scrollbars=yes,centerscreen=yes,status=yes,width=800,height=600,dependent=yes,dialog=yes");

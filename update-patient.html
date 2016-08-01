@@ -1,0 +1,33 @@
+<style type="text/css" media="screen">
+.dialog-label { min-width: 8em; }
+.dialog-button-area { text-align: center; margin-top: 1em; }
+</style>
+<form action="update-patient_submit" method="get" accept-charset="utf-8">
+<!--
+<div>
+  <label class="dialog-label" for="updateBMI">BMI:</label>
+  <input type="text" id="updateBMI" name="updateBMI" disabled="">
+</div>
+-->
+<div>
+  <label class="dialog-label" for="updateWeight">Weight:</label>
+  <input type="text" id="updateWeight" name="updateWeight">
+  kg
+</div>
+<div>
+  <label class="dialog-label" for="updateHeight">Height:</label>
+  <input type="text" id="updateHeight" name="updateHeight">
+  cm
+</div>
+<div>
+  <label class="dialog-label" for="updateHemo">Hemoglobin:</label>
+  <input type="text" id="updateHemo" name="updateHemo">
+  mg/dL
+</div>
+<div class="dialog-button-area">
+  <input type="submit" onclick="alert('foo'); return false;" value="Submit">
+  <!-- <input type="button" value="Submit"> -->
+</div>
+
+
+</form>
