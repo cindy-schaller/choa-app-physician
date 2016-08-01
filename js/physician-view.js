@@ -128,15 +128,18 @@
         }
 
         var barriersDiscussed = "N/A";
-        var barriersTemp = hhg_qr.entry[0].resource.group.question[7].answer;
-        if(barriersTemp) {
-            barriersDiscussed = barriersTemp[0].valueString;
-        }
-
         var otherNotes = "N/A";
-        var otherNotesTemp = hhg_qr.entry[0].resource.group.question[8].answer;
-        if(otherNotesTemp) {
-            otherNotes = otherNotesTemp[0].valueString;
+
+        if (typeof hhg_qr.entry != 'undefined') {
+            var barriersTemp = hhg_qr.entry[0].resource.group.question[7].answer;
+            if(barriersTemp) {
+                barriersDiscussed = barriersTemp[0].valueString;
+            }
+
+            var otherNotesTemp = hhg_qr.entry[0].resource.group.question[8].answer;
+            if(otherNotesTemp) {
+                otherNotes = otherNotesTemp[0].valueString;
+            }
         }
 
         var hhh_panel = "";
@@ -429,6 +432,8 @@
             // If not, hell breaks loose
 
             var process = function(d, l) {
+                if (typeof d == 'undefined') return;
+
                 for (var i = d.length - 1; i >= 0; i--) {
                     if (d[i] != undefined &&
                         d[i].resource.effectiveDateTime != undefined) {
