@@ -678,7 +678,9 @@
 
                     var d_time = oldestTime.getTime()  + (ms_in_3_months * i );
                     var d      = new Date(d_time);
-                    var d_display = (d.getMonth() + 1 ) + "/" + d.getFullYear() ;
+                    var year = d.getFullYear();
+                    var year_2_digit = year.toString().substr(2,2);
+                    var d_display = (d.getMonth() + 1 ) + "/" + year_2_digit ;
                     var x = left_margin + i * section_length;
 
                     context.fillText( d_display , x , (canvas.height -margin/2 ));
