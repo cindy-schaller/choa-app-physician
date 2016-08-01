@@ -585,3 +585,8 @@ span.title {
 .patient-name.heading {
 	display: none;
 }
+
+/* -------------------- Healthy Habits Prescription -------------------------------- */
+img.active-goal {
+	border: 4pt solid #000088;
+}

@@ -407,7 +407,8 @@ var json_observation_data ={
             var goalContainer = $("<div></div>").css({"background-color": "#DDDDDD", "padding": "15pt", "text-align": "center"});
             for (var goal in goalImgs) {
                 if (goalImgs.hasOwnProperty(goal)) {
-                    goalContainer.append("<img src='"+goalImgs[goal]+"' width='"+(goal == goalText ? 128 : 96)+"' style='padding:10pt' />");
+                    var selectedGoal = (goal == goalText);
+                    goalContainer.append("<img src='"+goalImgs[goal]+"' "+(selectedGoal?"class='active-goal' width='128'" : "width='96'")+ " style='padding:10pt' />");
                 }
             }
             $(container).append(goalContainer);
