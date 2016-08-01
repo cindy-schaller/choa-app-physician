@@ -394,7 +394,8 @@ var json_observation_data ={
             }
             var goalText = goalMap[qr["1"]]; // "Be active";
             var howText = qr["2"]; // "riding bikes together";
-            var whenText = qr["3"]; // "every day after school";
+            var whenText = qr["3"]; // "every day";
+            var howOftenText = qr["4"]; // "after school"
             var whoText = qr["5"]; // "my mom";
             var supportWhenText = qr["6"]; // "today, 7/21/16";
             var supportHowText = qr["7"]; // "be ready to ride at 4:30";
@@ -410,7 +411,7 @@ var json_observation_data ={
                 }
             }
             $(container).append(goalContainer);
-            var scripText = "<br/><br/>I/we will <b>"+goalText+"</b> by <b>"+howText+"</b> <b>"+whenText+"</b> with the help of <b>"+whoText+"</b>.";
+            var scripText = "<br/><br/>I/we will <b>"+goalText+"</b> by <b>"+howText+"</b> <b>"+whenText+" "+howOftenText+"</b> with the help of <b>"+whoText+"</b>.";
             var scripTextContainer = $("<div></div>").html(scripText);
             $(container).append(scripTextContainer);
             var parentHeadingContainer = $("<h3></h3>").html("Parent/Family Goal")
