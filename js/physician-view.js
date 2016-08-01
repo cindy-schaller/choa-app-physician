@@ -832,6 +832,7 @@
 
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
             var hhLastUpdated = new Date(questionnaireResponseCall.entry[0].resource.authored ? questionnaireResponseCall.entry[0].resource.authored : "-");
+            var wicLastUpdated = new Date(wicQuestionnaireResponseCall.authored ? wicQuestionnaireResponseCall.authored: "-");
 
             if (!isNaN(hhLastUpdated)) {
                 theQuestionnaires.append($("<div></div>")
@@ -846,7 +847,7 @@
                             .html("Updated " + months[hhLastUpdated.getMonth()] + " " + hhLastUpdated.getDate() + ", " + hhLastUpdated.getFullYear())
                         )
                         .append($("<p></p>")
-                            .html("click to see results ->")
+                            .html("click to see results")
                         )
                     )
                 );
@@ -863,22 +864,35 @@
                 );
             }
 
-            theQuestionnaires.append($("<div></div>")
-                .attr("id", "wic-div")
-                .addClass("col-xs-offset-6 text-center")
-                .append($("<a></a>")
-                    .attr("id", "view-WICQuestionnaireAndResponse")
+            if (!isNaN((wicLastUpdated))) {
+                theQuestionnaires.append($("<div></div>")
+                    .attr("id", "wic-div")
+                    .addClass("col-xs-offset-6 text-center")
+                    .append($("<a></a>")
+                        .attr("id", "view-WICQuestionnaireAndResponse")
+                        .append($("<h3></h3>")
+                            .html("WIC Questionnaire Response <br>")
+                        )
+                        .append($("<p></p>")
+                            .html(" Updated " + months[wicLastUpdated.getMonth()] + " " + wicLastUpdated.getDate() + ", " + wicLastUpdated.getFullYear())
+                        )
+                        .append($("<p></p>")
+                            .html("click to see results")
+                        )
+                    )
+                );
+            } else {
+                theQuestionnaires.append($("<div></div>")
+                    .attr("id", "wic-div")
+                    .addClass("col-xs-offset-6 text-center")
                     .append($("<h3></h3>")
                         .html("WIC Questionnaire Response <br>")
                     )
                     .append($("<p></p>")
-                        .html(" Updated <b>*** WILL FIX LATER ***</b>")
+                        .html("The patient has not completed the WIC Questionnaire")
                     )
-                    .append($("<p></p>")
-                        .html("click to see results ->")
-                    )
-                )
-            );
+                );
+            }
 
             $("#dialog").dialog({ autoOpen: false, height: 500, width: 1000, overflow: scroll });
             $("#view-HHQuestionnaireAndResponse").click(function() {
