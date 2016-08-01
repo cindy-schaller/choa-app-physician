@@ -1902,7 +1902,7 @@ Chart.prototype = {
                 point      : point,
                 record     : entry,
                 // TODO: remove this hackery
-                provider   : (i == 1 || i == 4) ? 'wic' : 'md'
+                provider   : typeof point.provider != 'undefined' ? point.provider : 'md'
             }).toFront();
             inst._nodes.push(elem);
             dots.push(elem);

@@ -36,7 +36,7 @@ GC.get_data = function() {
     auth: {
       type: 'none'
     }
-  })
+  });
   console.log('smart');
   console.log(smart);
   onReady(smart);
@@ -142,7 +142,8 @@ GC.get_data = function() {
         observationValues && observationValues.forEach(function(v){
           arr.push({
             agemos: months(v.effectiveDateTime, patient.birthDate),
-            value: toUnit(v.valueQuantity)
+            value: toUnit(v.valueQuantity),
+            source: (typeof v.performer != 'undefined' ? v.performer : 'MD')
           })
         });
       };
@@ -151,7 +152,8 @@ GC.get_data = function() {
         boneAgeValues && boneAgeValues.forEach(function(v){
           arr.push({
             date: v.effectiveDateTime,
-            boneAgeMos: units.any(v.valueQuantity)
+            boneAgeMos: units.any(v.valueQuantity),
+            source: (typeof v.performer != 'undefined' ? v.performer : 'MD')
           })
         });
       };
