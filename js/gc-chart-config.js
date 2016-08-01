@@ -322,7 +322,7 @@ window.GC = window.GC || {};
         },
         
         weightChart : {
-            abbr : "W",
+            abbr : "Wt",
             shortName : "WEIGHT",
             shortNameId : "STR_6",
             color : "", // general use clear color
