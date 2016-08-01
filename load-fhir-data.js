@@ -143,7 +143,7 @@ GC.get_data = function() {
           arr.push({
             agemos: months(v.effectiveDateTime, patient.birthDate),
             value: toUnit(v.valueQuantity),
-            source: (typeof v.performer != 'undefined' ? v.performer : 'MD')
+            source: (typeof v.performer.display != 'undefined' ? v.performer.display : 'MD')
           })
         });
       };
@@ -153,7 +153,7 @@ GC.get_data = function() {
           arr.push({
             date: v.effectiveDateTime,
             boneAgeMos: units.any(v.valueQuantity),
-            source: (typeof v.performer != 'undefined' ? v.performer : 'MD')
+            source: (typeof v.performer.display != 'undefined' ? v.performer.display : 'MD')
           })
         });
       };
