@@ -668,6 +668,9 @@
         if (globalParams != undefined && globalParams.mode != undefined &&
             globalParams.mode.toLowerCase().indexOf('nutritionist') != -1) {
             $("#referral").css("display", "none");
+            GC.App.nutritionistMode = true;
+        } else {
+            GC.App.nutritionistMode = false;
         }
 
         var stage = $("#stage"),
