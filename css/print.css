@@ -16,8 +16,9 @@ body {
 .gender-button { color: #666}
 
 #today {
-	color: #666;
-	float:right;
+	color: #000000;
+	font-weight: bold;
+	float: right;
 	line-height: 1em;
 }
 

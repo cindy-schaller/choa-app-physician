@@ -213,7 +213,7 @@
             $("#corrected-age").parent().hide();
         }
         
-        $("#today").text(new XDate().toString("ddMMMyyyy HH:MM TT"));
+        $("#today").text(new XDate().toString("dd MMM yyyy, HH:MM TT"));
         
         setStageHeight();
         draw();
