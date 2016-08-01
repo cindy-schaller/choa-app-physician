@@ -113,20 +113,22 @@
 
     function create_hhh_panel( hhg_qr, qr) {
 
-        //console.log(qr);
-        var goalMap = {
+        //note the bug where PatientChosengoalMap hhQ Q5 and PhysicianChosengoalMap hhG Q1 has the multiple choice 3 and 4 reversed order
+        var PatientChosengoalMap = {
             1: 'Making half of their plate fruits and veggies',
             2: 'Being active',
-            3: 'Limiting screen time',
-            4: 'Drinking more water & limiting sugary drinks'
+            3: 'Drinking more water & limiting sugary drinks',
+            4: 'Limiting screen time' 
         };
 
-        var selectedGoal = "N/A";
+        //  hhQ Q6 
+        var PatientselectedGoal = "N/A";
         if(qr.entry){
             var selectedIndex = qr.entry[0].resource.group.question[5].answer[0].valueInteger;
-            selectedGoal = goalMap[selectedIndex];
+            PatientselectedGoal = PatientChosengoalMap[selectedIndex];
         }
 
+        
         var barriersDiscussed = "N/A";
         var barriersTemp = hhg_qr.entry[0].resource.group.question[7].answer;
         if(barriersTemp) {
@@ -142,7 +144,7 @@
         var hhh_panel = "";
         hhh_panel += ("<div id='physician-hhh-panel'>");
         hhh_panel += ("<h4>Patient wanted to discuss:</h4>");
-        hhh_panel += ("<blockquote> <b>" + selectedGoal + "</b> </blockquote>");
+        hhh_panel += ("<blockquote> <b>" + PatientselectedGoal + "</b> </blockquote>");
         hhh_panel += ("<h4>Last discussion of barriers:</h4>");
         hhh_panel += ("<blockquote>" + barriersDiscussed + "</blockquote>");
         hhh_panel += ("<h4>Other notes:</h4>");
@@ -153,7 +155,7 @@
         $( wants_to_discuss_div ).append( hhh_panel);
 
         var CurrentGoal_str   ='                                                                                     ' 
-                              +' <p> Most recent goal:  <b>' + selectedGoal + '</b></p>        ' 
+                              +' <p> Most recent patient chosen goal (Q5 of Healthy Habits Questionnaire):  <b>' + PatientselectedGoal + '</b></p>        '  
                               +' <p> Most recent notes:  <b>' + otherNotes + '</b></p>        '
                               +' <p> Most recent barriers Discussed:  <b>' + barriersDiscussed + '</b></p>        ';
 
@@ -556,7 +558,7 @@
                          +'        <style>  '
                          +'        .carousel-control.left, .carousel-control.right { background-image: none}         '
                          +'        </style>                                                                                                   '
-                         +'        <h2  align="center">Health Habit Item: Progress History</h2>                                           '
+                         +'        <div id="HHitem"> <h2  align="center">Health Habit Item: Progress History</h2></div>                                           '
                          +'        <div class="container" id="historyGraphDiscuss">                                                       '
                          +'            <div class="row">                                                                                  '
                          +'                 <div class="col-sm-8 graph_col_h1" id="GraphCarousel_div" style="border:1px solid black" >     '
@@ -593,31 +595,31 @@
             //console.log(hhg_qr);
 
             create_hhh_tbl(container, hhg_qr);
-        create_hhh_panel( hhg_qr, qr);
+            create_hhh_panel( hhg_qr, qr);
 
             /*****************************  graphs **************************/
 
+            /****************  This canvas graph was authored by jbarron30@gatech.edu, If you have any questions about it please  ask********/
 
-
-            function create_graph( Question, key_word, answer_date , multiple_choices, canvasCount)
+            function create_graph( Question, key_word, answer_date , multiple_choices, canvasCount, Is_PhysicianGoal, graphcolor) 
             {
                 var legend_id= "legend_id_" + canvasCount;
                 var height = 400;
                 var width = 795;
                 var margin = 30;
                 var left_margin = 180; //size should be calculated the longest string in all the multiple_choices
-                var right_margin = 30; //size should be calculated to be as long as a date of the authored feild
+                var right_margin = 30; //size should be calculated to be as long as a date of the authored field
 
 
                 var canvas_Carousel_id= "canvas_Carousel" + key_word;
                 var canvas_str = '<canvas id="' + canvas_Carousel_id + '" height="'+ height +'" width="'+ width +'" style="border:1px solid #000000;" ></canvas>';
            
                 //insert canvas into bootstrap carousel
-                if(canvasCount == 0)// todo change to id of current goal
+                if(Is_PhysicianGoal == true)
                 {
                     var ol_str = '<li data-target="#myGraphCarousel" data-slide-to="'+canvasCount+ '" class="active"></li>';
-
                     var item_str ='<div class="item active">'+ canvas_str +'</div>';
+                    $('#HHitem').css('color', graphcolor);
 
                 }
                 else
@@ -660,7 +662,7 @@
 
 
                 // print dates on X axis every 3 months
-                //1. convert newest and oldest dates into miliseconds
+                //1. convert newest and oldest dates into milliseconds
                 var ms_in_3_months = (1000 * 60 * 60 * 24 * 30 *3);
                 var oldestDate = answer_date[  answer_date.length -1   ].authored;
                 var oldestTime = new Date(oldestDate);
@@ -668,7 +670,7 @@
                 var newestTime = new Date(newestDate);
                 var diff_max = newestTime.getTime() - oldestTime.getTime();  //ms of span from oldest date to newest date
                 var diff_max_3_month_periods = diff_max / ms_in_3_months;
-                var length_x_axis = canvas.width - left_margin - right_margin;
+                var length_x_axis = canvas.width - left_margin - right_margin -5; //-5 to keep away from right edge
                 var section_length = length_x_axis / diff_max_3_month_periods;
 
                 for (var i = 0; i < diff_max_3_month_periods; i++)
@@ -685,8 +687,8 @@
 
                 var x_y = [];
 
-                // calculate the iregular interval on x axis
-                //1. convert newest and oldest dates into miliseconds and figure out time span
+                // calculate the irregular interval on x axis
+                //1. convert newest and oldest dates into milliseconds and figure out time span
                 var oldestDate = answer_date[  answer_date.length -1   ].authored;
                 var oldestTime = new Date(oldestDate);
                 var newestDate = answer_date[0].authored;
@@ -695,6 +697,8 @@
                 var length_x_axis = canvas.width - left_margin - right_margin;
 
 
+
+                 //determine the locations of the data points
                 for (var i = 0; i < answer_date.length; i++)
                 {
                     var currDate = answer_date[ i  ].authored;
@@ -707,49 +711,70 @@
 
                     x_y.push({ x:X , y:Y});
 
+                }
+
+
+                //draw the line on graph connecting the data points
+                context.lineWidth=2;
+                context.strokeStyle="#000000"; 
+                for (var i = 1; i < answer_date.length; i++)
+                {
+                      context.beginPath();
+                      context.moveTo(x_y[i-1].x,x_y[i-1].y)  ;
+
+                      if(answer_date[ i ].is_PatientGoal == true  )
+                      {
+                           context.setLineDash([]); // A solid line
+                           context.lineTo(x_y[i].x,x_y[i].y);
+                           context.stroke();
+                      }
+                      else
+                      {
+                           context.save();
+                           context.setLineDash([5, 15]);
+                           context.lineTo(x_y[i].x,x_y[i].y);
+                           context.stroke();
+                           context.restore();
+                      }
+                      
+                }
+                
+
+                // draw the balls on the data points
+                for (var i = 0; i < answer_date.length; i++)
+                {
                     // draw the circles
-                    context.fillStyle = "rgba(255, 255, 0, .5)";  //yellow
+                    context.globalAlpha=1.0;
+                    context.fillStyle = "rgba(255, 255, 0, 1.0)";  //yellow non opaque
                     context.strokeStyle="#000000";
                     context.beginPath();
-                    context.arc(X,Y,10,0,2*Math.PI);
+                    context.arc(x_y[i].x , x_y[i].y ,10,0,2*Math.PI);
                     context.closePath();
                     context.fill();
-                    context.lineTo(X.Y ,y)
                     context.stroke();
 
                 }
 
-                //console.log("x_y")
-                //console.log(x_y);
-
-                //draw line on graph
-                context.lineWidth=2;
-                context.beginPath();
-                context.moveTo(x_y[0].x,x_y[0].y)  ;
-                for (var i = 1; i < answer_date.length; i++)
-                {
-                    context.lineTo(x_y[i].x,x_y[i].y);
-
-                }
-                context.stroke();
 
                 //append the keyword to the graph key
-                $( graph_key_div ).append( '<p id="'+ legend_id +'"  class="legend_class" ><font color="blue">'+ key_word +'</font></p> <p> </p>'  );
-
+                $( graph_key_div ).append( '<p id="'+ legend_id +'"  class="legend_class" >'+ key_word +'</p> <p> </p>'  );
+                $('#'+ legend_id).css('color', graphcolor);
 
             }
 
 
 
            
-            var answer_date = [];
-            var multiple_choices = [];
-            var Question = '';
-            var Response = '';
-            var Answer = '';
-            var Authored = '';
-            var questionnaire = '';
-            var canvasCount =0;
+        var answer_date = [];
+        var multiple_choices = [];
+        var Question = '';
+        var Response = '';
+        var Answer = '';
+        var Authored = '';
+        var questionnaire = '';
+        var canvasCount =0;
+        var Is_PatientGoal = '';
+        var Is_PhysicianGoal = '';
 
         if (questionnaireCall.entry && questionnaireResponseCall.entry && hhgQuestionnaireResponseCall.entry ) 
         {
@@ -767,6 +792,15 @@
 
                     //only let through the questions about "veggies and fruits", "active", "fruit juice", "sweet drinks", "television"
 
+
+                    /*
+                       Fruits and Veggies = green
+                       Juice = red
+                       Active = orange
+                       Sweet Drinks = purple
+                       Screen Time = light blue
+                    */
+                    var graphcolor = 'green';
                     var KeyWord = 'veggies and fruits';
                     var want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
 
@@ -774,21 +808,21 @@
                     {
                         KeyWord = 'active';
                         want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
-                        //console.log("active")
+                        graphcolor = 'orange';
                     }
 
                     if(want_graph == false)
                     {
                         KeyWord = 'fruit juice';
                         want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
-                        //console.log("fruit juice")
+                        graphcolor = 'red';
                     }
 
                     if(want_graph == false)
                     {
                         KeyWord = 'sweet drinks';
                         want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
-                        //console.log("fruit juice")
+                        graphcolor = 'purple';
                     }
 
                     if(want_graph == false)
@@ -796,11 +830,34 @@
                         KeyWord = 'television';
                         want_graph = new RegExp('\\b' + KeyWord + '\\b').test(Question);
                         KeyWord = 'screen time';
+                        graphcolor = 'blue';
                     }
 
                     if(want_graph == true )
                     {
 
+                        var PhysicianGoalMap = {
+                            1: 'veggies and fruits',
+                            2: 'active',
+                            3: 'television',
+                            //4: 'sweet drinks',
+                            4: 'fruit juice'
+                       };
+
+                       //the list is in descending order bt date authored so get the newest one
+                       var CurrentPhysicianGoalIndex = 0;
+                       var HHGresponse = hhgQuestionnaireResponseCall.entry[CurrentPhysicianGoalIndex].resource;
+                       
+                       var Physiciangoal = HHGresponse.group.question[0].answer[0].valueInteger;
+                       if( KeyWord == PhysicianGoalMap[ Physiciangoal ] )
+                       {
+                            Is_PhysicianGoal = true;
+                       }
+                       else
+                       {
+                           Is_PhysicianGoal = false;
+                       }
+                
                         multiple_choices = [];
                         for(var j = 0; j < questionnaire.group.question[q].option.length; j++)
                         {
@@ -814,45 +871,77 @@
                             Response   =   questionnaireResponseCall.entry[ qr ].resource;
                             Answer     =   Response.group.question[ q ].answer[ 0 ].valueInteger;
                             Authored   =   Response.authored.split("T")[ 0 ] ;
-                            answer_date.push({ answer:Answer, authored:Authored});
-                        }
+                           // question 5 is the Patient selected goal. If this ever changes the app will be broken 
+                           var PatientSelectedGoal = Response.group.question[ 5 ].answer[ 0 ].valueInteger;
+                           var PatientGoalMap = {
+                            1: 'veggies and fruits',
+                            2: 'active',
+                            3: 'fruit juice',
+                            //4: 'sweet drinks',
+                            4: 'television'
+                           };
 
-                        //console.log("answer_date")
-                        //console.log(answer_date);
+                           if( KeyWord == PatientGoalMap[ PatientSelectedGoal ] )
+                           {
+                                Is_PatientGoal = true;
+                           }
+                           else 
+                           {
+                               Is_PatientGoal = false;
+                           }
 
-                        create_graph(Question, KeyWord, answer_date, multiple_choices,canvasCount ) ;
+                           answer_date.push({ answer:Answer, authored:Authored,  is_PatientGoal:Is_PatientGoal});
+                    }
+
+                        
+                
+
+                        create_graph(Question, KeyWord, answer_date, multiple_choices,canvasCount , Is_PhysicianGoal, graphcolor) ;
+                    
                         canvasCount++;
                     }
                 }
             }
 
-           //stop gragh scrolling automatically
+           //stop graph scrolling automatically
            $('#myGraphCarousel').carousel('pause');
 
-          //give legend clicks functionality
+           //give legend clicks functionality
             $(".legend_class").click(function()
             {
 
+                 //set the title color to match
+                 $('#HHitem').css('color', $(this).css('color'));
+
+                 //slide in chosen canvas
                 var this_id = this.id;
                 var this_slider_number = this_id.replace(/^legend_id_/, '');
                 $('#myGraphCarousel').carousel(Number(this_slider_number));
                 $('#myGraphCarousel').carousel('pause');
+            
+                
 
             });
 
-        // set graph colums same height
-        $( document ).ready(function() 
-        {
-            var heights = $(".graph_col_h1").map(function() 
+            // set graph columns same height
+            $( document ).ready(function() 
             {
-                return $(this).height();
-            }).get(),
+                var heights = $(".graph_col_h1").map(function() 
+                {
+                    return $(this).height();
+                }).get(),
 
-            maxHeight = Math.max.apply(null, heights);
+                maxHeight = Math.max.apply(null, heights);
 
-            $(".graph_col_h1").height(maxHeight);
-        });
+                $(".graph_col_h1").height(maxHeight);
+            });
+
+            $( graph_key_div ).append( '<p> <b>- - -</b>  not patient chosen goal</p> <p> </p>'  );
+            $( graph_key_div ).append( '<p> <b>_____</b> patient chosen goal</p> <p> </p>'  );
+
             /***************************** end  graphs **************************/
+
+            /********************************************************************/
 
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
             var hhLastUpdated = new Date(questionnaireResponseCall.entry[0].resource.authored ? questionnaireResponseCall.entry[0].resource.authored : "-");
