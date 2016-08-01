@@ -2449,7 +2449,7 @@
 
         var logID = function(id) { console.log('FHIR Resource created: ' + id); };
 
-        var ep = GC.App.nutritionistMode ? 'Nutritionist' : 'MD';
+        var ep = GC.App.nutritionistMode ? 'WIC' : 'MD';
         var url = window.sessionStorage.getItem('fhir_url_global') + '/Observation';
 
         var fhirHeaders = new Headers();
