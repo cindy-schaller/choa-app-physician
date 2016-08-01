@@ -832,6 +832,7 @@
 
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
             var hhLastUpdated = new Date(questionnaireResponseCall.entry[0].resource.authored ? questionnaireResponseCall.entry[0].resource.authored : "-");
+            var wicLastUpdated = new Date(wicQuestionnaireResponseCall.authored ? wicQuestionnaireResponseCall.authored: "-");
 
             if (!isNaN(hhLastUpdated)) {
                 theQuestionnaires.append($("<div></div>")
@@ -846,7 +847,7 @@
                             .html("Updated " + months[hhLastUpdated.getMonth()] + " " + hhLastUpdated.getDate() + ", " + hhLastUpdated.getFullYear())
                         )
                         .append($("<p></p>")
-                            .html("click to see results ->")
+                            .html("click to see results")
                         )
                     )
                 );
@@ -863,22 +864,35 @@
                 );
             }
 
-            theQuestionnaires.append($("<div></div>")
-                .attr("id", "wic-div")
-                .addClass("col-xs-offset-6 text-center")
-                .append($("<a></a>")
-                    .attr("id", "view-WICQuestionnaireAndResponse")
+            if (!isNaN((wicLastUpdated))) {
+                theQuestionnaires.append($("<div></div>")
+                    .attr("id", "wic-div")
+                    .addClass("col-xs-offset-6 text-center")
+                    .append($("<a></a>")
+                        .attr("id", "view-WICQuestionnaireAndResponse")
+                        .append($("<h3></h3>")
+                            .html("WIC Questionnaire Response <br>")
+                        )
+                        .append($("<p></p>")
+                            .html(" Updated " + months[wicLastUpdated.getMonth()] + " " + wicLastUpdated.getDate() + ", " + wicLastUpdated.getFullYear())
+                        )
+                        .append($("<p></p>")
+                            .html("click to see results")
+                        )
+                    )
+                );
+            } else {
+                theQuestionnaires.append($("<div></div>")
+                    .attr("id", "wic-div")
+                    .addClass("col-xs-offset-6 text-center")
                     .append($("<h3></h3>")
                         .html("WIC Questionnaire Response <br>")
                     )
                     .append($("<p></p>")
-                        .html(" Updated <b>*** WILL FIX LATER ***</b>")
+                        .html("The patient has not completed the WIC Questionnaire")
                     )
-                    .append($("<p></p>")
-                        .html("click to see results ->")
-                    )
-                )
-            );
+                );
+            }
 
             $("#dialog").dialog({ autoOpen: false, height: 500, width: 1000, overflow: scroll });
             $("#view-HHQuestionnaireAndResponse").click(function() {
@@ -999,7 +1013,7 @@
 
             $("#dialog").dialog({ autoOpen: false, height: 600, width: 1200, overflow: scroll });
             $("#view-WICQuestionnaireAndResponse").click(function() {
-
+                $("dialog").css("overflow-x", "hidden");
                 $("#dialog").empty();
 
                 var wicSurvey = $("<div></div>").addClass("col-xs-12");
@@ -1182,7 +1196,7 @@
                         .addClass("form-control")
                         .attr("multiple", "")
                         .css("height", "185px")
-                        .css("width", "100%");
+                        .css("width", "80%");
 
                     var linkID8Form = $("<div></div>")
                         .addClass("form-group");
@@ -1699,7 +1713,7 @@
 
                                 for (var k = 0; k < wicQAndA[j].responseChoices.length; k++) {
                                     var _linkID7 = $("<option></option>")
-                                        .addClass("form-control text-center")
+                                        .addClass("form-control text-center col-xs-offset-1")
                                         .attr("multiple", "")
                                         .prop("selected", wicQAndA[j].answer)
                                         .attr("disabled", "disabled")
@@ -1914,7 +1928,7 @@
 
                                 for (var k = 0; k < wicQAndA[j].responseChoices.length; k++) {
                                     var _linkID11 = $("<option></option>")
-                                        .addClass("form-control text-center")
+                                        .addClass("form-control text-center col-xs-offset-1")
                                         .attr("multiple", "")
                                         .prop("selected", wicQAndA[j].answer)
                                         .attr("disabled", "disabled")
