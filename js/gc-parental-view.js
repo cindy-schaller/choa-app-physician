@@ -976,7 +976,7 @@
                 dataSet = GC.DATA_SETS.CDC_WEIGHT,
                 weightPctNow,
                 weightPctPrev,
-                bmi, healthyWeightMin, healthyWeightMax, D;
+                bmi, bmiPctNow, healthyWeightMin, healthyWeightMax, D;
             
             out.name = PATIENT.name;
             
@@ -1014,6 +1014,10 @@
                 }
                 
                 bmi = lastWeightEntry.weight / Math.pow(lastHeightEntry.lengthAndStature / 100, 2);
+
+
+                var vitals = this._getVitals();
+                bmiPctNow = vitals.bmi.percentile * 100;
                 
                 healthyWeightMin = GC.findXFromPercentile(
                     0.05, 
@@ -1031,19 +1035,19 @@
                 
                 D = weightPctNow - weightPctPrev;
                 
-                if (weightPctNow < 5) {
+                if (bmiPctNow < 5) {
                     out.state = WEIGHT_STATES.UNDERWEIGHT;
                     out.stateGoingTo = D < -1 ? 
                         WEIGHT_TRENDS.MORE_UNDERWEIGHT : 
                         WEIGHT_TRENDS.IMPROVING;
-                } else if (weightPctNow <= 85) {
+                } else if (bmiPctNow <= 85) {
                     out.state = WEIGHT_STATES.HEALTHY;
                     out.stateGoingTo = D < -1 && weightPctNow <= 10 ? 
                         WEIGHT_TRENDS.RISK_FOR_UNDERWEIGHT : 
                         D > -1 && weightPctNow > 80 ? 
                             WEIGHT_TRENDS.RISK_FOR_OVERWEIGHT :
                             WEIGHT_TRENDS.NONE;
-                } else if ( weightPctNow <= 95) {
+                } else if ( bmiPctNow <= 95) {
                     out.state = WEIGHT_STATES.OVERWEIGHT;
                     out.stateGoingTo = D < -1 ? 
                         WEIGHT_TRENDS.IMPROVING : 

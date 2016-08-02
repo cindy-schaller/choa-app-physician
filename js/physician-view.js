@@ -221,6 +221,132 @@
         $(container).append(hhh_tbl);
     }
 
+    /**
+     * Sigh.  This function and the constants within it are stolen wholesale from gc-parental-view.js because I only discovered 90 minutes before
+     * the demo that the BMI calculations implemented in *this* view were incorrect.
+     */
+    function getHeuristics(PATIENT) {
+        var AGES = {
+            Infant     : 1,
+            Toddler    : 4,
+            Child      : 12,
+            Adolescent : 20
+        };
+        var WEIGHT_STATES = {
+            UNDERWEIGHT : "underweight",
+            HEALTHY     : "healthy",
+            OVERWEIGHT  : "overweight",
+            OBESE       : "obese"
+        };
+        var WEIGHT_TRENDS = {
+            MORE_UNDERWEIGHT     : 2,
+            MORE_OBESE           : 4,
+            RISK_FOR_UNDERWEIGHT : 8,
+            RISK_FOR_OVERWEIGHT  : 16,
+            RISK_FOR_OBESE       : 32,
+            IMPROVING            : 64,
+            NONE                 : 128
+        };
+
+
+        var out = {},
+            lastWeightEntry = PATIENT.getLastEnryHaving("weight"),
+            lastHeightEntry = PATIENT.getLastEnryHaving("lengthAndStature"),
+            prevWeightEntry,
+            dataSet = GC.DATA_SETS.CDC_WEIGHT,
+            weightPctNow,
+            weightPctPrev,
+            bmi, bmiPctNow, healthyWeightMin, healthyWeightMax, D;
+
+        out.name = PATIENT.name;
+
+        if (!lastWeightEntry || !lastHeightEntry) {
+            out.error = [
+                PATIENT.name,
+                GC.str("STR_183"),
+                GC.str(PATIENT.gender == "male" ? "STR_181" : "STR_182"),
+                GC.str("STR_184")
+            ].join(" ");
+        }
+
+        else {
+
+            weightPctNow = GC.findPercentileFromX(
+                lastWeightEntry.weight,
+                dataSet,
+                PATIENT.gender,
+                lastWeightEntry.agemos
+            ) * 100;
+
+            weightPctPrev = weightPctNow;
+
+            prevWeightEntry = PATIENT.getLastModelEntry(function(entry) {
+                return entry.weight !== undefined && entry.agemos < lastWeightEntry.agemos;
+            });
+
+            if (prevWeightEntry) {
+                weightPctPrev = GC.findPercentileFromX(
+                    prevWeightEntry.weight,
+                    dataSet,
+                    PATIENT.gender,
+                    prevWeightEntry.agemos
+                ) * 100;
+            }
+
+            bmi = lastWeightEntry.weight / Math.pow(lastHeightEntry.lengthAndStature / 100, 2);
+
+
+            var vitals = getVitals(PATIENT);
+            bmiPctNow = vitals.bmi.percentile * 100;
+
+            healthyWeightMin = GC.findXFromPercentile(
+                0.05,
+                dataSet,
+                PATIENT.gender,
+                lastWeightEntry.agemos
+            );
+
+            healthyWeightMax = GC.findXFromPercentile(
+                0.85,
+                dataSet,
+                PATIENT.gender,
+                lastWeightEntry.agemos
+            );
+
+            D = weightPctNow - weightPctPrev;
+
+            if (bmiPctNow < 5) {
+                out.state = WEIGHT_STATES.UNDERWEIGHT;
+                out.stateGoingTo = D < -1 ?
+                    WEIGHT_TRENDS.MORE_UNDERWEIGHT :
+                    WEIGHT_TRENDS.IMPROVING;
+            } else if (bmiPctNow <= 85) {
+                out.state = WEIGHT_STATES.HEALTHY;
+                out.stateGoingTo = D < -1 && weightPctNow <= 10 ?
+                    WEIGHT_TRENDS.RISK_FOR_UNDERWEIGHT :
+                    D > -1 && weightPctNow > 80 ?
+                        WEIGHT_TRENDS.RISK_FOR_OVERWEIGHT :
+                        WEIGHT_TRENDS.NONE;
+            } else if ( bmiPctNow <= 95) {
+                out.state = WEIGHT_STATES.OVERWEIGHT;
+                out.stateGoingTo = D < -1 ?
+                    WEIGHT_TRENDS.IMPROVING :
+                    WEIGHT_TRENDS.RISK_FOR_OBESE;
+            } else {
+                out.state = WEIGHT_STATES.OBESE;
+                out.stateGoingTo = D < -1 ?
+                    WEIGHT_TRENDS.IMPROVING :
+                    WEIGHT_TRENDS.MORE_OBESE;
+            }
+
+            out.lastWeight       = lastWeightEntry.weight;
+            out.healthyWeightMin = healthyWeightMin;
+            out.healthyWeightMax = healthyWeightMax;
+        }
+
+        return out;
+    }
+
     function renderPhysicianView(container) {
         $(container).empty();
         var topContainer = $("<div></div>").addClass("row");
@@ -398,31 +524,25 @@
 
             var bmiText, bmiClass;
 
+            var bmiMetadata = getHeuristics(GC.App.getPatient());
+
             // FIXME: The comparisons can be optimized by inversing the evaluation order
-            switch (true) {
-                case (latestRecording.bmi.value <= 18.5):
+            switch (bmiMetadata.state) {
+                case ("underweight"):
                     bmiText = 'Underweight </br> BMI: '+formatData(latestRecording.bmi, false);
-                    bmiClass = 'text-warning'
+                    bmiClass = 'text-warning';
                     break;
-                case (18.5 < latestRecording.bmi.value && latestRecording.bmi.value <= 25):
+                case ("healthy"):
                     bmiText = 'Normal weight </br> BMI: '+formatData(latestRecording.bmi, false);
-                    bmiClass = 'text-info'
+                    bmiClass = 'text-info';
                     break;
-                case (25 < latestRecording.bmi.value && latestRecording.bmi.value <= 30):
+                case ("overweight"):
                     bmiText = 'Overweight </br> BMI: '+formatData(latestRecording.bmi, false);
-                    bmiClass = 'text-warning'
+                    bmiClass = 'text-warning';
                     break;
-                case (30 < latestRecording.bmi.value && latestRecording.bmi.value <= 35):
-                    bmiText = 'Class II obesity </br> BMI: '+formatData(latestRecording.bmi, false);
-                    bmiClass = 'text-warning'
-                    break;
-                case (35 < latestRecording.bmi.value && latestRecording.bmi.value <= 40):
-                    bmiText = 'Class II obesity </br> BMI: '+formatData(latestRecording.bmi, false);
-                    bmiClass = 'text-danger'
-                    break;
-                case (40 < latestRecording.bmi.value):
-                    bmiText = 'Class III obesity </br> BMI: '+formatData(latestRecording.bmi, false);
-                    bmiClass = 'text-danger'
+                case ("obese"):
+                    bmiText = 'Obese </br> BMI: '+formatData(latestRecording.bmi, false);
+                    bmiClass = 'text-danger';
                     break;
                 default:
                 // This should never happen
