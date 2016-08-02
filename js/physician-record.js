@@ -522,7 +522,22 @@ var json_observation_data ={
             return patientHeightCall;
         })();
 
-        $.when(patientCall, questionnaireCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
+        var familyCall = (function () {
+            var familyCall = null;
+
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url + 'RelatedPerson?patient=' + patientID,
+                dataType: 'json',
+                success: function (data) {
+                    familyCall = data;
+                }
+            });
+            return familyCall;
+        })();
+
+        $.when(patientCall, questionnaireCall, patientBMICall, patientWeightCall, patientHeightCall, familyCall).then(function() {
 
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
@@ -632,8 +647,16 @@ var json_observation_data ={
                 default:
                     BMIClassification = "BMI: ー"
             }
-            var familyMembers = {"Martha Kent": "Mother",
-                "Kara Kent": "Sister"}; // TODO: fetch this from another FHIR call
+            var familyMembers = {};
+            if (familyCall) {
+                if (familyCall.entry) {
+                    for (var idx = 0; idx < familyCall.entry.length; idx++) {
+                        var member = familyCall.entry[idx].resource;
+                        var memberName = member.name ? member.name.given[0] + " " + member.name.family[0] : "";
+                        familyMembers[memberName] = member.relationship.coding[0].display;
+                    }
+                }
+            }
 
             var infoBox = $("<div></div>")
                     .attr("style", "margin: 10pt; padding: 5pt; background-color: #F8F8F8; border: 1pt solid #DFDFDF")
