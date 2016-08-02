@@ -23,9 +23,9 @@ window.GC = window.GC || {};
     // been stored on the server too) 
     // =========================================================================
     var readOnlySettings = {
-        
+
         fileRevision : 202,
-        
+
         // See the toString method for the rendering template
         version : {
             major    : 0,
@@ -33,10 +33,10 @@ window.GC = window.GC || {};
             build    : 9,
             revision : 0,
             state    : "BETA", // dev|alpha|beta|rc|r
-            
+
             asString : function() {
-                return  this.major    + "." + 
-                        this.minor    + "." + 
+                return  this.major    + "." +
+                        this.minor    + "." +
                         //this.build    + "." + 
                         //this.revision + "-" +
                         this.build    + "-" +
@@ -69,18 +69,217 @@ window.GC = window.GC || {};
             zeroFill  : false,
             limit     : 2
         },
-        
+
         appEnvironment : "PRODUCTION", // DEVELOPMENT | PRODUCTION
-        
+
         // Used to log the execution time of some important methods
         timeLogsEnabled : false,
-        
+
         // Display coordinates on the paper
         mouseTrackingEnabled : false,
-        
+
         // set to true to enable the editing of the parents in the header
         patientFamilyHistoryEditable : false,
-        patientDataEditable : false
+        patientDataEditable : false,
+
+        // Charts
+        // =====================================================================
+        drawChartBackground : false,
+        drawChartOutlines   : false,
+        verticalShift : {
+            enabled   : true,
+            ticks     : 30,
+            drawTicks : false
+        },
+
+        chartBackground : {
+            "fill"        : "#EEC",
+            "fill-opacity": 0.5,
+            "stroke"      : "none"
+        },
+
+        weightChart : {
+            abbr : "Wt",
+            shortName : "WEIGHT",
+            shortNameId : "STR_6",
+            color : "", // general use clear color
+            lines : {
+                stroke           : "",
+                "stroke-width"   : 1,
+                "stroke-linejoin": "round"
+            },
+            axis : {
+                stroke           : "",
+                "stroke-width"   : 1,
+                "shape-rendering": "crispedges"
+            },
+            axisLabels : {
+                "fill"      : "",
+                "font-size" : 12
+            },
+            pointsColor : "",
+            fillRegion : {
+                fill           : "",
+                "fill-opacity" : 0.7,
+                "stroke-width" : 0
+            },
+            problemRegion : {
+                fillOpacity : 0.3,
+                fillURL     : "url(img/problem-pattern-orange.png)",
+                fillColor   : "",
+                stroke      : "none"
+            }
+        },
+
+        lengthChart : {
+            abbr : "L",
+            shortName : "LENGTH",
+            shortNameId : "STR_2",
+            color : "", // general use clear color
+            lines : {
+                stroke           : "",
+                "stroke-width"   : 1,
+                "stroke-linejoin": "round",
+                "stroke-opacity" : 0.8
+            },
+            axis : {
+                stroke           : "",
+                "stroke-width"   : 1,
+                "shape-rendering": "crispedges"
+            },
+            axisLabels : {
+                "fill"      : "",
+                "font-size" : 12
+            },
+            pointsColor : "",
+            fillRegion : {
+                fill           : "",
+                "fill-opacity" : 0.5,
+                "stroke-width" : 0
+            },
+            problemRegion : {
+                fillOpacity : 0.3,
+                fillColor   : "",
+                fillURL     : "url(img/problem-pattern-blue.png)",
+                stroke      : "none"
+            }
+        },
+
+        headChart : {
+            abbr : "HC",
+            shortName : "HEAD C",
+            shortNameId : "STR_13",
+            color : "", // general use clear color
+            lines : {
+                stroke           : "",
+                "stroke-width"   : 1,
+                "stroke-linejoin": "round"
+            },
+            axis : {
+                stroke           : "",
+                "stroke-width"   : 1,
+                "shape-rendering": "crispedges"
+            },
+            axisLabels : {
+                "fill"      : "",
+                "font-size" : 12
+            },
+            pointsColor : "",
+            fillRegion : {
+                fill           : "",
+                "fill-opacity" : 0.7,
+                "stroke-width" : 0
+            },
+            problemRegion : {
+                fillOpacity : 0.3,
+                fillColor   : "",
+                fillURL     : "url(img/problem-pattern-green.png)",
+                stroke      : "none"
+            }
+        },
+
+        bodyMassChart : {
+            abbr : "BMI",
+            shortName : "BMI",
+            shortNameId : "STR_14",
+            color : "", // general use clear color
+            lines : {
+                stroke           : "",
+                "stroke-width"   : 1,
+                "stroke-linejoin": "round"
+            },
+            axis : {
+                stroke           : "",
+                "stroke-width"   : 1,
+                "shape-rendering": "crispedges"
+            },
+            axisLabels : {
+                "fill"      : "",
+                "font-size" : 12
+            },
+            pointsColor : "",
+            fillRegion : {
+                fill           : "",
+                "fill-opacity" : 0.75,
+                "stroke-width" : 0
+            },
+            problemRegion : {
+                fillOpacity : 0.3,
+                fillColor   : "",
+                fillURL     : "url(img/problem-pattern-orange.png)",
+                stroke      : "none"
+            }
+        },
+
+        patientData : {
+            points : {
+                even : {
+                    stroke          : "#FFF",
+                    "stroke-width"  : 4,
+                    "stroke-opacity": 0.9,
+                    "fill-opacity"  : 1
+                },
+                odd : {
+                    stroke          : "#FFF",
+                    "stroke-width"  : 4,
+                    "stroke-opacity": 0.9,
+                    "fill-opacity"  : 1
+                },
+                firstMonth : {
+                    stroke          : "#FFF",
+                    "stroke-width"  : 8,
+                    "stroke-opacity": 0.8,
+                    "fill-opacity"  : 1
+                },
+                current : {
+                    stroke: "rgb(0,0,0)",
+                    "stroke-width": 2
+                }
+            },
+            lines : {
+                "stroke-width": 1.5
+            }
+        },
+
+        // The pail grey rectangle on the inner side of the right axis
+        rightAxisInnerShadow : {
+            width : 20,
+            attr  : {
+                "stroke-width" : 0,
+                "fill"         : "#E0E0E0",
+                "fill-opacity" : 1
+            }
+        },
+
+        // selectionRect
+        selectionRect : {
+            "fill"             : "#039",
+            "fill-opacity"     : 0.2,
+            "stroke"           : "#006",
+            "stroke-width"     : 1,
+            "stroke-opacity"   : 0.5,
+            "stroke-dasharray" : "- "
+        }
     };
     
     // =========================================================================
@@ -303,217 +502,18 @@ window.GC = window.GC || {};
         
         currentColorPreset : "Default", // One of the listed above
         saturation : 0, // -0.5 to +0.5 correction
-        brightness : 0, // -0.5 to +0.5 correction
-        
-        // Charts
-        // =====================================================================
-        drawChartBackground : false,
-        drawChartOutlines   : false,
-        verticalShift : {
-            enabled   : true,
-            ticks     : 30,
-            drawTicks : false
-        },
-        
-        chartBackground : {
-            "fill"        : "#EEC",
-            "fill-opacity": 0.5,
-            "stroke"      : "none"
-        },
-        
-        weightChart : {
-            abbr : "W",
-            shortName : "WEIGHT",
-            shortNameId : "STR_6",
-            color : "", // general use clear color
-            lines : {
-                stroke           : "", 
-                "stroke-width"   : 1, 
-                "stroke-linejoin": "round"
-            },
-            axis : {
-                stroke           : "", 
-                "stroke-width"   : 1,
-                "shape-rendering": "crispedges"
-            },
-            axisLabels : {
-                "fill"      : "", 
-                "font-size" : 12
-            },
-            pointsColor : "",
-            fillRegion : {
-                fill           : "",
-                "fill-opacity" : 0.7,
-                "stroke-width" : 0
-            },
-            problemRegion : {
-                fillOpacity : 0.3,
-                fillURL     : "url(img/problem-pattern-orange.png)",
-                fillColor   : "",
-                stroke      : "none"
-            }
-        },
-        
-        lengthChart : {
-            abbr : "L",
-            shortName : "LENGTH",
-            shortNameId : "STR_2",
-            color : "", // general use clear color
-            lines : {
-                stroke           : "", 
-                "stroke-width"   : 1, 
-                "stroke-linejoin": "round",
-                "stroke-opacity" : 0.8 
-            },
-            axis : {
-                stroke           : "", 
-                "stroke-width"   : 1,
-                "shape-rendering": "crispedges"
-            },
-            axisLabels : {
-                "fill"      : "",
-                "font-size" : 12
-            },
-            pointsColor : "",
-            fillRegion : {
-                fill           : "",
-                "fill-opacity" : 0.5,
-                "stroke-width" : 0
-            },
-            problemRegion : {
-                fillOpacity : 0.3,
-                fillColor   : "",
-                fillURL     : "url(img/problem-pattern-blue.png)",
-                stroke      : "none"
-            }
-        },
-        
-        headChart : {
-            abbr : "HC",
-            shortName : "HEAD C",
-            shortNameId : "STR_13",
-            color : "", // general use clear color
-            lines : {
-                stroke           : "", 
-                "stroke-width"   : 1, 
-                "stroke-linejoin": "round"
-            },
-            axis : {
-                stroke           : "", 
-                "stroke-width"   : 1,
-                "shape-rendering": "crispedges"
-            },
-            axisLabels : {
-                "fill"      : "", 
-                "font-size" : 12
-            },
-            pointsColor : "",
-            fillRegion : {
-                fill           : "",
-                "fill-opacity" : 0.7,
-                "stroke-width" : 0
-            },
-            problemRegion : {
-                fillOpacity : 0.3,
-                fillColor   : "",
-                fillURL     : "url(img/problem-pattern-green.png)",
-                stroke      : "none"
-            }
-        },
-        
-        bodyMassChart : {
-            abbr : "BMI",
-            shortName : "BMI",
-            shortNameId : "STR_14",
-            color : "", // general use clear color
-            lines : {
-                stroke           : "", 
-                "stroke-width"   : 1, 
-                "stroke-linejoin": "round"
-            },
-            axis : {
-                stroke           : "", 
-                "stroke-width"   : 1,
-                "shape-rendering": "crispedges"
-            },
-            axisLabels : {
-                "fill"      : "", 
-                "font-size" : 12
-            },
-            pointsColor : "",
-            fillRegion : {
-                fill           : "",
-                "fill-opacity" : 0.75,
-                "stroke-width" : 0
-            },
-            problemRegion : {
-                fillOpacity : 0.3,
-                fillColor   : "",
-                fillURL     : "url(img/problem-pattern-orange.png)",
-                stroke      : "none"
-            }
-        },
-        
-        patientData : {
-            points : {
-                even : {
-                    stroke          : "#FFF", 
-                    "stroke-width"  : 4,
-                    "stroke-opacity": 0.9,
-                    "fill-opacity"  : 1
-                },
-                odd : {
-                    stroke          : "#FFF", 
-                    "stroke-width"  : 4,
-                    "stroke-opacity": 0.9,
-                    "fill-opacity"  : 1
-                },
-                firstMonth : {
-                    stroke          : "#FFF", 
-                    "stroke-width"  : 8,
-                    "stroke-opacity": 0.8,
-                    "fill-opacity"  : 1
-                },
-                current : {
-                    stroke: "rgb(0,0,0)", 
-                    "stroke-width": 2
-                }
-            },
-            lines : {
-                "stroke-width": 1.5
-            }
-        },
-        
-        // The pail grey rectangle on the inner side of the right axis
-        rightAxisInnerShadow : {
-            width : 20,
-            attr  : {
-                "stroke-width" : 0,
-                "fill"         : "#E0E0E0",
-                "fill-opacity" : 1
-            }
-        },
-        
-        // selectionRect
-        selectionRect : {
-            "fill"             : "#039",
-            "fill-opacity"     : 0.2,
-            "stroke"           : "#006",
-            "stroke-width"     : 1,
-            "stroke-opacity"   : 0.5,
-            "stroke-dasharray" : "- "
-        }
+        brightness : 0 // -0.5 to +0.5 correction
     };
     
     // Populate the chart color defaults from the default color presets
     function setChartSettingsColors (chartName, baseColor) {
-        settings[chartName].color = baseColor;
-        settings[chartName].fillRegion.fill = baseColor;
-        settings[chartName].lines.stroke = GC.Util.darken(baseColor, 80);
-        settings[chartName].axis.stroke = GC.Util.darken(baseColor, 90);
-        settings[chartName].axisLabels.fill = GC.Util.darken(baseColor, 70);
-        settings[chartName].pointsColor = GC.Util.darken(baseColor, 70);
-        settings[chartName].problemRegion.fillColor = baseColor;
+        readOnlySettings[chartName].color = baseColor;
+        readOnlySettings[chartName].fillRegion.fill = baseColor;
+        readOnlySettings[chartName].lines.stroke = GC.Util.darken(baseColor, 80);
+        readOnlySettings[chartName].axis.stroke = GC.Util.darken(baseColor, 90);
+        readOnlySettings[chartName].axisLabels.fill = GC.Util.darken(baseColor, 70);
+        readOnlySettings[chartName].pointsColor = GC.Util.darken(baseColor, 70);
+        readOnlySettings[chartName].problemRegion.fillColor = baseColor;
     }
     setChartSettingsColors("weightChart",   settings.colorPrresets.Default["Weight"]);
     setChartSettingsColors("lengthChart",   settings.colorPrresets.Default["Length"]);

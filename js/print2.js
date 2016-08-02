@@ -143,7 +143,8 @@
         document.title = PATIENT.name + (
             type == "graphs" ? " - Charts" : 
                 type == "table" ? " - Data" : 
-                    type == "parent" ? " - Parental View" : 
+                    type == "parent" ? " - Parental View" :
+                        type == "goal" ? " - Prescription" :
                         ""
         ) + " " + (new XDate().toString("ddMMMyyyy HH-MMTT"));
         
@@ -177,6 +178,10 @@
             case "table":
                 GC.TableView.render();
                 break;
+
+            case "goal":
+                GC.HHGPrintView.render();
+                break;
         }
 
         drawn = true;
@@ -208,7 +213,7 @@
             $("#corrected-age").parent().hide();
         }
         
-        $("#today").text(new XDate().toString("ddMMMyyyy HH:MM TT"));
+        $("#today").text(new XDate().toString("dd MMM yyyy, HH:MM TT"));
         
         setStageHeight();
         draw();

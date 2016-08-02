@@ -16,8 +16,9 @@ body {
 .gender-button { color: #666}
 
 #today {
-	color: #666;
-	float:right;
+	color: #000000;
+	font-weight: bold;
+	float: right;
 	line-height: 1em;
 }
 
@@ -583,4 +584,9 @@ span.title {
 }
 .patient-name.heading {
 	display: none;
+}
+
+/* -------------------- Healthy Habits Prescription -------------------------------- */
+img.active-goal {
+	border: 4pt solid #000088;
 }

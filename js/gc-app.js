@@ -308,8 +308,9 @@
             case "view":
                 GC.PhysicianView.render();
                 break;
-            case "record":
-                GC.PhysicianRecord.render();
+            case "goal":
+                $("#print-button").html("Print Prescription");
+                GC.PhysicianGoal.render();
                 break;
             case "referral":
                 GC.PhysicianReferral.render();
@@ -467,6 +468,15 @@
         GC.App.dialog("about-dialog.html", null, {
             "modal" : false,
             "title" : NS.str("STR_AboutThisApp"),
+            "height" : "auto",
+            "width" : "auto"
+        });
+    };
+
+    NS.App.updatePatientDialog = function() {
+        GC.App.dialog("update-patient.html", null, {
+            "modal" : false,
+            "title" : 'Log Values',
             "height" : "auto",
             "width" : "auto"
         });
@@ -659,6 +669,9 @@
         if (globalParams != undefined && globalParams.mode != undefined &&
             globalParams.mode.toLowerCase().indexOf('nutritionist') != -1) {
             $("#referral").css("display", "none");
+            GC.App.nutritionistMode = true;
+        } else {
+            GC.App.nutritionistMode = false;
         }
 
         var stage = $("#stage"),
@@ -897,7 +910,7 @@
                 $("#view-table"   )[type == "table"  ? "show" : "hide"]();
                 $("#view-patients") [type == "patients" ? "show" : "hide"]();
                 $("#view-physician") [type == "view" ? "show" : "hide"]();
-                $("#view-record") [type == "record" ? "show" : "hide"]();
+                $("#view-goal") [type == "goal" ? "show" : "hide"]();
                 $("#view-referral") [type == "referral" ? "show" : "hide"]();
                 $("html")
                     .toggleClass("has-patient-header", !GC.Preferences.prop("hidePatientHeader"))
@@ -907,8 +920,8 @@
                     .toggleClass("view-table", type == "table")
                     .toggleClass("view-patients", type == "patients")
                     .toggleClass("view-physician", type == "view")
-                    .toggleClass("view-record", type == "record")
-                    .toggleClass("view-referral", type == "referral");
+                    .toggleClass("view-referral", type == "referral")
+                    .toggleClass("view-goal", type == "goal");
 
                 //hide parent tab
                 if ( ! GC.Preferences._data.isParentTabShown) {
@@ -917,8 +930,8 @@
                 }
 
                 //hide gc header
-                $("#time-ranges") [(type == "patients" || type == "view" || type == "record" || type == "referral") ? "hide" : "show"]();
-                $("#info-bar")    [(type == "patients" || type == "view" || type == "record" || type == "referral") ? "hide" : "show"]();
+                $("#time-ranges") [(type == "patients" || type == "view" || type == "goal" || type == "referral") ? "hide" : "show"]();
+                $("#info-bar")    [(type == "patients" || type == "view" || type == "goal" || type == "referral") ? "hide" : "show"]();
 
                 $(".timeline")    [(type != "graphs") ? "hide" : "show"]();
 

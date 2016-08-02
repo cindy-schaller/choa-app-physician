@@ -291,7 +291,8 @@ window.GC = window.GC || {};
                 agemos: o.hasOwnProperty("agemos") ? 
                     o.agemos : 
                     patient.DOB.diffMonths(new XDate(o.date)),
-                value : o.value
+                value : o.value,
+                source: o.source
             });
         }
         
