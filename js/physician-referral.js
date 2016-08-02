@@ -488,7 +488,7 @@ XDate, setTimeout, getDataSet*/
                   $('<li  />', { class:'ui-widget-content', id: val, text: data[val]}).appendTo(s);
               }
               if (allow_other) {
-                  $('<li><input type="text" style="width:95%; margin:1.5pt 4pt"/></li>', { class:'ui-widget-content'}).appendTo(s);
+                  $('<li><input id="ref-target-other" type="text" style="width:95%; margin:1.5pt 4pt"/></li>', { class:'ui-widget-content'}).appendTo(s);
               }
               s.appendTo(div_id);
         }
@@ -564,8 +564,8 @@ XDate, setTimeout, getDataSet*/
               {
                    whatAbout += " , " + selected_referals[i];
               }
-              if ($('#ref-type-other').val()) {
-                   whatAbout += " , " + $('#ref-type-other').val();
+              if ($('#ref-target-other').val()) {
+                   whatAbout += " , " + $('#ref-target-other').val();
               }
 
               ReferralPOST("community care");
