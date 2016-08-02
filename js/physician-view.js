@@ -972,8 +972,8 @@
                     $(".graph_col_h1").height(maxHeight);
                 });
 
-                $( graph_key_div ).append( '<p></p><p></p> <hr> <p></p><p> <b>- - -</b>  not patient chosen goal</p> <p> </p>'  );
-                $( graph_key_div ).append( '<p> <b>_____</b> patient chosen goal</p> <p> </p>'  );
+                $( graph_key_div ).append( '<p></p> <hr>  <b>- - -</b>  not a goal'  );
+                $( graph_key_div ).append( '<p></p>       <b>_____</b>  goal'  );
 
             /***************************** end  graphs **************************/
 
