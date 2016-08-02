@@ -142,12 +142,13 @@
         }
 
         var hhh_panel = "";
+        hhh_panel += ("<style> blockquote { font-style: italic; margin-left: 10px ; font-size: 12px;} </style> ");
         hhh_panel += ("<div id='physician-hhh-panel'>");
-        hhh_panel += ("<h4>Patient wanted to discuss:</h4>");
+        hhh_panel += ("<b>Patient wanted to discuss:</b>");
         hhh_panel += ("<blockquote> <b>" + PatientselectedGoal + "</b> </blockquote>");
-        hhh_panel += ("<h4>Last discussion of barriers:</h4>");
+        hhh_panel += ("<b>Last discussion of barriers:</b>");
         hhh_panel += ("<blockquote>" + barriersDiscussed + "</blockquote>");
-        hhh_panel += ("<h4>Other notes:</h4>");
+        hhh_panel += ("<b>Other notes:</b>");
         hhh_panel += ("<blockquote>" + otherNotes + "</blockquote>");
         hhh_panel += ("</div>");
 
@@ -317,7 +318,7 @@
 
         var theQuestionnaires = $("<div></div>").addClass("row");
         theQuestionnaires.attr("id", "theQuestionnaires-div");
-        $(container).append(theQuestionnaires);
+        
 
         var hhgQuestionsID = window.sessionStorage.getItem('hhg_questions_id');
 
@@ -586,7 +587,7 @@
                 
                       
 
-        $(container).append(graph_str);    
+            $(container).append(graph_str);    
 
             var hhg_qr = hhgQuestionnaireResponseCall;
             var qr = questionnaireResponseCall;
@@ -595,8 +596,10 @@
             //console.log(hhg_qr);
 
             create_hhh_tbl(container, hhg_qr);
+
             create_hhh_panel( hhg_qr, qr);
 
+             $(container).append(theQuestionnaires);
             /*****************************  graphs **************************/
 
             /****************  This canvas graph was authored by jbarron30@gatech.edu, If you have any questions about it please  ask********/
@@ -607,7 +610,7 @@
                 var height = 400;
                 var width = 795;
                 var margin = 30;
-                var left_margin = 180; //size should be calculated the longest string in all the multiple_choices
+                var left_margin = 185; //size should be calculated the longest string in all the multiple_choices
                 var right_margin = 30; //size should be calculated to be as long as a date of the authored field
 
 
@@ -719,22 +722,22 @@
                 //draw the line on graph connecting the data points
                 context.lineWidth=2;
                 context.strokeStyle="#000000"; 
-                for (var i = 1; i < answer_date.length; i++)
+                for (var i = 0; i < answer_date.length-1; i++)
                 {
                       context.beginPath();
-                      context.moveTo(x_y[i-1].x,x_y[i-1].y)  ;
+                      context.moveTo(x_y[i].x,x_y[i].y)  ;
 
                       if(answer_date[ i ].is_PatientGoal == true  )
                       {
                            context.setLineDash([]); // A solid line
-                           context.lineTo(x_y[i].x,x_y[i].y);
+                           context.lineTo(x_y[i+1].x,x_y[i+1].y);
                            context.stroke();
                       }
                       else
                       {
                            context.save();
                            context.setLineDash([5, 15]);
-                           context.lineTo(x_y[i].x,x_y[i].y);
+                           context.lineTo(x_y[i+1].x,x_y[i+1].y);
                            context.stroke();
                            context.restore();
                       }
@@ -750,7 +753,7 @@
                     context.fillStyle = "rgba(255, 255, 0, 1.0)";  //yellow non opaque
                     context.strokeStyle="#000000";
                     context.beginPath();
-                    context.arc(x_y[i].x , x_y[i].y ,10,0,2*Math.PI);
+                    context.arc(x_y[i].x , x_y[i].y ,5,0,2*Math.PI);
                     context.closePath();
                     context.fill();
                     context.stroke();
@@ -892,11 +895,11 @@
                                Is_PatientGoal = false;
                            }
 
-                           answer_date.push({ answer:Answer, authored:Authored,  is_PatientGoal:Is_PatientGoal});
+                           answer_date.push({ answer:Answer, authored:Authored,  is_PatientGoal:Is_PatientGoal, question:q});
                     }
 
                         
-                
+                        //console.log(answer_date);
 
                         create_graph(Question, KeyWord, answer_date, multiple_choices,canvasCount , Is_PhysicianGoal, graphcolor) ;
                     
@@ -938,7 +941,7 @@
                 $(".graph_col_h1").height(maxHeight);
             });
 
-            $( graph_key_div ).append( '<p> <b>- - -</b>  not patient chosen goal</p> <p> </p>'  );
+            $( graph_key_div ).append( '<p> </p><p> </p><p>#############</p><p> <b>- - -</b>  not patient chosen goal</p> <p> </p>'  );
             $( graph_key_div ).append( '<p> <b>_____</b> patient chosen goal</p> <p> </p>'  );
 
             /***************************** end  graphs **************************/
