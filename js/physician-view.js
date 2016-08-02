@@ -580,6 +580,7 @@
                     )
                     .append($('<div><input type="button" id="patient-update-button" value="Log Values"></div>')
                         .attr("id", "patient-update")
+                        .attr("style", GC.App.nutritionistMode ? "" : "display:none")
                     )
                  )
               );
