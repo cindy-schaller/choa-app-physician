@@ -221,7 +221,6 @@
             {
                     window.sessionStorage.setItem('hhg_questions_id',HealthyHabitsGoalQuestionnaire.id );
             }
-            }
 
         }
 
