@@ -488,14 +488,14 @@ XDate, setTimeout, getDataSet*/
                   $('<li  />', { class:'ui-widget-content', id: val, text: data[val]}).appendTo(s);
               }
               if (allow_other) {
-                  $('<li><input id="ref-type-other" type="text" style="width:95%; margin:1.5pt 4pt"/></li>', { class:'ui-widget-content'}).appendTo(s);
+                  $('<li><input type="text" style="width:95%; margin:1.5pt 4pt"/></li>', { class:'ui-widget-content'}).appendTo(s);
               }
               s.appendTo(div_id);
         }
  
         
-        create_list('Suggested Coding:', 'selectableCoding',coding_data, '#sugested-coding', true);
-        create_list('Refer To:' ,'selectableRefer',refer_data, '#refer-to', false);
+        create_list('Suggested Coding:', 'selectableCoding',coding_data, '#sugested-coding', false);
+        create_list('Refer To:' ,'selectableRefer',refer_data, '#refer-to', true);
 
 
         function add_to_array( selected_id , array ) 
