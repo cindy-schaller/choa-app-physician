@@ -968,8 +968,14 @@
             /********************************************************************/
 
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
-            var hhLastUpdated = new Date(questionnaireResponseCall.entry[0].resource.authored ? questionnaireResponseCall.entry[0].resource.authored : "-");
-            var wicLastUpdated = new Date(wicQuestionnaireResponseCall.authored ? wicQuestionnaireResponseCall.authored: "-");
+            var hhLastUpdated = NaN;
+            var wicLastUpdated = NaN;
+            if (questionnaireResponseCall.entry) {
+                var hhLastUpdated = new Date(questionnaireResponseCall.entry[0].resource.authored ? questionnaireResponseCall.entry[0].resource.authored : "-");
+            }
+            if (wicQuestionnaireResponseCall.entry) {
+                var wicLastUpdated = new Date(wicQuestionnaireResponseCall.authored ? wicQuestionnaireResponseCall.authored: "-");
+            }
 
             if (!isNaN(hhLastUpdated)) {
                 theQuestionnaires.append($("<div></div>")
