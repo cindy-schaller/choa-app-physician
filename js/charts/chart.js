@@ -576,16 +576,16 @@ Chart.prototype = {
             for ( i = 0; i < len; i++ ) {
                 if ( points[i].agemos < min ) {
                     if ( !ptPrev || ptPrev[0] < points[i].agemos ) {
-                        ptPrev = [ points[i].agemos, points[i].value ];
+                        ptPrev = [ points[i].agemos, points[i].value, points[i].source ];
                     }
                 }
                 else if ( points[i].agemos > max ) {
                     if ( !ptNext || ptNext[0] > points[i].agemos ) {
-                        ptNext = [ points[i].agemos, points[i].value ];
+                        ptNext = [ points[i].agemos, points[i].value, points[i].source ];
                     }
                 }
                 else {
-                    out.push( [ points[i].agemos, points[i].value ] );
+                    out.push( [ points[i].agemos, points[i].value, points[i].source ] );
                 }
             }
             
@@ -1893,14 +1893,15 @@ Chart.prototype = {
                 curValue    : point.value,
                 isLastPoint : point === lastPoint
             });
-            
+
             // Draw the dot
             entry = patient.getModelEntryAtAgemos(point.agemos);
             elem = inst.drawDot(x, y, {
                 firstMonth : point.agemos <= 1,
                 annotation : entry.annotation,
                 point      : point,
-                record     : entry
+                record     : entry,
+                provider   : typeof point.source != 'undefined' ? point.source : 'md'
             }).toFront();
             inst._nodes.push(elem);
             dots.push(elem);
@@ -2125,7 +2126,8 @@ Chart.prototype = {
     {
         var cfg = $.extend({
                 firstMonth : false, 
-                annotation : ""
+                annotation : "",
+                provider : "md"
             }, settings),
             title = "",
             set = this.pane.paper.set(),
@@ -2146,14 +2148,16 @@ Chart.prototype = {
                 }).addClass("point")
             );
         }
+
+        var highlight = (cfg.provider == "WIC");
         
         set.push(
             
             // The point white outline
             this.pane.paper.circle(cx, cy, cfg.firstMonth ? 5 : 4).attr({
-                stroke : "#FFF",
+                stroke : (highlight ? "#222" : "#FFF"),
                 "stroke-opacity": cfg.firstMonth ? 0.75 : 1,
-                "stroke-width" : cfg.firstMonth ? 4 : 2
+                "stroke-width" : (highlight ? 4 : cfg.firstMonth ? 4 : 2)
             }).addClass("point"), 
             
             // The inner point

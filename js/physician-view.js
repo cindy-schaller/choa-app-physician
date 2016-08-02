@@ -123,21 +123,19 @@
         var PhysicianSelectedGoal  = "N/A";
         var barriersDiscussed = "N/A";
         var otherNotes = "N/A";
-        if(hhg_qr.entry)
+        if(typeof hhg_qr.entry != 'undefined')
         {
             var PhysicianSelectedGoalTemp = hhg_qr.entry[0].resource.group.question[0].answer[0].valueInteger;
             if(PhysicianSelectedGoalTemp) {
                 PhysicianSelectedGoal =  goalMap[PhysicianSelectedGoalTemp];
             }
 
-
-        
             var barriersTemp = hhg_qr.entry[0].resource.group.question[7].answer;
             if(barriersTemp) {
                 barriersDiscussed = barriersTemp[0].valueString;
             }
 
-            
+
             var otherNotesTemp = hhg_qr.entry[0].resource.group.question[8].answer;
             if(otherNotesTemp) {
                 otherNotes = otherNotesTemp[0].valueString;
@@ -227,7 +225,7 @@
             }
 
         } else {
-            hhh_tbl += ("<tr> <td>No Healthy Habit Goal Set</td> <td>N/A</td> <td>N/A</td> </tr>");
+            hhh_tbl += ("<tr> <td>No Healthy Habit Goal Set</td> <td>N/A</td> <td>N/A</td> <td>N/A</td> </tr>");
         }
 
         hhh_tbl += ("</table>");
@@ -391,6 +389,23 @@
             return patientHeightCall;
         })();
 
+        var patientHemoCall = (function () {
+            var patientHemoCall = null;
+            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
+
+            //Note LOINC Codes: 8302-2 for Height BMI Observations
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url + 'Observation?subject:Patient=' + patientID + '&code=718-7&_count=50',
+                dataType: 'json',
+                success: function (data) {
+                    patientHemoCall = data;
+                }
+            });
+            return patientHemoCall;
+        })();
+
         $.when(patientCall, questionnaireResponseCall, wicQuestionnaireResponseCall ,questionnaireCall, hhgQuestionnaireResponseCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
 
             if (patientCall.entry) {
@@ -428,6 +443,8 @@
             // If not, hell breaks loose
 
             var process = function(d, l) {
+                if (typeof d == 'undefined') return;
+
                 for (var i = d.length - 1; i >= 0; i--) {
                     if (d[i] != undefined &&
                         d[i].resource.effectiveDateTime != undefined) {
@@ -447,8 +464,7 @@
             process(patientWeightCall.entry, 'weight');
             process(patientHeightCall.entry, 'height');
             process(patientBMICall.entry, 'bmi');
-            // FIXME: Implement hemoglobin A fetching
-            // process(patientHeightCall.entry, 'hemo');
+            process(patientHemoCall.entry, 'hemo');
 
             localStorage.setItem("BMI", latestRecording.bmi);
 
@@ -457,27 +473,27 @@
             // FIXME: The comparisons can be optimized by inversing the evaluation order
             switch (true) {
                 case (latestRecording.bmi <= 18.5):
-                    bmiText = 'Underweight </br> BMI: ' + latestRecording.bmi;
+                    bmiText = 'Underweight </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
                     bmiClass = 'text-warning'
                     break;
                 case (18.5 < latestRecording.bmi && latestRecording.bmi <= 25):
-                    bmiText = 'Normal weight </br> BMI: ' + latestRecording.bmi;
+                    bmiText = 'Normal weight </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
                     bmiClass = 'text-info'
                     break;
                 case (25 < latestRecording.bmi && latestRecording.bmi <= 30):
-                    bmiText = 'Overweight </br> BMI: ' + latestRecording.bmi;
+                    bmiText = 'Overweight </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
                     bmiClass = 'text-warning'
                     break;
                 case (30 < latestRecording.bmi && latestRecording.bmi <= 35):
-                    bmiText = 'Class II obesity </br> BMI: ' + latestRecording.bmi;
+                    bmiText = 'Class II obesity </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
                     bmiClass = 'text-warning'
                     break;
                 case (35 < latestRecording.bmi && latestRecording.bmi <= 40):
-                    bmiText = 'Class II obesity </br> BMI: ' + latestRecording.bmi;
+                    bmiText = 'Class II obesity </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
                     bmiClass = 'text-danger'
                     break;
                 case (40 < latestRecording.bmi):
-                    bmiText = 'Class III obesity </br> BMI: ' + latestRecording.bmi;
+                    bmiText = 'Class III obesity </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
                     bmiClass = 'text-danger'
                     break;
                 default:
@@ -547,12 +563,23 @@
                     .append($("<div></div>")
                         .addClass("patient-weight")
                         .attr("id", "patient-weight")
-                        .html("<strong>Weight: </strong>" + latestRecording.weight + " " + latestRecording.weightUnit)
+                        .html("<strong>Weight: </strong><span class='recordedValue'>" + latestRecording.weight +
+                              "</span> " + latestRecording.weightUnit)
                     )
                     .append($("<div></div>")
                         .addClass("patient-height")
                         .attr("id", "patient-height")
-                        .html("<strong>Height: </strong>" + latestRecording.height + " " + latestRecording.heightUnit)
+                        .html("<strong>Height: </strong><span class='recordedValue'>" + latestRecording.height +
+                              "</span> " + latestRecording.heightUnit)
+                    )
+                    .append($("<div></div>")
+                        .addClass("patient-hemo")
+                        .attr("id", "patient-hemo")
+                        .html("<strong>Hemoglobin: </strong><span class='recordedValue'>" + latestRecording.hemo +
+                              "</span> " + latestRecording.hemoUnit)
+                    )
+                    .append($('<div><input type="button" id="patient-update-button" value="Log Values"></div>')
+                        .attr("id", "patient-update")
                     )
                  )
               );
@@ -953,7 +980,14 @@
             /********************************************************************/
 
             var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
-            var hhLastUpdated = new Date(questionnaireResponseCall.entry[0].resource.authored ? questionnaireResponseCall.entry[0].resource.authored : "-");
+            var hhLastUpdated = NaN;
+            var wicLastUpdated = NaN;
+            if (questionnaireResponseCall.entry) {
+                var hhLastUpdated = new Date(questionnaireResponseCall.entry[0].resource.authored ? questionnaireResponseCall.entry[0].resource.authored : "-");
+            }
+            if (wicQuestionnaireResponseCall.entry) {
+                var wicLastUpdated = new Date(wicQuestionnaireResponseCall.authored ? wicQuestionnaireResponseCall.authored: "-");
+            }
 
             if (!isNaN(hhLastUpdated)) {
                 theQuestionnaires.append($("<div></div>")
@@ -968,7 +1002,7 @@
                             .html("Updated " + months[hhLastUpdated.getMonth()] + " " + hhLastUpdated.getDate() + ", " + hhLastUpdated.getFullYear())
                         )
                         .append($("<p></p>")
-                            .html("click to see results ->")
+                            .html("click to see results")
                         )
                     )
                 );
@@ -985,22 +1019,35 @@
                 );
             }
 
-            theQuestionnaires.append($("<div></div>")
-                .attr("id", "wic-div")
-                .addClass("col-xs-offset-6 text-center")
-                .append($("<a></a>")
-                    .attr("id", "view-WICQuestionnaireAndResponse")
+            if (!isNaN((wicLastUpdated))) {
+                theQuestionnaires.append($("<div></div>")
+                    .attr("id", "wic-div")
+                    .addClass("col-xs-offset-6 text-center")
+                    .append($("<a></a>")
+                        .attr("id", "view-WICQuestionnaireAndResponse")
+                        .append($("<h3></h3>")
+                            .html("WIC Questionnaire Response <br>")
+                        )
+                        .append($("<p></p>")
+                            .html(" Updated " + months[wicLastUpdated.getMonth()] + " " + wicLastUpdated.getDate() + ", " + wicLastUpdated.getFullYear())
+                        )
+                        .append($("<p></p>")
+                            .html("click to see results")
+                        )
+                    )
+                );
+            } else {
+                theQuestionnaires.append($("<div></div>")
+                    .attr("id", "wic-div")
+                    .addClass("col-xs-offset-6 text-center")
                     .append($("<h3></h3>")
                         .html("WIC Questionnaire Response <br>")
                     )
                     .append($("<p></p>")
-                        .html(" Updated <b>*** WILL FIX LATER ***</b>")
+                        .html("The patient has not completed the WIC Questionnaire")
                     )
-                    .append($("<p></p>")
-                        .html("click to see results ->")
-                    )
-                )
-            );
+                );
+            }
 
             $("#dialog").dialog({ autoOpen: false, height: 500, width: 1000, overflow: scroll });
             $("#view-HHQuestionnaireAndResponse").click(function() {
@@ -1121,7 +1168,7 @@
 
             $("#dialog").dialog({ autoOpen: false, height: 600, width: 1200, overflow: scroll });
             $("#view-WICQuestionnaireAndResponse").click(function() {
-
+                $("dialog").css("overflow-x", "hidden");
                 $("#dialog").empty();
 
                 var wicSurvey = $("<div></div>").addClass("col-xs-12");
@@ -1304,7 +1351,7 @@
                         .addClass("form-control")
                         .attr("multiple", "")
                         .css("height", "185px")
-                        .css("width", "100%");
+                        .css("width", "80%");
 
                     var linkID8Form = $("<div></div>")
                         .addClass("form-group");
@@ -1821,7 +1868,7 @@
 
                                 for (var k = 0; k < wicQAndA[j].responseChoices.length; k++) {
                                     var _linkID7 = $("<option></option>")
-                                        .addClass("form-control text-center")
+                                        .addClass("form-control text-center col-xs-offset-1")
                                         .attr("multiple", "")
                                         .prop("selected", wicQAndA[j].answer)
                                         .attr("disabled", "disabled")
@@ -2036,7 +2083,7 @@
 
                                 for (var k = 0; k < wicQAndA[j].responseChoices.length; k++) {
                                     var _linkID11 = $("<option></option>")
-                                        .addClass("form-control text-center")
+                                        .addClass("form-control text-center col-xs-offset-1")
                                         .attr("multiple", "")
                                         .prop("selected", wicQAndA[j].answer)
                                         .attr("disabled", "disabled")
@@ -2441,6 +2488,8 @@
                 $("#dialog").dialog("open");
             });
         });
+
+        $('#patient-update-button').click(NS.App.updatePatientDialog);
     }
 
     NS.PhysicianView =
@@ -2451,6 +2500,138 @@
             renderPhysicianView("#view-physician");
 
         }
+    };
+
+    // FIXME: Antipattern alert, probably not a great idea to pass the entire form, but
+    // that simplifies subtree selection for manipulating the DOM to add/show errors.
+
+    GC.App.UpdatePatient = function(updateForm) {
+        // From the requirements, it seems like CDC is expecting BMI to be automatically
+        // calculated everywhere. Unfortunately, this is not the case - and fixing that in
+        // every place where it's referenced requires an abstract concept called motivation,
+        // which I seem to be lacking at. So we log BMI into FHIR here, so the rest of the app
+        // does not break. Whoever you are - the poor soul reading this comment, I am sorry.
+
+        var hadErrors = false;
+
+        $('.update-patient-warning').css('display', 'none');
+
+        var weight = parseFloat(updateForm.querySelector('#updateWeight').value);
+        var height = parseFloat(updateForm.querySelector('#updateHeight').value);
+        var hemo = parseFloat(updateForm.querySelector('#updateHemo').value);
+
+        if (isNaN(weight)) {
+            updateForm.querySelector('#weight-warning').style.display = 'block';
+            hadErrors = true;
+        }
+
+        if (isNaN(height)) {
+            updateForm.querySelector('#height-warning').style.display = 'block';
+            hadErrors = true;
+        }
+
+        if (isNaN(hemo)) {
+            updateForm.querySelector('#hemo-warning').style.display = 'block';
+            hadErrors = true;
+        }
+
+        if (hadErrors) {
+            return false;
+        }
+
+        var bmi = (weight / Math.pow(height / 100, 2)).toFixed(2);
+        var synchronizedTime = new Date().toISOString().substring(0, 19);
+
+        var observation = function(c, d, e, p, v, u) {
+            return {
+                "resourceType": 'Observation',
+                "status": "final",
+                "code":{
+                    "coding": [
+                        { "system":"http://loinc.org", "code": c, "display": d }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/" + window.sessionStorage.getItem('patientid_global'),
+                    "display": document.querySelector('#patient-fullname strong').innerText
+                },
+                "encounter":{
+                    "display": e
+                },
+                "effectiveDateTime": synchronizedTime,
+                "performer":[
+                    { "display": p }
+                ],
+                "valueQuantity":{
+                    "value": v,
+                    "unit": u
+                }
+            };
+        };
+
+        var fhir = FHIR.client({
+          serviceUrl: window.sessionStorage.getItem('fhir_url_global'),
+          patientId:  window.sessionStorage.getItem('patientid_global'),
+            auth: { type: 'none' }
+        });
+
+        var logID = function(id) { console.log('FHIR Resource created: ' + id); };
+
+        var ep = GC.App.nutritionistMode ? 'WIC' : 'MD';
+        var url = window.sessionStorage.getItem('fhir_url_global') + '/Observation';
+
+        var fhirHeaders = new Headers();
+        fhirHeaders.append("Content-Type", "application/json");
+
+        $('#update-patient-submit').hide('fast');
+        $('#update-patient-processing').hide('fast');
+
+        var done = 0;
+        var maybeFinish = function() {
+            done++;
+
+            if (done >= 4) {
+                window.setTimeout(function(e) {
+                    $('#update-patient-processing').hide('fast');
+                    $('#update-patient-submit').hide('fast');
+                    $('.ui-icon-closethick').click();
+                }, 200);
+            }
+        }
+
+        fetch(url, { method: 'POST', mode: 'cors', cache: 'default', headers: fhirHeaders,
+                     body: JSON.stringify(observation('8302-2', 'Height', ep, ep, height, 'cm'))})
+            .then(function(e) {
+                $('#patient-height .recordedValue').text(height);
+                maybeFinish();
+            })
+            .catch(function(e) { alert(e) });
+
+        fetch(url, { method: 'POST', mode: 'cors', cache: 'default', headers: fhirHeaders,
+                     body: JSON.stringify(observation('3141-9', 'Weight', ep, ep, weight, 'kg'))})
+            .then(function(e) {
+                $('#patient-weight .recordedValue').text(weight);
+                maybeFinish();
+            })
+            .catch(function(e) { alert(e) });
+
+        fetch(url, { method: 'POST', mode: 'cors', cache: 'default', headers: fhirHeaders,
+                     body: JSON.stringify(observation('39156-5', 'BMI', ep, ep, bmi, 'kg/m2'))})
+            .then(function(e) {
+                $('#patient-BMI .recordedValue').text(bmi);
+                maybeFinish();
+            })
+            .catch(function(e) { alert(e) });
+
+        fetch(url, { method: 'POST', mode: 'cors', cache: 'default', headers: fhirHeaders,
+                     body: JSON.stringify(observation('718-7', 'Hemoglobin', ep, ep, hemo, 'mg/dL'))})
+            .then(function(e) {
+                $('#patient-hemo .recordedValue').text(hemo);
+                maybeFinish();
+            })
+            .catch(function(e) { alert(e) });
+
+        return false;
     };
 
     $(function()

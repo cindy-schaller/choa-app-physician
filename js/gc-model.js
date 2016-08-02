@@ -3,7 +3,7 @@
 
 /**
  * The GC.Model class and a collection of classes. The model stores its data in
- * JS object (no mather the deepnes) and has rich observing support...
+ * JS object (no mather the deepness) and has rich observing support...
  * @file gc-model.js
  * @author Vladimir Ignatov <vlad.ignatov@gmail.com>
  */
@@ -81,7 +81,7 @@
                 }
             });
             return HealthyHabitsGoalQuestionnaireCall;
-       })();   
+       })();
 
     var InsecurityQuestionnaireCall = (function ()
       {
@@ -97,6 +97,38 @@
             });
             return InsecurityQuestionnaireCall;
         })();
+
+    var WicQuestionnaireCall = (function ()
+        {
+            var WicQuestionnaireCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url + "Questionnaire?identifier=questionnaire-wic-child-nutrition",
+                dataType: 'json',
+                success: function (data) {
+                    WicQuestionnaireCall = data;
+                }
+            });
+            return WicQuestionnaireCall;
+        })();
+
+    var GoalQuestionnaireCall = (function ()
+        {
+            var GoalQuestionnaireCall = null;
+            $.ajax({
+                async: false,
+                global: false,
+                url: fhir_url + "Questionnaire?identifier=questionnaire-healthy-habit-goals",
+                dataType: 'json',
+                success: function (data) {
+                    GoalQuestionnaireCall = data;
+                }
+            });
+            return GoalQuestionnaireCall;
+        })();
+
+
 
 //http://52.72.172.54:8080/fhir/baseDstu2/Patient?family=Kent&given=Clark&birthdate=2006-03-30
     var ClarkCall = (function ()
@@ -160,19 +192,19 @@
         })();
 
 
-   $.when(CoordCall, MDCall, KaraCall, ClarkCall, InsecurityQuestionnaireCall, AdolescentHealthyEatingQuestionnaireCall, ChildHealthyEatingQuestionnaireCall, HealthyHabitsGoalQuestionnaireCall).then(function() 
+   $.when(CoordCall, MDCall, KaraCall, ClarkCall, InsecurityQuestionnaireCall, AdolescentHealthyEatingQuestionnaireCall,
+       ChildHealthyEatingQuestionnaireCall, WicQuestionnaireCall, HealthyHabitsGoalQuestionnaireCall, GoalQuestionnaireCall).then(function()
     {
        if (ChildHealthyEatingQuestionnaireCall.entry)
         {
             var ChildHealthyEatingQuestionnaire = ChildHealthyEatingQuestionnaireCall.entry[0].resource;
-            console.log(ChildHealthyEatingQuestionnaireCall);
-
             if (!window.sessionStorage.getItem('infant_questions_id'))
             {
                     window.sessionStorage.setItem('infant_questions_id',ChildHealthyEatingQuestionnaire.id );
             }
 
         }
+
        if (AdolescentHealthyEatingQuestionnaireCall.entry)
         {
             var AdolescentHealthyEatingQuestionnaire = AdolescentHealthyEatingQuestionnaireCall.entry[0].resource;
@@ -182,19 +214,36 @@
             }
         }
 
-
-       if (HealthyHabitsGoalQuestionnaireCall.entry) 
-        {       
+       if (HealthyHabitsGoalQuestionnaireCall.entry)
+        {
             var HealthyHabitsGoalQuestionnaire = HealthyHabitsGoalQuestionnaireCall.entry[0].resource;
-            if (!window.sessionStorage.getItem('hhg_questions_id')) 
+            if (!window.sessionStorage.getItem('hhg_questions_id'))
             {
                     window.sessionStorage.setItem('hhg_questions_id',HealthyHabitsGoalQuestionnaire.id );
-            } 
+            }
 
         }
 
+       if (WicQuestionnaireCall.entry)
+       {
+           var WicQuestionnaire = WicQuestionnaireCall.entry[0].resource;
+           if (!window.sessionStorage.getItem('wic_questions_id'))
+           {
+               window.sessionStorage.setItem('wic_questions_id', WicQuestionnaire.id);
+           }
+       }
 
-       if (InsecurityQuestionnaireCall.entry) 
+       if (GoalQuestionnaireCall.entry)
+       {
+           var GoalQuestionnaire = GoalQuestionnaireCall.entry[0].resource;
+           //if (!window.sessionStorage.getItem('healthy_habits_goal_questions_id'))
+           {
+               window.sessionStorage.setItem('healthy_habits_goal_questions_id', GoalQuestionnaire.id);
+           }
+       }
+
+
+       if (InsecurityQuestionnaireCall.entry)
         {
             var InsecurityQuestionnaire = InsecurityQuestionnaireCall.entry[0].resource;
             if (!window.sessionStorage.getItem('food_insecurity_questions_id_global'))
@@ -203,6 +252,9 @@
             }
 
         }
+
+
+
        if (ClarkCall.entry)
         {
             var Clark = ClarkCall.entry[0].resource;
@@ -215,8 +267,8 @@
             {
                     window.sessionStorage.setItem('patientid_global',Clark.id  );
             }
-
         }
+
        if (KaraCall.entry)
         {
             var Kara = KaraCall.entry[0].resource;
@@ -225,6 +277,7 @@
                     window.sessionStorage.setItem('Kara_ID_global',Kara.id );
             }
         }
+
        if (MDCall.entry)
         {
             var MD = MDCall.entry[0].resource;
@@ -233,6 +286,7 @@
                     window.sessionStorage.setItem('MD_ID_global',MD.id );
             }
         }
+
         if (CoordCall.entry)
         {
             var Coor = CoordCall.entry[0].resource;
