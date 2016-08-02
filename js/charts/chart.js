@@ -576,16 +576,16 @@ Chart.prototype = {
             for ( i = 0; i < len; i++ ) {
                 if ( points[i].agemos < min ) {
                     if ( !ptPrev || ptPrev[0] < points[i].agemos ) {
-                        ptPrev = [ points[i].agemos, points[i].value ];
+                        ptPrev = [ points[i].agemos, points[i].value, points[i].source ];
                     }
                 }
                 else if ( points[i].agemos > max ) {
                     if ( !ptNext || ptNext[0] > points[i].agemos ) {
-                        ptNext = [ points[i].agemos, points[i].value ];
+                        ptNext = [ points[i].agemos, points[i].value, points[i].source ];
                     }
                 }
                 else {
-                    out.push( [ points[i].agemos, points[i].value ] );
+                    out.push( [ points[i].agemos, points[i].value, points[i].source ] );
                 }
             }
             
@@ -1901,8 +1901,7 @@ Chart.prototype = {
                 annotation : entry.annotation,
                 point      : point,
                 record     : entry,
-                // TODO: remove this hackery
-                provider   : typeof point.provider != 'undefined' ? point.provider : 'md'
+                provider   : typeof point.source != 'undefined' ? point.source : 'md'
             }).toFront();
             inst._nodes.push(elem);
             dots.push(elem);
@@ -2150,7 +2149,7 @@ Chart.prototype = {
             );
         }
 
-        var highlightColor = (cfg.provider == "wic") ? "#FB0" : "#FFF";
+        var highlightColor = (cfg.provider == "WIC") ? "#FB0" : "#FFF";
         
         set.push(
             
