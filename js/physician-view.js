@@ -155,7 +155,7 @@
         hhh_panel += ("</div>");
 
         //$(container).append(hhh_panel);  
-        $( wants_to_discuss_div ).append( hhh_panel);
+        //$( wants_to_discuss_div ).append( hhh_panel);
 
         var CurrentGoal_str   ='                                                                                     ' 
                               +' <p> Most recent physician chosen goal:  <b>' + PhysicianSelectedGoal + '</b></p>        '  
@@ -610,7 +610,7 @@
                          +'                       </div>    '
                          +'                  </div>    '
                          +'                  <div class="col-sm-1 graph_col_h1" id="graph_key_div" style="border:1px solid black"><b>Click on Healthy Habit to see change over time graph:</b><p></p> </div>       '
-                         +'                  <div class="col-sm-2 graph_col_h1" id="wants_to_discuss_div" ></div>                                   ' 
+                        // +'                  <div class="col-sm-2 graph_col_h1" id="wants_to_discuss_div" ></div>                                   ' 
                          +'            </div>    '
                          +'            <div class="row">                                                                                  '
                          +'                 <div class="col-sm-8 " id="CurrentGoal_div" style="border:1px solid black"> </div>    '
