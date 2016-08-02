@@ -473,6 +473,15 @@
         });
     };
 
+    NS.App.updatePatientDialog = function() {
+        GC.App.dialog("update-patient.html", null, {
+            "modal" : false,
+            "title" : 'Log Values',
+            "height" : "auto",
+            "width" : "auto"
+        });
+    };
+
     NS.App.viewAnnotations = function() {
         if (ANNOTATIONS_WINDOW === null || ANNOTATIONS_WINDOW.closed) {
             ANNOTATIONS_WINDOW = window.open("annotations.html", "annotationsWindow", "resizable=yes,scrollbars=yes,centerscreen=yes,status=yes,width=800,height=600,dependent=yes,dialog=yes");
@@ -655,11 +664,14 @@
             .map(function(n) {
                 return n = n.split("="), this[n[0]] = n[1], this;
             }
-            .bind({}))[0];
+                .bind({}))[0];
 
         if (globalParams != undefined && globalParams.mode != undefined &&
             globalParams.mode.toLowerCase().indexOf('nutritionist') != -1) {
             $("#referral").css("display", "none");
+            GC.App.nutritionistMode = true;
+        } else {
+            GC.App.nutritionistMode = false;
         }
 
         var stage = $("#stage"),
@@ -920,6 +932,8 @@
                 //hide gc header
                 $("#time-ranges") [(type == "patients" || type == "view" || type == "goal" || type == "referral") ? "hide" : "show"]();
                 $("#info-bar")    [(type == "patients" || type == "view" || type == "goal" || type == "referral") ? "hide" : "show"]();
+
+                $(".timeline")    [(type != "graphs") ? "hide" : "show"]();
 
                 setStageHeight();
 
