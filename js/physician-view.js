@@ -563,7 +563,7 @@
                          +'            <div class="row">                                                                                  '
                          +'                 <div class="col-sm-8 graph_col_h1" id="GraphCarousel_div" style="border:1px solid black" >     '
                          +'                       <div id="myGraphCarousel" class="carousel slide" data-ride="carousel">       '
-                         +'                          <ol id="GraphCarouselIndicators"  class="carousel-indicators"> </ol>'
+                         +'                          <ol id="GraphCarouselIndicators"  class="carousel-indicators" style="visibility:hidden;"> </ol>'
                          +'                          <div id="carousel_inner_id" class="carousel-inner" role="listbox"> </div> '
                          +'                           <!-- Left and right controls -->'
                          +'                           <a class="left carousel-control" href="#myGraphCarousel" role="button" data-slide="prev">'
