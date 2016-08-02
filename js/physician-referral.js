@@ -426,7 +426,7 @@ XDate, setTimeout, getDataSet*/
 		+'                <div class="col-sm-6">                                                                    '
         +'                    <div class="col-sm-offset-3 col-sm-7" id="sugested-coding" ></div>                            '
 		+'                    <div class="col-sm-offset-3 col-sm-4" id="btn-send" >                                          '
-        +'                        <button type="button" class="btn btn-primary" id="RefBtn">Send Referal &gt </button>       '     
+        +'                        <button type="button" class="btn btn-primary" id="RefBtn">Send Referral &raquo; </button>       '
         +'                    </div>                                                                                         '
         +'                </div>                                                                                             '
 		+'            </div>                                                                                                 '
@@ -476,7 +476,7 @@ XDate, setTimeout, getDataSet*/
        }
        
 
-        function create_list( heading , ol_id_val, table, div_id ) 
+        function create_list( heading , ol_id_val, table, div_id, allow_other )
         {
               
               $( div_id).html( '<p style="font-size: 24px; font-weight: bold; color: #4F5F6B;">' + "    " + heading + '</p>');
@@ -487,13 +487,15 @@ XDate, setTimeout, getDataSet*/
               {
                   $('<li  />', { class:'ui-widget-content', id: val, text: data[val]}).appendTo(s);
               }
+              if (allow_other) {
+                  $('<li><input id="ref-type-other" type="text" style="width:95%; margin:1.5pt 4pt"/></li>', { class:'ui-widget-content'}).appendTo(s);
+              }
               s.appendTo(div_id);
-            
         }
  
         
-        create_list('Suggested Coding:', 'selectableCoding',coding_data, '#sugested-coding');
-        create_list('Refer To:' ,'selectableRefer',refer_data, '#refer-to');
+        create_list('Suggested Coding:', 'selectableCoding',coding_data, '#sugested-coding', true);
+        create_list('Refer To:' ,'selectableRefer',refer_data, '#refer-to', false);
 
 
         function add_to_array( selected_id , array ) 
@@ -556,12 +558,15 @@ XDate, setTimeout, getDataSet*/
                    ICD_codes  = " , " + selected_Codes[i];
               } 
 
-              whatAbout += ".  Patient is reffered to the following: "; 
+              whatAbout += ".  Patient is refered to the following: ";
               var arrayLength = selected_referals.length;
               for (var i = 0; i < arrayLength; i++) 
               {
                    whatAbout += " , " + selected_referals[i];
-              } 
+              }
+              if ($('#ref-type-other').val()) {
+                   whatAbout += " , " + $('#ref-type-other').val();
+              }
 
               ReferralPOST("community care");
               
