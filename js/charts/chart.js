@@ -2149,15 +2149,15 @@ Chart.prototype = {
             );
         }
 
-        var highlightColor = (cfg.provider == "WIC") ? "#FB0" : "#FFF";
+        var highlight = (cfg.provider == "WIC");
         
         set.push(
             
             // The point white outline
             this.pane.paper.circle(cx, cy, cfg.firstMonth ? 5 : 4).attr({
-                stroke : highlightColor,
+                stroke : (highlight ? "#222" : "#FFF"),
                 "stroke-opacity": cfg.firstMonth ? 0.75 : 1,
-                "stroke-width" : cfg.firstMonth ? 4 : 2
+                "stroke-width" : (highlight ? 4 : cfg.firstMonth ? 4 : 2)
             }).addClass("point"), 
             
             // The inner point
