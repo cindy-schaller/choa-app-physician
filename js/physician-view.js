@@ -121,22 +121,28 @@
         };
 
         var PhysicianSelectedGoal  = "N/A";
-        var PhysicianSelectedGoalTemp = hhg_qr.entry[0].resource.group.question[0].answer[0].valueInteger;
-        if(PhysicianSelectedGoalTemp) {
-            PhysicianSelectedGoal =  goalMap[PhysicianSelectedGoalTemp];
-        }
-
-
         var barriersDiscussed = "N/A";
-        var barriersTemp = hhg_qr.entry[0].resource.group.question[7].answer;
-        if(barriersTemp) {
-            barriersDiscussed = barriersTemp[0].valueString;
-        }
-
         var otherNotes = "N/A";
-        var otherNotesTemp = hhg_qr.entry[0].resource.group.question[8].answer;
-        if(otherNotesTemp) {
-            otherNotes = otherNotesTemp[0].valueString;
+        if(hhg_qr.entry)
+        {
+            var PhysicianSelectedGoalTemp = hhg_qr.entry[0].resource.group.question[0].answer[0].valueInteger;
+            if(PhysicianSelectedGoalTemp) {
+                PhysicianSelectedGoal =  goalMap[PhysicianSelectedGoalTemp];
+            }
+
+
+        
+            var barriersTemp = hhg_qr.entry[0].resource.group.question[7].answer;
+            if(barriersTemp) {
+                barriersDiscussed = barriersTemp[0].valueString;
+            }
+
+            
+            var otherNotesTemp = hhg_qr.entry[0].resource.group.question[8].answer;
+            if(otherNotesTemp) {
+                otherNotes = otherNotesTemp[0].valueString;
+            }
+
         }
 
         var hhh_panel = "";
@@ -611,20 +617,27 @@
                 var margin = 30;
                 var left_margin = 185; //size should be calculated the longest string in all the multiple_choices
                 var right_margin = 30; //size should be calculated to be as long as a date of the authored field
-
+                
 
                 var canvas_Carousel_id= "canvas_Carousel" + key_word;
                 var canvas_str = '<canvas id="' + canvas_Carousel_id + '" height="'+ height +'" width="'+ width +'" style="border:1px solid #000000;" ></canvas>';
            
                 //insert canvas into bootstrap carousel
-                var current_PhysicianGoal = PhysGoal_date[ 0].physGoal;
+                var current_PhysicianGoal = "";
+                if(PhysGoal_date.length ==0)   //in case of children with no HHG
+                {
+                    current_PhysicianGoal = 1; //set the first question active
+                }
+                else
+                {
+                    var current_PhysicianGoal = PhysGoal_date[ 0].physGoal;
+                }
                 //canvas count is the order of the questions in the HH QR 
                 if(current_PhysicianGoal == canvasCount +1)
                 {
                     var ol_str = '<li data-target="#myGraphCarousel" data-slide-to="'+canvasCount+ '" class="active"></li>';
                     var item_str ='<div class="item active">'+ canvas_str +'</div>';
                     $('#HHitem').css('color', graphcolor);
-
                 }
                 else
                 {
@@ -774,32 +787,36 @@
             var canvasCount =0;
             var Is_PhysicianGoal = '';
             var PhysGoal ='';
-            if (questionnaireCall.entry && questionnaireResponseCall.entry && hhgQuestionnaireResponseCall.entry ) 
+            if (questionnaireCall.entry && questionnaireResponseCall.entry && hhgQuestionnaireResponseCall ) 
             {
                     
                    // create a PhysicialSetGoal Date Array
                     var PhysGoal_date = [];
-                    for(var  hhgqr = 0; hhgqr < hhgQuestionnaireResponseCall.entry.length; hhgqr++)
+                    if(hhgQuestionnaireResponseCall.entry)
                     {
-                            Response   =   hhgQuestionnaireResponseCall.entry[ hhgqr ].resource;
-                            PhysGoal   =   Response.group.question[ 0].answer[ 0 ].valueInteger;
-                            //bug fix to take into account the order of goal for physician and patient has 3 and 4 reversed
-                            if(PhysGoal == 3) 
-                            {
-                                PhysGoal = 4;
-                            }
-                            else
-                            if(PhysGoal == 4) 
-                            {
-                                PhysGoal = 3;
-                            }  
+                        for(var  hhgqr = 0; hhgqr < hhgQuestionnaireResponseCall.entry.length; hhgqr++)
+                        {
+                                Response   =   hhgQuestionnaireResponseCall.entry[ hhgqr ].resource;
+                                PhysGoal   =   Response.group.question[ 0].answer[ 0 ].valueInteger;
+                                //bug fix to take into account the order of goal for physician and patient has 3 and 4 reversed
+                                if(PhysGoal == 3) 
+                                {
+                                    PhysGoal = 4;
+                                }
+                                else
+                                if(PhysGoal == 4) 
+                                {
+                                    PhysGoal = 3;
+                                }  
 
-                            Authored   =   Response.authored.split("T")[ 0 ] ;  
-                            PhysGoal_date.push({ physGoal:PhysGoal, authored:Authored });
+                                Authored   =   Response.authored.split("T")[ 0 ] ;  
+                                PhysGoal_date.push({ physGoal:PhysGoal, authored:Authored });
+                        }
                     }
 
                     //console.log(PhysGoal_date);
 
+                    
                     questionnaire = questionnaireCall.entry[0].resource;
 
                     for(var q = 0; q < questionnaire.group.question.length; q++)
