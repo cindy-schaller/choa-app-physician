@@ -617,9 +617,6 @@
                 var canvas_str = '<canvas id="' + canvas_Carousel_id + '" height="'+ height +'" width="'+ width +'" style="border:1px solid #000000;" ></canvas>';
            
                 //insert canvas into bootstrap carousel
-                
-                
-
                 var current_PhysicianGoal = PhysGoal_date[ 0].physGoal;
                 //canvas count is the order of the questions in the HH QR 
                 if(current_PhysicianGoal == canvasCount +1)
@@ -683,7 +680,6 @@
                     var year_2_digit = year.toString().substr(2,2);
                     var d_display = (d.getMonth() + 1 ) + "/" + year_2_digit ;
                     var x = left_margin + i * section_length;
-
                     context.fillText( d_display , x , (canvas.height -margin/2 ));
                 }
 
@@ -709,9 +705,7 @@
                     var diff_to_curr = currTime.getTime() - oldestTime.getTime();
                     var frac_of_span = diff_to_curr /diff_max;
                     var X = (length_x_axis * frac_of_span) + left_margin;
-
                     var Y  = (canvas.height - margin) - ((answer_date[ i ].answer -1) * yStep) ;
-
                     x_y.push({ x:X , y:Y});
 
                 }
@@ -725,8 +719,10 @@
                       context.beginPath();
                       context.moveTo(x_y[i].x,x_y[i].y)  ;
 
-                      if(answer_date[ i ].is_PatientGoal == true  )
+
+                      if(answer_date[ i ].is_PhysicianGoal == true  )
                       {
+
                            context.setLineDash([]); // A solid line
                            context.lineTo(x_y[i+1].x,x_y[i+1].y);
                            context.stroke();
@@ -734,7 +730,7 @@
                       else
                       {
                            context.save();
-                           context.setLineDash([5, 15]);
+                           context.setLineDash([5, 15]); // A dashed line
                            context.lineTo(x_y[i+1].x,x_y[i+1].y);
                            context.stroke();
                            context.restore();
@@ -760,7 +756,7 @@
 
 
                 //append the keyword to the graph key
-                $( graph_key_div ).append( '<p id="'+ legend_id +'"  class="legend_class" >'+ key_word +'</p> <p> </p>'  );
+                $( graph_key_div ).append( '<p id="'+ legend_id +'"  class="legend_class" style="border:1px solid black;font-weight: bold;" >'+ key_word +'</p> <p> </p>'  );
                 $('#'+ legend_id).css('color', graphcolor);
 
             }
@@ -776,7 +772,6 @@
             var Authored = '';
             var questionnaire = '';
             var canvasCount =0;
-            var Is_PatientGoal = '';
             var Is_PhysicianGoal = '';
             var PhysGoal ='';
             if (questionnaireCall.entry && questionnaireResponseCall.entry && hhgQuestionnaireResponseCall.entry ) 
@@ -786,7 +781,6 @@
                     var PhysGoal_date = [];
                     for(var  hhgqr = 0; hhgqr < hhgQuestionnaireResponseCall.entry.length; hhgqr++)
                     {
-
                             Response   =   hhgQuestionnaireResponseCall.entry[ hhgqr ].resource;
                             PhysGoal   =   Response.group.question[ 0].answer[ 0 ].valueInteger;
                             //bug fix to take into account the order of goal for physician and patient has 3 and 4 reversed
@@ -800,20 +794,18 @@
                                 PhysGoal = 3;
                             }  
 
-                            Authored   =   Response.authored.split("T")[ 0 ] ;
-                        
+                            Authored   =   Response.authored.split("T")[ 0 ] ;  
                             PhysGoal_date.push({ physGoal:PhysGoal, authored:Authored });
                     }
 
-                    console.log(PhysGoal_date);
+                    //console.log(PhysGoal_date);
 
                     questionnaire = questionnaireCall.entry[0].resource;
 
                     for(var q = 0; q < questionnaire.group.question.length; q++)
                     {
                         Question = questionnaire.group.question[q].text
-                        //console.log("Question")
-                        //console.log(Question);
+                        
 
                         var graph_question = "";
                         var want_graph = false;
@@ -859,7 +851,9 @@
                                 {
                                     multiple_choices.push(questionnaire.group.question[q].option[j].display);
                                 }
-
+ 
+                                var current_Question = q +1; //the order of the questions in the HHQR should match the order of the goals in the HHG question 
+                               
                                 answer_date = [];
                                 for(var  qr = 0; qr < questionnaireResponseCall.entry.length; qr++)
                                 {
@@ -867,11 +861,32 @@
                                         Response   =   questionnaireResponseCall.entry[ qr ].resource;
                                         Answer     =   Response.group.question[ q ].answer[ 0 ].valueInteger;
                                         Authored   =   Response.authored.split("T")[ 0 ] ;
-                                        answer_date.push({ answer:Answer, authored:Authored, question:q});
-                                }
+                                        
+                                        //find the first physician goal older than the time of this data point's Authored time
+                                        var AuthoredTime = new Date(Authored);  
+                                        Is_PhysicianGoal = false;
+                                        for (var i = 0; i < PhysGoal_date.length ; i++)
+                                        {
+                                            var PhysGoalDate = PhysGoal_date[ i  ].authored;
+                                            var PhysGoalTime = new Date(PhysGoalDate);
+                                            
+                                            if(PhysGoalTime.getTime() <= AuthoredTime.getTime() )
+                                            {
+                                                //here we have found the first Physician goal older than the current data point
 
-                            
-                               //console.log(answer_date);
+                                                var PGoal = PhysGoal_date[ i  ].physGoal;
+                                               
+                                                //if the physician goal equals this graph then set this data point to be selected as a current goal
+                                                if( PGoal == current_Question )  
+                                                {
+                                                    Is_PhysicianGoal = true;
+                                                }
+                                                break;
+                                            }
+                                        }
+
+                                        answer_date.push({ answer:Answer, authored:Authored, is_PhysicianGoal:Is_PhysicianGoal});
+                                }
 
                                 create_graph(Question, KeyWord, answer_date, multiple_choices,canvasCount , PhysGoal_date, graphcolor) ;
                         
@@ -913,7 +928,7 @@
                     $(".graph_col_h1").height(maxHeight);
                 });
 
-                $( graph_key_div ).append( '<p> </p><p> </p><p>===========</p><p> <b>- - -</b>  not patient chosen goal</p> <p> </p>'  );
+                $( graph_key_div ).append( '<p></p><p></p> <hr> <p></p><p> <b>- - -</b>  not patient chosen goal</p> <p> </p>'  );
                 $( graph_key_div ).append( '<p> <b>_____</b> patient chosen goal</p> <p> </p>'  );
 
             /***************************** end  graphs **************************/
