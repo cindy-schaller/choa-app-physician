@@ -912,7 +912,7 @@
             if (questionnaireResponseCall.entry) {
                 var hhLastUpdated = new Date(questionnaireResponseCall.entry[0].resource.authored ? questionnaireResponseCall.entry[0].resource.authored : "-");
             }
-            if (wicQuestionnaireResponseCall.entry) {
+            if (wicQuestionnaireResponseCall) {
                 var wicLastUpdated = new Date(wicQuestionnaireResponseCall.authored ? wicQuestionnaireResponseCall.authored: "-");
             }
 
@@ -1101,10 +1101,6 @@
                 var wicSurvey = $("<div></div>").addClass("col-xs-12");
                 wicSurvey.attr("id", "wicSurvey-div");
                 $("#dialog").append(wicSurvey);
-
-                if (questionnaireResponseCall.entry) {
-                    var response = questionnaireResponseCall.entry[0].resource;
-                }
 
                 if (wicQuestionnaireCall.group && wicQuestionnaireResponseCall.group) {
 
