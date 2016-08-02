@@ -50,30 +50,16 @@
     }
 
     /**
-     * Returns the last record having the given property "propName".
-     * Can also be called before the patient has been initialized, in which case
-     * it returns null.
-     * @param {String} propName The name of the property to serach for inside
-     *                          the recods.
-     */
-    function getLastEnryHaving(propName) {
-        if ( !PATIENT ) {
-            return null;
-        }
-        return PATIENT.getLastEnryHaving(propName);
-    }
-
-    /**
      * Modified getVitals function from gc-parental-view
      * Collects and returns the latest measurements and returns them as an
      * useful object...
      */
     function getVitals(PATIENT) {
         var out = {
-                height : { value : undefined, "percentile" : null},
-                weight : { value : undefined, "percentile" : null},
-                headc  : { value : undefined, "percentile" : null},
-                bmi    : { value : undefined, "percentile" : null},
+                height : { value : undefined, "percentile" : null, "unit": "m"},
+                weight : { value : undefined, "percentile" : null, "unit": "kg"},
+                headc  : { value : undefined, "percentile" : null, "unit": "cm"},
+                bmi    : { value : undefined, "percentile" : null, "unit": "kg/m^2"},
 
                 age : PATIENT.getCurrentAge()
             },
@@ -86,11 +72,12 @@
             headc  : { modelProp: "headc"           , dsType : "HEADC"  },
             bmi    : { modelProp: "bmi"             , dsType : "BMI"    }
         }, function(key, meta) {
-            var lastEntry = getLastEnryHaving( meta.modelProp ), ds, pct;
+            var lastEntry = PATIENT.getLastEnryHaving( meta.modelProp ), ds, pct;
             if (lastEntry) {
                 ds = GC.getDataSet(src, meta.dsType, gender, 0, lastEntry.agemos);
                 out[key].value  = lastEntry[meta.modelProp];
                 if (ds) {
+                    out[key].unit = ds.units;
                     pct = GC.findPercentileFromX(
                         out[key].value,
                         ds,
@@ -338,57 +325,6 @@
             return hhgQuestionnaireResponseCall;
         })();
 
-        var patientBMICall = (function () {
-            var patientBMICall = null;
-            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
-
-            //Note LOINC Codes: 39156-5 for BMI Observations
-            $.ajax({
-                async: false,
-                global: false,
-                url: fhir_url +'Observation?subject:Patient=' + patientID + '&code=39156-5&_count=50',
-                dataType: 'json',
-                success: function (data) {
-                    patientBMICall = data;
-                }
-            });
-            return patientBMICall;
-        })();
-
-        var patientWeightCall = (function () {
-            var patientWeightCall = null;
-            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
-
-            //Note LOINC Codes: 3141-9 for Weight Observations
-            $.ajax({
-                async: false,
-                global: false,
-                url: fhir_url +'Observation?subject:Patient=' + patientID + '&code=3141-9&_count=50',
-                dataType: 'json',
-                success: function (data) {
-                    patientWeightCall = data;
-                }
-            });
-            return patientWeightCall;
-        })();
-
-        var patientHeightCall = (function () {
-            var patientHeightCall = null;
-            //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
-
-            //Note LOINC Codes: 8302-2 for Height BMI Observations
-            $.ajax({
-                async: false,
-                global: false,
-                url: fhir_url + 'Observation?subject:Patient=' + patientID + '&code=8302-2&_count=50',
-                dataType: 'json',
-                success: function (data) {
-                    patientHeightCall = data;
-                }
-            });
-            return patientHeightCall;
-        })();
-
         var patientHemoCall = (function () {
             var patientHemoCall = null;
             //refer to http://docs.smarthealthit.org/tutorials/server-quick-start/
@@ -406,7 +342,7 @@
             return patientHemoCall;
         })();
 
-        $.when(patientCall, questionnaireResponseCall, wicQuestionnaireResponseCall ,questionnaireCall, hhgQuestionnaireResponseCall, patientBMICall, patientWeightCall, patientHeightCall).then(function() {
+        $.when(patientCall, questionnaireResponseCall, wicQuestionnaireResponseCall ,questionnaireCall, hhgQuestionnaireResponseCall).then(function() {
 
             if (patientCall.entry) {
                 var patient = patientCall.entry[0].resource;
@@ -433,67 +369,59 @@
             (patient.telecom[0].value ?
                 patient.telecom[0].value : "") : "");
 
-            // stamp = 0 = Unix Epoch. Fingers crossed that we don't deal with
-            // "children" that are older than the age of 46 in this app.
-            var latestRecording = { 'stamp': 0, 'text': '',
-                'weight': -1, 'weightUnit': 'kg', 'weightStamp': 0,
-                'height': -1, 'heightUnit': 'cm', 'heightStamp': 0,
-                'bmi': -1, 'bmiUnit': 'kg/m2', 'bmiStamp': 0,
-                'hemo': -1,  'hemoUnit': 'mg/dL', 'hemoStamp': 0 };
-            // If not, hell breaks loose
+            var latestRecording = getVitals(GC.App.getPatient());
+            var hemo = {'hemo': -1,  'hemoUnit': 'mg/dL', 'hemoStamp': 0 };
 
-            var process = function(d, l) {
+            var process = function(d, l, arr) {
                 if (typeof d == 'undefined') return;
-
                 for (var i = d.length - 1; i >= 0; i--) {
-                    if (d[i] != undefined &&
-                        d[i].resource.effectiveDateTime != undefined) {
+                    if (d[i] != undefined && d[i].resource.effectiveDateTime != undefined) {
                         var t = Date.parse(d[i].resource.effectiveDateTime);
-
-                        if (t > latestRecording[l + 'Stamp']) {
-                            latestRecording[l + 'Stamp'] = t
-                            latestRecording[l] = d[i].resource.valueQuantity.value;
-                            latestRecording[l + 'Unit'] = d[i].resource.valueQuantity.unit;
+                        if (t > arr[l + 'Stamp']) {
+                            arr[l + 'Stamp'] = t;
+                            arr[l] = d[i].resource.valueQuantity.value;
+                            arr[l + 'Unit'] = d[i].resource.valueQuantity.unit;
                         }
                     }
                 }
-            }
+            };
 
-            // FIXME: Optimize this into one FHIR query instead of 3 (or.actually,
-            // when the app loads there are *6* observation requests...)
-            process(patientWeightCall.entry, 'weight');
-            process(patientHeightCall.entry, 'height');
-            process(patientBMICall.entry, 'bmi');
-            process(patientHemoCall.entry, 'hemo');
+            process(patientHemoCall.entry, 'hemo', hemo);
 
-            localStorage.setItem("BMI", latestRecording.bmi);
+            var formatData = function(data, includeUnits) {
+                return '<span class="recordedValue">' + data.value + '</span>'
+                    + (includeUnits ? data.unit : "")
+                    + ' ('+Math.round(data.percentile*100)+'%)';
+            };
+
+            localStorage.setItem("BMI", latestRecording.bmi.value);
 
             var bmiText, bmiClass;
 
             // FIXME: The comparisons can be optimized by inversing the evaluation order
             switch (true) {
-                case (latestRecording.bmi <= 18.5):
-                    bmiText = 'Underweight </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
+                case (latestRecording.bmi.value <= 18.5):
+                    bmiText = 'Underweight </br> BMI: '+formatData(latestRecording.bmi, false);
                     bmiClass = 'text-warning'
                     break;
-                case (18.5 < latestRecording.bmi && latestRecording.bmi <= 25):
-                    bmiText = 'Normal weight </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
+                case (18.5 < latestRecording.bmi.value && latestRecording.bmi.value <= 25):
+                    bmiText = 'Normal weight </br> BMI: '+formatData(latestRecording.bmi, false);
                     bmiClass = 'text-info'
                     break;
-                case (25 < latestRecording.bmi && latestRecording.bmi <= 30):
-                    bmiText = 'Overweight </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
+                case (25 < latestRecording.bmi.value && latestRecording.bmi.value <= 30):
+                    bmiText = 'Overweight </br> BMI: '+formatData(latestRecording.bmi, false);
                     bmiClass = 'text-warning'
                     break;
-                case (30 < latestRecording.bmi && latestRecording.bmi <= 35):
-                    bmiText = 'Class II obesity </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
+                case (30 < latestRecording.bmi.value && latestRecording.bmi.value <= 35):
+                    bmiText = 'Class II obesity </br> BMI: '+formatData(latestRecording.bmi, false);
                     bmiClass = 'text-warning'
                     break;
-                case (35 < latestRecording.bmi && latestRecording.bmi <= 40):
-                    bmiText = 'Class II obesity </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
+                case (35 < latestRecording.bmi.value && latestRecording.bmi.value <= 40):
+                    bmiText = 'Class II obesity </br> BMI: '+formatData(latestRecording.bmi, false);
                     bmiClass = 'text-danger'
                     break;
-                case (40 < latestRecording.bmi):
-                    bmiText = 'Class III obesity </br> BMI: <span class="recordedValue">' + latestRecording.bmi + '</span>';
+                case (40 < latestRecording.bmi.value):
+                    bmiText = 'Class III obesity </br> BMI: '+formatData(latestRecording.bmi, false);
                     bmiClass = 'text-danger'
                     break;
                 default:
@@ -563,20 +491,18 @@
                     .append($("<div></div>")
                         .addClass("patient-weight")
                         .attr("id", "patient-weight")
-                        .html("<strong>Weight: </strong><span class='recordedValue'>" + latestRecording.weight +
-                              "</span> " + latestRecording.weightUnit)
+                        .html("<strong>Weight: </strong>"+formatData(latestRecording.weight, true))
                     )
                     .append($("<div></div>")
                         .addClass("patient-height")
                         .attr("id", "patient-height")
-                        .html("<strong>Height: </strong><span class='recordedValue'>" + latestRecording.height +
-                              "</span> " + latestRecording.heightUnit)
+                        .html("<strong>Height: </strong>"+formatData(latestRecording.height, true))
                     )
                     .append($("<div></div>")
                         .addClass("patient-hemo")
                         .attr("id", "patient-hemo")
-                        .html("<strong>Hemoglobin: </strong><span class='recordedValue'>" + latestRecording.hemo +
-                              "</span> " + latestRecording.hemoUnit)
+                        .html("<strong>Hemoglobin: </strong><span class='recordedValue'>" + hemo.hemo +
+                              "</span> " + hemo.hemoUnit)
                     )
                     .append($('<div><input type="button" id="patient-update-button" value="Log Values"></div>')
                         .attr("id", "patient-update")
